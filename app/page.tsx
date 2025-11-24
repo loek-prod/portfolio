@@ -11,11 +11,6 @@ import { LoadingScreen } from "@/components/loading-screen"
 
 const photos = [
   {
-    src: "/images/photo3.jpg",
-    alt: "Mountain landscape with misty peaks",
-    category: "Landscape",
-  },
-  {
     src: "/images/photo5.jpg",
     alt: "Macro photography of textured green leaves",
     category: "Macro",
@@ -105,6 +100,11 @@ const photos = [
     alt: "Construction workers street scene",
     category: "Street",
   },
+  {
+    src: "/images/photo3.jpg",
+    alt: "Mountain landscape with misty peaks",
+    category: "Landscape",
+  },
 ]
 
 const videos = [
@@ -173,36 +173,36 @@ export default function Portfolio() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <header id="home" className="relative h-[60vh] overflow-hidden">
         {/* Navigation Bar */}
-        <nav className="absolute top-0 left-0 right-0 z-20 bg-white shadow-md">
+        <nav className="absolute top-0 left-0 right-0 z-20 bg-background shadow-md">
           <div className="flex justify-between items-center p-6 md:p-8">
-            <div className="text-black">
+            <div className="text-foreground">
               <h1 className="text-2xl md:text-3xl font-bold">LOEK LUTGENS</h1>
             </div>
             <div className="flex gap-6">
               <button
                 onClick={() => scrollToSection("home")}
-                className="nav-link text-black hover:bg-gray-100 px-4 py-2 rounded-md transition-colors"
+                className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors"
               >
                 <RollingText text="Home" />
               </button>
               <button
                 onClick={() => scrollToSection("gallery")}
-                className="nav-link text-black hover:bg-gray-100 px-4 py-2 rounded-md transition-colors"
+                className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors"
               >
                 <RollingText text="Pictures" />
               </button>
               <button
                 onClick={() => scrollToSection("videos")}
-                className="nav-link text-black hover:bg-gray-100 px-4 py-2 rounded-md transition-colors"
+                className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors"
               >
                 <RollingText text="Videos" />
               </button>
               <Link href="/contact">
-                <button className="nav-link text-black hover:bg-gray-100 px-4 py-2 rounded-md transition-colors">
+                <button className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors">
                   <RollingText text="Contact" />
                 </button>
               </Link>
@@ -228,10 +228,10 @@ export default function Portfolio() {
       </section>
 
       {/* Contact Section */}
-      <section className="py-20 px-4 md:px-8 bg-black text-white">
+      <section className="py-20 px-4 md:px-8 bg-primary text-primary-foreground">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">Let's Work Together</h2>
-          <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
             Available for photography and videography projects. Get in touch to discuss your vision.
           </p>
 
@@ -239,7 +239,7 @@ export default function Portfolio() {
             <Link href="/contact">
               <Button
                 size="lg"
-                className="bg-white/20 text-white border border-white/30 hover:bg-white/30 rounded-full px-8"
+                className="bg-background/20 text-primary-foreground border border-border hover:bg-background/30 rounded-full px-8"
               >
                 Contact Me
               </Button>
@@ -247,15 +247,15 @@ export default function Portfolio() {
             <a href="https://www.instagram.com/ll_exist/" target="_blank" rel="noopener noreferrer">
               <Button
                 size="lg"
-                className="bg-white/20 text-white border border-white/30 hover:bg-white/30 rounded-full px-8"
+                className="bg-background/20 text-primary-foreground border border-border hover:bg-background/30 rounded-full px-8"
               >
                 Instagram
               </Button>
             </a>
           </div>
 
-          <div className="border-t border-gray-700 pt-8">
-            <p className="text-gray-400">© {new Date().getFullYear()} Loek Lutgens. All rights reserved.</p>
+          <div className="border-t border-border pt-8">
+            <p className="text-muted-foreground">© {new Date().getFullYear()} Loek Lutgens. All rights reserved.</p>
           </div>
         </div>
       </section>

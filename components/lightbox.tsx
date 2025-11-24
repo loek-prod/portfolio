@@ -69,11 +69,11 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
   }, [onClose, goToNext, goToPrevious])
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 bg-primary/95 flex items-center justify-center">
       {/* Close Button */}
       <Button
         onClick={onClose}
-        className="absolute top-4 right-4 z-50 bg-white/10 hover:bg-white/20 text-white rounded-full w-12 h-12 p-0"
+        className="absolute top-4 right-4 z-50 bg-background/10 hover:bg-background/20 text-primary-foreground rounded-full w-12 h-12 p-0"
         aria-label="Close lightbox"
       >
         <X className="h-6 w-6" />
@@ -82,7 +82,7 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
       {/* Previous Button */}
       <Button
         onClick={goToPrevious}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-50 bg-white/10 hover:bg-white/20 text-white rounded-full w-14 h-14 p-0"
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-50 bg-background/10 hover:bg-background/20 text-primary-foreground rounded-full w-14 h-14 p-0"
         aria-label="Previous image"
       >
         <ChevronLeft className="h-8 w-8" />
@@ -91,7 +91,7 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
       {/* Next Button */}
       <Button
         onClick={goToNext}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-50 bg-white/10 hover:bg-white/20 text-white rounded-full w-14 h-14 p-0"
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-50 bg-background/10 hover:bg-background/20 text-primary-foreground rounded-full w-14 h-14 p-0"
         aria-label="Next image"
       >
         <ChevronRight className="h-8 w-8" />
@@ -117,17 +117,17 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
       </div>
 
       {/* Image Info */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white text-center">
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-primary-foreground text-center">
         <p className="text-sm mb-2">
           {currentIndex + 1} / {images.length}
         </p>
-        <span className="bg-white/20 px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
+        <span className="bg-background/20 px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
           {images[currentIndex].category}
         </span>
       </div>
 
       {/* Swipe Instructions */}
-      <div className="absolute top-8 left-1/2 -translate-x-1/2 text-white/60 text-sm">
+      <div className="absolute top-8 left-1/2 -translate-x-1/2 text-primary-foreground/60 text-sm">
         Swipe or use arrow keys to navigate
       </div>
     </div>

@@ -130,7 +130,7 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
   }, [])
 
   return (
-    <div className="relative w-full h-screen bg-gradient-to-b from-gray-50 to-white overflow-hidden select-none">
+    <div className="relative w-full h-screen bg-gradient-to-b from-accent to-background overflow-hidden select-none">
       <div
         ref={sliderRef}
         className="absolute inset-0 flex items-center justify-center cursor-grab active:cursor-grabbing"
@@ -185,7 +185,7 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
       <Button
         onClick={goToPrev}
         disabled={Math.round(offset) === 0}
-        className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-50 bg-white/90 hover:bg-white text-black rounded-full w-14 h-14 p-0 shadow-xl disabled:opacity-30"
+        className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-50 bg-background/90 hover:bg-background text-foreground rounded-full w-14 h-14 p-0 shadow-xl disabled:opacity-30"
         aria-label="Previous photo"
       >
         <ChevronLeft className="h-8 w-8" />
@@ -194,15 +194,15 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
       <Button
         onClick={goToNext}
         disabled={Math.round(offset) === photos.length - 1}
-        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-50 bg-white/90 hover:bg-white text-black rounded-full w-14 h-14 p-0 shadow-xl disabled:opacity-30"
+        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-50 bg-background/90 hover:bg-background text-foreground rounded-full w-14 h-14 p-0 shadow-xl disabled:opacity-30"
         aria-label="Next photo"
       >
         <ChevronRight className="h-8 w-8" />
       </Button>
 
       {/* Progress Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-white/90 backdrop-blur-sm px-6 py-3 rounded-full shadow-xl">
-        <span className="text-black font-medium">
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-background/90 backdrop-blur-sm px-6 py-3 rounded-full shadow-xl">
+        <span className="text-foreground font-medium">
           {Math.round(offset) + 1} / {photos.length}
         </span>
       </div>
