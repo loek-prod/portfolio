@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef } from "react"
 import { ChevronLeft, ChevronRight, Play, Pause } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -16,17 +16,14 @@ interface VideoSliderProps {
 }
 
 export function VideoSlider({ videos }: VideoSliderProps) {
-  const [offset, setOffset] = useState(0)
-  const [activeIndex, setActiveIndex] = useState(0)
+  const [currentIndex, setCurrentIndex] = useState(0)
   const [playingVideos, setPlayingVideos] = useState<Set<number>>(new Set())
-  const sliderRef = useRef<HTMLDivElement>(null)
   const videoRefs = useRef<(HTMLIFrameElement | null)[]>([])
-  const animationRef = useRef<number>()
 
   const slideWidth = 85 // percentage of viewport
 
   const getSlidePosition = (index: number) => {
-    return index - offset
+    return index - currentIndex
   }
 
   const getScale = (position: number) => {
@@ -41,31 +38,6 @@ export function VideoSlider({ videos }: VideoSliderProps) {
     if (absPos === 0) return 1.0 // center
     if (absPos === 1) return 0.7 // neighbors
     return 0.4 // further away
-  }
-
-  const animateToIndex = (targetIndex: number) => {
-    const clampedIndex = Math.max(0, Math.min(videos.length - 1, targetIndex))
-
-    const animate = () => {
-      setOffset((current) => {
-        const diff = clampedIndex - current
-        if (Math.abs(diff) < 0.01) {
-          setActiveIndex(clampedIndex)
-          return clampedIndex
-        }
-        // Smooth easing (lerp)
-        return current + diff * 0.25
-      })
-
-      if (Math.abs(offset - clampedIndex) > 0.01) {
-        animationRef.current = requestAnimationFrame(animate)
-      }
-    }
-
-    if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current)
-    }
-    animationRef.current = requestAnimationFrame(animate)
   }
 
   const togglePlayPause = (index: number, e: React.MouseEvent) => {
@@ -87,13 +59,11 @@ export function VideoSlider({ videos }: VideoSliderProps) {
   }
 
   const goToNext = () => {
-    const nextIndex = Math.min(Math.round(offset) + 1, videos.length - 1)
-    animateToIndex(nextIndex)
+    setCurrentIndex((prev) => Math.min(prev + 1, videos.length - 1))
   }
 
   const goToPrev = () => {
-    const prevIndex = Math.max(Math.round(offset) - 1, 0)
-    animateToIndex(prevIndex)
+    setCurrentIndex((prev) => Math.max(prev - 1, 0))
   }
 
   const handleContainerClick = (e: React.MouseEvent) => {
@@ -107,18 +77,9 @@ export function VideoSlider({ videos }: VideoSliderProps) {
     }
   }
 
-  useEffect(() => {
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current)
-      }
-    }
-  }, [])
-
   return (
     <div className="relative w-full bg-primary overflow-hidden select-none flex flex-col items-center py-8">
       <div
-        ref={sliderRef}
         className="relative w-full h-[70vh] flex items-center justify-center cursor-pointer"
         onClick={handleContainerClick}
       >
@@ -133,7 +94,7 @@ export function VideoSlider({ videos }: VideoSliderProps) {
             return (
               <div
                 key={index}
-                className="absolute transition-all duration-200 ease-out"
+                className="absolute transition-all duration-300 ease-out"
                 style={{
                   transform: `translateX(${position * slideWidth}vw) scale(${scale})`,
                   opacity: isVisible ? opacity : 0,
@@ -141,7 +102,6 @@ export function VideoSlider({ videos }: VideoSliderProps) {
                   maxWidth: "1400px",
                   zIndex: Math.round(100 - Math.abs(position) * 10),
                   pointerEvents: isVisible ? "auto" : "none",
-                  willChange: "transform, opacity",
                 }}
               >
                 <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl group">
@@ -182,7 +142,7 @@ export function VideoSlider({ videos }: VideoSliderProps) {
             e.stopPropagation()
             goToPrev()
           }}
-          disabled={Math.round(offset) === 0}
+          disabled={currentIndex === 0}
           className="bg-background/20 hover:bg-background/30 backdrop-blur-sm text-primary-foreground border-border rounded-full w-12 h-12 md:w-14 md:h-14 p-0 disabled:opacity-30 pointer-events-auto"
           aria-label="Previous video"
         >
@@ -191,7 +151,7 @@ export function VideoSlider({ videos }: VideoSliderProps) {
 
         <div className="flex items-center gap-3 bg-background/10 backdrop-blur-sm px-6 py-3 rounded-full">
           <span className="text-primary-foreground font-medium">
-            {Math.round(offset) + 1} / {videos.length}
+            {currentIndex + 1} / {videos.length}
           </span>
         </div>
 
@@ -200,7 +160,7 @@ export function VideoSlider({ videos }: VideoSliderProps) {
             e.stopPropagation()
             goToNext()
           }}
-          disabled={Math.round(offset) === videos.length - 1}
+          disabled={currentIndex === videos.length - 1}
           className="bg-background/20 hover:bg-background/30 backdrop-blur-sm text-primary-foreground border-border rounded-full w-12 h-12 md:w-14 md:h-14 p-0 disabled:opacity-30 pointer-events-auto"
           aria-label="Next video"
         >
