@@ -161,13 +161,17 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
                   zIndex: Math.round(100 - Math.abs(position) * 10),
                 }}
               >
-                <div className="relative w-full max-h-[80vh] rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center">
+                <div className="relative w-full h-[80vh] flex items-center justify-center">
                   <Image
                     src={photo.src || "/placeholder.svg"}
                     alt={photo.alt}
                     width={1200}
                     height={800}
-                    className="object-contain w-full h-auto max-h-[80vh]"
+                    className="object-contain max-w-full max-h-full rounded-2xl shadow-2xl"
+                    style={{
+                      width: "auto",
+                      height: "auto",
+                    }}
                     sizes="90vw"
                     draggable={false}
                   />

@@ -219,8 +219,18 @@ export default function Portfolio() {
         ></div>
       </header>
 
-      <section id="gallery">
-        <PhotoSlider photos={filteredPhotos} />
+      <section
+        id="gallery"
+        className="relative bg-cover bg-center bg-fixed"
+        style={{
+          backgroundImage: `url('/images/section-background.jpg')`,
+        }}
+      >
+        {/* Semi-transparent overlay for better contrast */}
+        <div className="absolute inset-0 bg-background/40 backdrop-blur-sm"></div>
+        <div className="relative z-10">
+          <PhotoSlider photos={filteredPhotos} />
+        </div>
       </section>
 
       <section id="videos">
