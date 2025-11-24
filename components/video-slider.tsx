@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState, useRef } from "react"
-import { ChevronLeft, ChevronRight, Play, Pause } from "lucide-react"
+import { ChevronLeft, ChevronRight, Play, Pause, Maximize } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface Video {
@@ -19,6 +19,7 @@ export function VideoSlider({ videos }: VideoSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [playingVideos, setPlayingVideos] = useState<Set<number>>(new Set())
   const videoRefs = useRef<(HTMLIFrameElement | null)[]>([])
+  const containerRefs = useRef<(HTMLDivElement | null)[]>([])
 
   const slideWidth = 85 // percentage of viewport
 
@@ -55,6 +56,20 @@ export function VideoSlider({ videos }: VideoSliderProps) {
         iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', "*")
         setPlayingVideos((prev) => new Set(prev).add(index))
       }
+    }
+  }
+
+  const toggleFullscreen = (index: number, e: React.MouseEvent) => {
+    e.stopPropagation()
+    const container = containerRefs.current[index]
+    if (!container) return
+
+    if (document.fullscreenElement) {
+      document.exitFullscreen()
+    } else {
+      container.requestFullscreen().catch((err) => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`)
+      })
     }
   }
 
@@ -104,7 +119,10 @@ export function VideoSlider({ videos }: VideoSliderProps) {
                   pointerEvents: isVisible ? "auto" : "none",
                 }}
               >
-                <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl group">
+                <div
+                  ref={(el) => (containerRefs.current[index] = el)}
+                  className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl group"
+                >
                   <iframe
                     ref={(el) => (videoRefs.current[index] = el)}
                     width="100%"
@@ -117,17 +135,26 @@ export function VideoSlider({ videos }: VideoSliderProps) {
                     className="w-full h-full pointer-events-auto"
                   ></iframe>
                   <div className="absolute inset-0 flex items-center justify-center bg-primary/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
-                    <button
-                      onClick={(e) => togglePlayPause(index, e)}
-                      className="bg-background/90 hover:bg-background rounded-full p-6 transition-all hover:scale-110 pointer-events-auto cursor-pointer"
-                      aria-label={isPlaying ? "Pause video" : "Play video"}
-                    >
-                      {isPlaying ? (
-                        <Pause className="h-10 w-10 text-foreground" fill="currentColor" />
-                      ) : (
-                        <Play className="h-10 w-10 text-foreground" fill="currentColor" />
-                      )}
-                    </button>
+                    <div className="flex items-center gap-4">
+                      <button
+                        onClick={(e) => togglePlayPause(index, e)}
+                        className="bg-background/90 hover:bg-background rounded-full p-6 transition-all hover:scale-110 pointer-events-auto cursor-pointer"
+                        aria-label={isPlaying ? "Pause video" : "Play video"}
+                      >
+                        {isPlaying ? (
+                          <Pause className="h-10 w-10 text-foreground" fill="currentColor" />
+                        ) : (
+                          <Play className="h-10 w-10 text-foreground" fill="currentColor" />
+                        )}
+                      </button>
+                      <button
+                        onClick={(e) => toggleFullscreen(index, e)}
+                        className="bg-background/90 hover:bg-background rounded-full p-6 transition-all hover:scale-110 pointer-events-auto cursor-pointer"
+                        aria-label="Toggle fullscreen"
+                      >
+                        <Maximize className="h-10 w-10 text-foreground" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
