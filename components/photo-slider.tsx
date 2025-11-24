@@ -19,12 +19,6 @@ interface PhotoSliderProps {
 
 export function PhotoSlider({ photos }: PhotoSliderProps) {
   const [offset, setOffset] = useState(0)
-  const [isDragging, setIsDragging] = useState(false)
-  const [startX, setStartX] = useState(0)
-  const [currentOffset, setCurrentOffset] = useState(0)
-  const [velocity, setVelocity] = useState(0)
-  const [lastMoveTime, setLastMoveTime] = useState(0)
-  const [lastMoveX, setLastMoveX] = useState(0)
   const sliderRef = useRef<HTMLDivElement>(null)
   const animationRef = useRef<number>()
 
@@ -51,12 +45,6 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
     return 0.4 // further away
   }
 
-  // Snap to nearest slide
-  const snapToNearest = (initialVelocity = 0) => {
-    const nearest = Math.round(offset + initialVelocity * 0.3)
-    animateToIndex(nearest)
-  }
-
   const animateToIndex = (targetIndex: number) => {
     const clampedIndex = Math.max(0, Math.min(photos.length - 1, targetIndex))
 
@@ -81,55 +69,6 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
     animationRef.current = requestAnimationFrame(animate)
   }
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true)
-    setStartX(e.clientX)
-    setCurrentOffset(offset)
-  }
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setIsDragging(true)
-    const touchX = e.touches[0].clientX
-    setStartX(touchX)
-    setCurrentOffset(offset)
-    setLastMoveX(touchX)
-    setLastMoveTime(Date.now())
-    setVelocity(0)
-  }
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return
-    const diff = startX - e.clientX
-    const slidesMove = diff / (window.innerWidth * (slideWidth / 100))
-    setOffset(currentOffset + slidesMove)
-  }
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging) return
-    e.preventDefault()
-
-    const touchX = e.touches[0].clientX
-    const diff = startX - touchX
-    const slidesMove = diff / (window.innerWidth * (slideWidth / 100))
-    setOffset(currentOffset + slidesMove)
-
-    const now = Date.now()
-    const timeDiff = now - lastMoveTime
-    if (timeDiff > 0) {
-      const moveDiff = touchX - lastMoveX
-      setVelocity(moveDiff / timeDiff)
-    }
-    setLastMoveX(touchX)
-    setLastMoveTime(now)
-  }
-
-  const handleDragEnd = () => {
-    if (isDragging) {
-      setIsDragging(false)
-      snapToNearest(velocity)
-    }
-  }
-
   const goToNext = () => {
     const nextIndex = Math.min(Math.round(offset) + 1, photos.length - 1)
     animateToIndex(nextIndex)
@@ -138,6 +77,17 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
   const goToPrev = () => {
     const prevIndex = Math.max(Math.round(offset) - 1, 0)
     animateToIndex(prevIndex)
+  }
+
+  const handleContainerClick = (e: React.MouseEvent) => {
+    const windowWidth = window.innerWidth
+    const clickX = e.clientX
+
+    if (clickX > windowWidth / 2) {
+      goToNext()
+    } else {
+      goToPrev()
+    }
   }
 
   useEffect(() => {
@@ -152,17 +102,10 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
     <div className="relative w-full h-screen bg-gradient-to-b from-accent to-background overflow-hidden select-none">
       <div
         ref={sliderRef}
-        className="absolute inset-0 flex items-center justify-center cursor-grab active:cursor-grabbing touch-pan-y"
-        style={{ touchAction: "pan-y", willChange: "transform" }}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleDragEnd}
-        onMouseLeave={handleDragEnd}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleDragEnd}
+        className="absolute inset-0 flex items-center justify-center cursor-pointer"
+        onClick={handleContainerClick}
       >
-        <div className="relative w-full h-full flex items-center justify-center">
+        <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
           {photos.map((photo, index) => {
             const position = getSlidePosition(index)
             const scale = getScale(position)
@@ -172,7 +115,7 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
             return (
               <div
                 key={index}
-                className="absolute transition-all duration-200 ease-out pointer-events-none"
+                className="absolute transition-all duration-200 ease-out"
                 style={{
                   transform: `translateX(${position * slideWidth}vw) scale(${scale})`,
                   opacity: isVisible ? opacity : 0,
@@ -208,18 +151,24 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
 
       {/* Navigation Arrows */}
       <Button
-        onClick={goToPrev}
+        onClick={(e) => {
+          e.stopPropagation()
+          goToPrev()
+        }}
         disabled={Math.round(offset) === 0}
-        className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-50 bg-background/90 hover:bg-background text-foreground rounded-full w-14 h-14 p-0 shadow-xl disabled:opacity-30"
+        className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-50 bg-background/90 hover:bg-background text-foreground rounded-full w-14 h-14 p-0 shadow-xl disabled:opacity-30 pointer-events-auto"
         aria-label="Previous photo"
       >
         <ChevronLeft className="h-8 w-8" />
       </Button>
 
       <Button
-        onClick={goToNext}
+        onClick={(e) => {
+          e.stopPropagation()
+          goToNext()
+        }}
         disabled={Math.round(offset) === photos.length - 1}
-        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-50 bg-background/90 hover:bg-background text-foreground rounded-full w-14 h-14 p-0 shadow-xl disabled:opacity-30"
+        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-50 bg-background/90 hover:bg-background text-foreground rounded-full w-14 h-14 p-0 shadow-xl disabled:opacity-30 pointer-events-auto"
         aria-label="Next photo"
       >
         <ChevronRight className="h-8 w-8" />

@@ -17,14 +17,8 @@ interface VideoSliderProps {
 
 export function VideoSlider({ videos }: VideoSliderProps) {
   const [offset, setOffset] = useState(0)
-  const [isDragging, setIsDragging] = useState(false)
-  const [startX, setStartX] = useState(0)
-  const [currentOffset, setCurrentOffset] = useState(0)
   const [activeIndex, setActiveIndex] = useState(0)
   const [playingVideos, setPlayingVideos] = useState<Set<number>>(new Set())
-  const [velocity, setVelocity] = useState(0)
-  const [lastMoveTime, setLastMoveTime] = useState(0)
-  const [lastMoveX, setLastMoveX] = useState(0)
   const sliderRef = useRef<HTMLDivElement>(null)
   const videoRefs = useRef<(HTMLIFrameElement | null)[]>([])
   const animationRef = useRef<number>()
@@ -47,11 +41,6 @@ export function VideoSlider({ videos }: VideoSliderProps) {
     if (absPos === 0) return 1.0 // center
     if (absPos === 1) return 0.7 // neighbors
     return 0.4 // further away
-  }
-
-  const snapToNearest = (initialVelocity = 0) => {
-    const nearest = Math.round(offset + initialVelocity * 0.3)
-    animateToIndex(nearest)
   }
 
   const animateToIndex = (targetIndex: number) => {
@@ -97,55 +86,6 @@ export function VideoSlider({ videos }: VideoSliderProps) {
     }
   }
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true)
-    setStartX(e.clientX)
-    setCurrentOffset(offset)
-  }
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setIsDragging(true)
-    const touchX = e.touches[0].clientX
-    setStartX(touchX)
-    setCurrentOffset(offset)
-    setLastMoveX(touchX)
-    setLastMoveTime(Date.now())
-    setVelocity(0)
-  }
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return
-    const diff = startX - e.clientX
-    const slidesMove = diff / (window.innerWidth * (slideWidth / 100))
-    setOffset(currentOffset + slidesMove)
-  }
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging) return
-    e.preventDefault()
-
-    const touchX = e.touches[0].clientX
-    const diff = startX - touchX
-    const slidesMove = diff / (window.innerWidth * (slideWidth / 100))
-    setOffset(currentOffset + slidesMove)
-
-    const now = Date.now()
-    const timeDiff = now - lastMoveTime
-    if (timeDiff > 0) {
-      const moveDiff = touchX - lastMoveX
-      setVelocity(moveDiff / timeDiff)
-    }
-    setLastMoveX(touchX)
-    setLastMoveTime(now)
-  }
-
-  const handleDragEnd = () => {
-    if (isDragging) {
-      setIsDragging(false)
-      snapToNearest(velocity)
-    }
-  }
-
   const goToNext = () => {
     const nextIndex = Math.min(Math.round(offset) + 1, videos.length - 1)
     animateToIndex(nextIndex)
@@ -154,6 +94,17 @@ export function VideoSlider({ videos }: VideoSliderProps) {
   const goToPrev = () => {
     const prevIndex = Math.max(Math.round(offset) - 1, 0)
     animateToIndex(prevIndex)
+  }
+
+  const handleContainerClick = (e: React.MouseEvent) => {
+    const windowWidth = window.innerWidth
+    const clickX = e.clientX
+
+    if (clickX > windowWidth / 2) {
+      goToNext()
+    } else {
+      goToPrev()
+    }
   }
 
   useEffect(() => {
@@ -165,20 +116,13 @@ export function VideoSlider({ videos }: VideoSliderProps) {
   }, [])
 
   return (
-    <div className="relative w-full h-screen bg-primary overflow-hidden select-none">
+    <div className="relative w-full bg-primary overflow-hidden select-none flex flex-col items-center py-8">
       <div
         ref={sliderRef}
-        className="absolute inset-0 flex items-center justify-center cursor-grab active:cursor-grabbing touch-pan-y"
-        style={{ touchAction: "pan-y", willChange: "transform" }}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleDragEnd}
-        onMouseLeave={handleDragEnd}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleDragEnd}
+        className="relative w-full h-[70vh] flex items-center justify-center cursor-pointer"
+        onClick={handleContainerClick}
       >
-        <div className="relative w-full h-full flex items-center justify-center">
+        <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
           {videos.map((video, index) => {
             const position = getSlidePosition(index)
             const scale = getScale(position)
@@ -205,26 +149,26 @@ export function VideoSlider({ videos }: VideoSliderProps) {
                     ref={(el) => (videoRefs.current[index] = el)}
                     width="100%"
                     height="100%"
-                    src={`https://www.youtube.com/embed/${video.id}?enablejsapi=1&controls=1`}
+                    src={`https://www.youtube.com/embed/${video.id}?enablejsapi=1&controls=0`}
                     title={video.title || `Video ${index + 1}`}
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                     className="w-full h-full pointer-events-auto"
                   ></iframe>
-                  <button
-                    onClick={(e) => togglePlayPause(index, e)}
-                    className="absolute inset-0 flex items-center justify-center bg-primary/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-auto z-10"
-                    aria-label={isPlaying ? "Pause video" : "Play video"}
-                  >
-                    <div className="bg-background/90 hover:bg-background rounded-full p-6 transition-all hover:scale-110">
+                  <div className="absolute inset-0 flex items-center justify-center bg-primary/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
+                    <button
+                      onClick={(e) => togglePlayPause(index, e)}
+                      className="bg-background/90 hover:bg-background rounded-full p-6 transition-all hover:scale-110 pointer-events-auto cursor-pointer"
+                      aria-label={isPlaying ? "Pause video" : "Play video"}
+                    >
                       {isPlaying ? (
                         <Pause className="h-10 w-10 text-foreground" fill="currentColor" />
                       ) : (
                         <Play className="h-10 w-10 text-foreground" fill="currentColor" />
                       )}
-                    </div>
-                  </button>
+                    </button>
+                  </div>
                 </div>
               </div>
             )
@@ -232,28 +176,36 @@ export function VideoSlider({ videos }: VideoSliderProps) {
         </div>
       </div>
 
-      <Button
-        onClick={goToPrev}
-        disabled={Math.round(offset) === 0}
-        className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-50 bg-background/20 hover:bg-background/30 backdrop-blur-sm text-primary-foreground border-border rounded-full w-14 h-14 p-0 disabled:opacity-30"
-        aria-label="Previous video"
-      >
-        <ChevronLeft className="h-8 w-8" />
-      </Button>
+      <div className="relative w-full flex items-center justify-center gap-4 mt-4 z-50">
+        <Button
+          onClick={(e) => {
+            e.stopPropagation()
+            goToPrev()
+          }}
+          disabled={Math.round(offset) === 0}
+          className="bg-background/20 hover:bg-background/30 backdrop-blur-sm text-primary-foreground border-border rounded-full w-12 h-12 md:w-14 md:h-14 p-0 disabled:opacity-30 pointer-events-auto"
+          aria-label="Previous video"
+        >
+          <ChevronLeft className="h-6 w-6 md:h-8 md:w-8" />
+        </Button>
 
-      <Button
-        onClick={goToNext}
-        disabled={Math.round(offset) === videos.length - 1}
-        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-50 bg-background/20 hover:bg-background/30 backdrop-blur-sm text-primary-foreground border-border rounded-full w-14 h-14 p-0 disabled:opacity-30"
-        aria-label="Next video"
-      >
-        <ChevronRight className="h-8 w-8" />
-      </Button>
+        <div className="flex items-center gap-3 bg-background/10 backdrop-blur-sm px-6 py-3 rounded-full">
+          <span className="text-primary-foreground font-medium">
+            {Math.round(offset) + 1} / {videos.length}
+          </span>
+        </div>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-background/10 backdrop-blur-sm px-6 py-3 rounded-full">
-        <span className="text-primary-foreground font-medium">
-          {Math.round(offset) + 1} / {videos.length}
-        </span>
+        <Button
+          onClick={(e) => {
+            e.stopPropagation()
+            goToNext()
+          }}
+          disabled={Math.round(offset) === videos.length - 1}
+          className="bg-background/20 hover:bg-background/30 backdrop-blur-sm text-primary-foreground border-border rounded-full w-12 h-12 md:w-14 md:h-14 p-0 disabled:opacity-30 pointer-events-auto"
+          aria-label="Next video"
+        >
+          <ChevronRight className="h-6 w-6 md:h-8 md:w-8" />
+        </Button>
       </div>
     </div>
   )
