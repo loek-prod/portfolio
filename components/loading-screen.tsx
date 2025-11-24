@@ -10,17 +10,26 @@ interface LoadingScreenProps {
 
 export function LoadingScreen({ photos, onComplete }: LoadingScreenProps) {
   const [isExiting, setIsExiting] = useState(false)
+  const [photosFadeOut, setPhotosFadeOut] = useState(false)
 
   useEffect(() => {
-    // Wait for 3 seconds, then start exit animation
-    const timer = setTimeout(() => {
+    const photoFadeTimer = setTimeout(() => {
+      setPhotosFadeOut(true)
+    }, 3000)
+
+    const exitTimer = setTimeout(() => {
       setIsExiting(true)
       // After exit animation completes, call onComplete
       setTimeout(onComplete, 800)
-    }, 3000)
+    }, 3600) // 3s + 0.6s for photo fade
 
-    return () => clearTimeout(timer)
+    return () => {
+      clearTimeout(photoFadeTimer)
+      clearTimeout(exitTimer)
+    }
   }, [onComplete])
+
+  const displayPhotos = photos.slice(0, 7)
 
   return (
     <div
@@ -42,22 +51,25 @@ export function LoadingScreen({ photos, onComplete }: LoadingScreenProps) {
         {/* Large Title */}
         <h1 className="loading-title">Loek Lutgens</h1>
 
-        {/* Photo Strip */}
-        <div className="loading-photo-strip">
-          <div className="photo-strip-inner">
-            {photos.slice(0, 10).map((photo, index) => (
-              <div key={index} className="strip-image-wrapper">
-                <Image
-                  src={photo.src || "/placeholder.svg"}
-                  alt={photo.alt}
-                  width={400}
-                  height={300}
-                  className="strip-image"
-                  priority
-                />
-              </div>
-            ))}
-          </div>
+        <div className={`loading-stacked-photos ${photosFadeOut ? "photos-fade-out" : ""}`}>
+          {displayPhotos.map((photo, index) => (
+            <div
+              key={index}
+              className="stacked-photo"
+              style={{
+                animationDelay: `${index * 0.4}s`,
+              }}
+            >
+              <Image
+                src={photo.src || "/placeholder.svg"}
+                alt={photo.alt}
+                width={600}
+                height={400}
+                className="stacked-image"
+                priority
+              />
+            </div>
+          ))}
         </div>
       </div>
     </div>
