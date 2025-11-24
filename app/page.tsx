@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { Menu, X } from "lucide-react"
 import { PhotoSlider } from "@/components/photo-slider"
 import { VideoSlider } from "@/components/video-slider"
 import { Lightbox } from "@/components/lightbox"
@@ -139,6 +140,7 @@ export default function Portfolio() {
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const categories = [
     "All",
@@ -166,6 +168,7 @@ export default function Portfolio() {
     if (element) {
       element.scrollIntoView({ behavior: "smooth" })
     }
+    setMobileMenuOpen(false)
   }
 
   if (isLoading) {
@@ -182,7 +185,7 @@ export default function Portfolio() {
             <div className="text-foreground">
               <h1 className="text-2xl md:text-3xl font-bold">LOEK LUTGENS</h1>
             </div>
-            <div className="flex gap-6">
+            <div className="hidden md:flex gap-6">
               <button
                 onClick={() => scrollToSection("home")}
                 className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors"
@@ -207,7 +210,43 @@ export default function Portfolio() {
                 </button>
               </Link>
             </div>
+            <button
+              className="md:hidden text-foreground p-2 hover:bg-accent rounded-md transition-colors"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
           </div>
+          {mobileMenuOpen && (
+            <div className="md:hidden bg-background border-t border-border shadow-lg">
+              <div className="flex flex-col p-4 space-y-2">
+                <button
+                  onClick={() => scrollToSection("home")}
+                  className="text-foreground hover:bg-accent px-4 py-3 rounded-md transition-colors text-left"
+                >
+                  Home
+                </button>
+                <button
+                  onClick={() => scrollToSection("gallery")}
+                  className="text-foreground hover:bg-accent px-4 py-3 rounded-md transition-colors text-left"
+                >
+                  Pictures
+                </button>
+                <button
+                  onClick={() => scrollToSection("videos")}
+                  className="text-foreground hover:bg-accent px-4 py-3 rounded-md transition-colors text-left"
+                >
+                  Videos
+                </button>
+                <Link href="/contact">
+                  <button className="w-full text-foreground hover:bg-accent px-4 py-3 rounded-md transition-colors text-left">
+                    Contact
+                  </button>
+                </Link>
+              </div>
+            </div>
+          )}
         </nav>
 
         {/* Background Image with Animation */}

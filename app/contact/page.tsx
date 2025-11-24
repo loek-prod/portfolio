@@ -1,12 +1,15 @@
 "use client"
 
+import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Mail, Phone, Instagram, ArrowLeft } from "lucide-react"
+import { Mail, Phone, Instagram, ArrowLeft, Menu, X } from "lucide-react"
 import { RollingText } from "@/components/rolling-text"
 
 export default function ContactPage() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation Bar */}
@@ -15,7 +18,8 @@ export default function ContactPage() {
           <Link href="/" className="text-foreground">
             <h1 className="text-2xl md:text-3xl font-bold">LOEK LUTGENS</h1>
           </Link>
-          <div className="flex gap-6">
+
+          <div className="hidden md:flex gap-6">
             <Link href="/">
               <button className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors">
                 <RollingText text="Home" />
@@ -32,7 +36,37 @@ export default function ContactPage() {
               </button>
             </Link>
           </div>
+
+          <button
+            className="md:hidden text-foreground p-2 hover:bg-accent rounded-md transition-colors"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
+
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-background border-t border-border shadow-lg">
+            <div className="flex flex-col p-4 space-y-2">
+              <Link href="/" onClick={() => setMobileMenuOpen(false)}>
+                <button className="w-full text-foreground hover:bg-accent px-4 py-3 rounded-md transition-colors text-left">
+                  Home
+                </button>
+              </Link>
+              <Link href="/#gallery" onClick={() => setMobileMenuOpen(false)}>
+                <button className="w-full text-foreground hover:bg-accent px-4 py-3 rounded-md transition-colors text-left">
+                  Pictures
+                </button>
+              </Link>
+              <Link href="/#videos" onClick={() => setMobileMenuOpen(false)}>
+                <button className="w-full text-foreground hover:bg-accent px-4 py-3 rounded-md transition-colors text-left">
+                  Videos
+                </button>
+              </Link>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Contact Content */}
