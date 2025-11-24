@@ -22,6 +22,9 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)
   const [currentOffset, setCurrentOffset] = useState(0)
+  const [velocity, setVelocity] = useState(0)
+  const [lastMoveTime, setLastMoveTime] = useState(0)
+  const [lastMoveX, setLastMoveX] = useState(0)
   const sliderRef = useRef<HTMLDivElement>(null)
   const animationRef = useRef<number>()
 
@@ -49,8 +52,8 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
   }
 
   // Snap to nearest slide
-  const snapToNearest = () => {
-    const nearest = Math.round(offset)
+  const snapToNearest = (initialVelocity = 0) => {
+    const nearest = Math.round(offset + initialVelocity * 0.3)
     animateToIndex(nearest)
   }
 
@@ -64,7 +67,7 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
           return clampedIndex
         }
         // Smooth easing (lerp)
-        return current + diff * 0.15
+        return current + diff * 0.25
       })
 
       if (Math.abs(offset - clampedIndex) > 0.01) {
@@ -86,8 +89,12 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true)
-    setStartX(e.touches[0].clientX)
+    const touchX = e.touches[0].clientX
+    setStartX(touchX)
     setCurrentOffset(offset)
+    setLastMoveX(touchX)
+    setLastMoveTime(Date.now())
+    setVelocity(0)
   }
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -99,15 +106,27 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging) return
-    const diff = startX - e.touches[0].clientX
+    e.preventDefault()
+
+    const touchX = e.touches[0].clientX
+    const diff = startX - touchX
     const slidesMove = diff / (window.innerWidth * (slideWidth / 100))
     setOffset(currentOffset + slidesMove)
+
+    const now = Date.now()
+    const timeDiff = now - lastMoveTime
+    if (timeDiff > 0) {
+      const moveDiff = touchX - lastMoveX
+      setVelocity(moveDiff / timeDiff)
+    }
+    setLastMoveX(touchX)
+    setLastMoveTime(now)
   }
 
   const handleDragEnd = () => {
     if (isDragging) {
       setIsDragging(false)
-      snapToNearest()
+      snapToNearest(velocity)
     }
   }
 
@@ -133,7 +152,8 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
     <div className="relative w-full h-screen bg-gradient-to-b from-accent to-background overflow-hidden select-none">
       <div
         ref={sliderRef}
-        className="absolute inset-0 flex items-center justify-center cursor-grab active:cursor-grabbing"
+        className="absolute inset-0 flex items-center justify-center cursor-grab active:cursor-grabbing touch-pan-y"
+        style={{ touchAction: "pan-y", willChange: "transform" }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleDragEnd}
@@ -159,6 +179,7 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
                   width: `${slideWidth}vw`,
                   maxWidth: "1200px",
                   zIndex: Math.round(100 - Math.abs(position) * 10),
+                  willChange: "transform, opacity",
                 }}
               >
                 <div className="relative w-full h-[80vh] flex items-center justify-center">

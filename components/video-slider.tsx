@@ -22,6 +22,9 @@ export function VideoSlider({ videos }: VideoSliderProps) {
   const [currentOffset, setCurrentOffset] = useState(0)
   const [activeIndex, setActiveIndex] = useState(0)
   const [playingVideos, setPlayingVideos] = useState<Set<number>>(new Set())
+  const [velocity, setVelocity] = useState(0)
+  const [lastMoveTime, setLastMoveTime] = useState(0)
+  const [lastMoveX, setLastMoveX] = useState(0)
   const sliderRef = useRef<HTMLDivElement>(null)
   const videoRefs = useRef<(HTMLIFrameElement | null)[]>([])
   const animationRef = useRef<number>()
@@ -46,8 +49,8 @@ export function VideoSlider({ videos }: VideoSliderProps) {
     return 0.4 // further away
   }
 
-  const snapToNearest = () => {
-    const nearest = Math.round(offset)
+  const snapToNearest = (initialVelocity = 0) => {
+    const nearest = Math.round(offset + initialVelocity * 0.3)
     animateToIndex(nearest)
   }
 
@@ -62,7 +65,7 @@ export function VideoSlider({ videos }: VideoSliderProps) {
           return clampedIndex
         }
         // Smooth easing (lerp)
-        return current + diff * 0.15
+        return current + diff * 0.25
       })
 
       if (Math.abs(offset - clampedIndex) > 0.01) {
@@ -102,8 +105,12 @@ export function VideoSlider({ videos }: VideoSliderProps) {
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true)
-    setStartX(e.touches[0].clientX)
+    const touchX = e.touches[0].clientX
+    setStartX(touchX)
     setCurrentOffset(offset)
+    setLastMoveX(touchX)
+    setLastMoveTime(Date.now())
+    setVelocity(0)
   }
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -115,15 +122,27 @@ export function VideoSlider({ videos }: VideoSliderProps) {
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging) return
-    const diff = startX - e.touches[0].clientX
+    e.preventDefault()
+
+    const touchX = e.touches[0].clientX
+    const diff = startX - touchX
     const slidesMove = diff / (window.innerWidth * (slideWidth / 100))
     setOffset(currentOffset + slidesMove)
+
+    const now = Date.now()
+    const timeDiff = now - lastMoveTime
+    if (timeDiff > 0) {
+      const moveDiff = touchX - lastMoveX
+      setVelocity(moveDiff / timeDiff)
+    }
+    setLastMoveX(touchX)
+    setLastMoveTime(now)
   }
 
   const handleDragEnd = () => {
     if (isDragging) {
       setIsDragging(false)
-      snapToNearest()
+      snapToNearest(velocity)
     }
   }
 
@@ -149,7 +168,8 @@ export function VideoSlider({ videos }: VideoSliderProps) {
     <div className="relative w-full h-screen bg-primary overflow-hidden select-none">
       <div
         ref={sliderRef}
-        className="absolute inset-0 flex items-center justify-center cursor-grab active:cursor-grabbing"
+        className="absolute inset-0 flex items-center justify-center cursor-grab active:cursor-grabbing touch-pan-y"
+        style={{ touchAction: "pan-y", willChange: "transform" }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleDragEnd}
@@ -177,6 +197,7 @@ export function VideoSlider({ videos }: VideoSliderProps) {
                   maxWidth: "1400px",
                   zIndex: Math.round(100 - Math.abs(position) * 10),
                   pointerEvents: isVisible ? "auto" : "none",
+                  willChange: "transform, opacity",
                 }}
               >
                 <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl group">
