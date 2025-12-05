@@ -310,7 +310,7 @@ export default function Portfolio() {
               : "opacity-0 translate-y-4 pointer-events-none absolute inset-0"
           }`}
         >
-          <section id="videos" className="-mt-8 md:-mt-12 pt-24 md:pt-32 bg-primary">
+          <section id="videos" className="bg-primary">
             <VideoSlider videos={videos} />
           </section>
 
