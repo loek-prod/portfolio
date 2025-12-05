@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Menu, X } from "lucide-react"
@@ -113,15 +113,15 @@ const photos = [
 
 const videos = [
   {
+    id: "2X-7H1_Nz94",
+    title: "",
+  },
+  {
     id: "fcNs7xLVLB4",
     title: "",
   },
   {
     id: "EFuZUPn6Pfw",
-    title: "",
-  },
-  {
-    id: "2X-7H1_Nz94",
     title: "",
   },
   {
@@ -135,7 +135,7 @@ const videos = [
 ]
 
 export default function Portfolio() {
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [showModeIntro, setShowModeIntro] = useState(false)
   const [siteMode, setSiteMode] = useState<"visual" | "innovation">("visual")
   const [selectedCategory, setSelectedCategory] = useState("All")
@@ -175,7 +175,15 @@ export default function Portfolio() {
   const handleLoadingComplete = () => {
     setIsLoading(false)
     setShowModeIntro(true)
+    sessionStorage.setItem("hasSeenLoading", "true")
   }
+
+  useEffect(() => {
+    const hasSeenLoading = sessionStorage.getItem("hasSeenLoading")
+    if (!hasSeenLoading) {
+      setIsLoading(true)
+    }
+  }, [])
 
   if (isLoading) {
     return <LoadingScreen photos={photos} onComplete={handleLoadingComplete} />
@@ -203,16 +211,16 @@ export default function Portfolio() {
               {siteMode === "visual" ? (
                 <>
                   <button
-                    onClick={() => scrollToSection("gallery")}
-                    className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors"
-                  >
-                    <RollingText text="Pictures" />
-                  </button>
-                  <button
                     onClick={() => scrollToSection("videos")}
                     className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors"
                   >
                     <RollingText text="Videos" />
+                  </button>
+                  <button
+                    onClick={() => scrollToSection("gallery")}
+                    className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors"
+                  >
+                    <RollingText text="Pictures" />
                   </button>
                 </>
               ) : (
@@ -263,16 +271,16 @@ export default function Portfolio() {
                 {siteMode === "visual" && (
                   <>
                     <button
-                      onClick={() => scrollToSection("gallery")}
-                      className="text-foreground hover:bg-accent px-4 py-3 rounded-md transition-colors text-left"
-                    >
-                      Pictures
-                    </button>
-                    <button
                       onClick={() => scrollToSection("videos")}
                       className="text-foreground hover:bg-accent px-4 py-3 rounded-md transition-colors text-left"
                     >
                       Videos
+                    </button>
+                    <button
+                      onClick={() => scrollToSection("gallery")}
+                      className="text-foreground hover:bg-accent px-4 py-3 rounded-md transition-colors text-left"
+                    >
+                      Pictures
                     </button>
                   </>
                 )}
@@ -302,6 +310,10 @@ export default function Portfolio() {
               : "opacity-0 translate-y-4 pointer-events-none absolute inset-0"
           }`}
         >
+          <section id="videos" className="-mt-8 md:-mt-12 pt-24 md:pt-32 bg-primary">
+            <VideoSlider videos={videos} />
+          </section>
+
           <section
             id="gallery"
             className="relative bg-cover bg-center bg-fixed"
@@ -313,10 +325,6 @@ export default function Portfolio() {
             <div className="relative z-10">
               <PhotoSlider photos={filteredPhotos} />
             </div>
-          </section>
-
-          <section id="videos" className="mt-16 md:mt-20">
-            <VideoSlider videos={videos} />
           </section>
 
           <section className="py-20 px-4 md:px-8 bg-primary text-primary-foreground">

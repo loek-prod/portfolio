@@ -94,7 +94,10 @@ export function VideoSlider({ videos }: VideoSliderProps) {
 
   return (
     <div className="relative w-full bg-primary overflow-hidden select-none">
-      <div className="relative w-full h-[55vh] md:h-[60vh] cursor-pointer py-8 md:py-12" onClick={handleContainerClick}>
+      <div
+        className="relative w-full h-[55vh] md:h-[60vh] cursor-pointer py-12 md:py-16"
+        onClick={handleContainerClick}
+      >
         <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
           {videos.map((video, index) => {
             const position = getSlidePosition(index)
