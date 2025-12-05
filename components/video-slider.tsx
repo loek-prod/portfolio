@@ -95,7 +95,7 @@ export function VideoSlider({ videos }: VideoSliderProps) {
   return (
     <div className="relative w-full bg-primary overflow-hidden select-none flex flex-col items-center py-8">
       <div
-        className="relative w-full h-[70vh] flex items-center justify-center cursor-pointer"
+        className="relative w-full h-[60vh] flex items-center justify-center cursor-pointer"
         onClick={handleContainerClick}
       >
         <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
@@ -163,7 +163,7 @@ export function VideoSlider({ videos }: VideoSliderProps) {
         </div>
       </div>
 
-      <div className="relative w-full flex items-center justify-center gap-4 mt-4 z-50">
+      <div className="relative w-full flex items-center justify-center gap-4 mt-6 z-50">
         <Button
           onClick={(e) => {
             e.stopPropagation()
