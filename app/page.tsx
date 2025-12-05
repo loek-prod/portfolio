@@ -9,6 +9,9 @@ import { VideoSlider } from "@/components/video-slider"
 import { Lightbox } from "@/components/lightbox"
 import { RollingText } from "@/components/rolling-text"
 import { LoadingScreen } from "@/components/loading-screen"
+import { ModeToggle } from "@/components/mode-toggle"
+import { ModeIntro } from "@/components/mode-intro"
+import { InnovationSection } from "@/components/innovation-section"
 
 const photos = [
   {
@@ -133,6 +136,8 @@ const videos = [
 
 export default function Portfolio() {
   const [isLoading, setIsLoading] = useState(true)
+  const [showModeIntro, setShowModeIntro] = useState(false)
+  const [siteMode, setSiteMode] = useState<"visual" | "innovation">("visual")
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
@@ -167,44 +172,73 @@ export default function Portfolio() {
     setMobileMenuOpen(false)
   }
 
+  const handleLoadingComplete = () => {
+    setIsLoading(false)
+    setShowModeIntro(true)
+  }
+
   if (isLoading) {
-    return <LoadingScreen photos={photos} onComplete={() => setIsLoading(false)} />
+    return <LoadingScreen photos={photos} onComplete={handleLoadingComplete} />
   }
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
+      {showModeIntro && (
+        <ModeIntro mode={siteMode} onModeChange={setSiteMode} onComplete={() => setShowModeIntro(false)} />
+      )}
+
       <header id="home" className="relative h-[60vh] overflow-hidden">
-        {/* Navigation Bar */}
         <nav className="absolute top-0 left-0 right-0 z-20 bg-background shadow-md">
           <div className="flex justify-between items-center p-6 md:p-8">
             <div className="text-foreground">
               <h1 className="text-2xl md:text-3xl font-bold">LOEK LUTGENS</h1>
             </div>
-            <div className="hidden md:flex gap-6">
+            <div className="hidden md:flex gap-6 items-center">
               <button
                 onClick={() => scrollToSection("home")}
                 className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors"
               >
                 <RollingText text="Home" />
               </button>
-              <button
-                onClick={() => scrollToSection("gallery")}
-                className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors"
-              >
-                <RollingText text="Pictures" />
-              </button>
-              <button
-                onClick={() => scrollToSection("videos")}
-                className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors"
-              >
-                <RollingText text="Videos" />
-              </button>
+              {siteMode === "visual" ? (
+                <>
+                  <button
+                    onClick={() => scrollToSection("gallery")}
+                    className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors"
+                  >
+                    <RollingText text="Pictures" />
+                  </button>
+                  <button
+                    onClick={() => scrollToSection("videos")}
+                    className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors"
+                  >
+                    <RollingText text="Videos" />
+                  </button>
+                </>
+              ) : (
+                <>
+                  {/* Placeholder buttons to maintain spacing */}
+                  <button
+                    onClick={() => scrollToSection("projects")}
+                    className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors"
+                  >
+                    <RollingText text="Projects" />
+                  </button>
+                  <button
+                    onClick={() => scrollToSection("about")}
+                    className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors"
+                  >
+                    <RollingText text="About" />
+                  </button>
+                </>
+              )}
               <Link href="/contact">
                 <button className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors">
                   <RollingText text="Contact" />
                 </button>
               </Link>
+              <div className="h-6 w-px bg-border mx-2" />
+              <ModeToggle mode={siteMode} onModeChange={setSiteMode} size="compact" />
             </div>
             <button
               className="md:hidden text-foreground p-2 hover:bg-accent rounded-md transition-colors"
@@ -217,24 +251,31 @@ export default function Portfolio() {
           {mobileMenuOpen && (
             <div className="md:hidden bg-background border-t border-border shadow-lg">
               <div className="flex flex-col p-4 space-y-2">
+                <div className="flex justify-center py-3 border-b border-border mb-2">
+                  <ModeToggle mode={siteMode} onModeChange={setSiteMode} size="compact" />
+                </div>
                 <button
                   onClick={() => scrollToSection("home")}
                   className="text-foreground hover:bg-accent px-4 py-3 rounded-md transition-colors text-left"
                 >
                   Home
                 </button>
-                <button
-                  onClick={() => scrollToSection("gallery")}
-                  className="text-foreground hover:bg-accent px-4 py-3 rounded-md transition-colors text-left"
-                >
-                  Pictures
-                </button>
-                <button
-                  onClick={() => scrollToSection("videos")}
-                  className="text-foreground hover:bg-accent px-4 py-3 rounded-md transition-colors text-left"
-                >
-                  Videos
-                </button>
+                {siteMode === "visual" && (
+                  <>
+                    <button
+                      onClick={() => scrollToSection("gallery")}
+                      className="text-foreground hover:bg-accent px-4 py-3 rounded-md transition-colors text-left"
+                    >
+                      Pictures
+                    </button>
+                    <button
+                      onClick={() => scrollToSection("videos")}
+                      className="text-foreground hover:bg-accent px-4 py-3 rounded-md transition-colors text-left"
+                    >
+                      Videos
+                    </button>
+                  </>
+                )}
                 <Link href="/contact">
                   <button className="w-full text-foreground hover:bg-accent px-4 py-3 rounded-md transition-colors text-left">
                     Contact
@@ -245,7 +286,6 @@ export default function Portfolio() {
           )}
         </nav>
 
-        {/* Background Image with Animation */}
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat hero-zoom-fade"
           style={{
@@ -254,58 +294,75 @@ export default function Portfolio() {
         ></div>
       </header>
 
-      <section
-        id="gallery"
-        className="relative bg-cover bg-center bg-fixed"
-        style={{
-          backgroundImage: `url('/images/section-background.jpg')`,
-        }}
-      >
-        {/* Semi-transparent overlay for better contrast */}
-        <div className="absolute inset-0 bg-background/40 backdrop-blur-sm"></div>
-        <div className="relative z-10">
-          <PhotoSlider photos={filteredPhotos} />
+      <div className="relative">
+        <div
+          className={`transition-all duration-500 ease-out ${
+            siteMode === "visual"
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4 pointer-events-none absolute inset-0"
+          }`}
+        >
+          <section
+            id="gallery"
+            className="relative bg-cover bg-center bg-fixed"
+            style={{
+              backgroundImage: `url('/images/section-background.jpg')`,
+            }}
+          >
+            <div className="absolute inset-0 bg-background/40 backdrop-blur-sm"></div>
+            <div className="relative z-10">
+              <PhotoSlider photos={filteredPhotos} />
+            </div>
+          </section>
+
+          <section id="videos">
+            <VideoSlider videos={videos} />
+          </section>
+
+          <section className="py-20 px-4 md:px-8 bg-primary text-primary-foreground">
+            <div className="max-w-4xl mx-auto text-center">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">Let's Work Together</h2>
+              <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
+                Available for photography and videography projects. Get in touch to discuss your vision.
+              </p>
+
+              <div className="flex justify-center gap-6 mb-12">
+                <Link href="/contact">
+                  <Button
+                    size="lg"
+                    className="bg-background/20 text-primary-foreground border border-border hover:bg-background/30 rounded-full px-8"
+                  >
+                    Contact Me
+                  </Button>
+                </Link>
+                <a href="https://www.instagram.com/ll_exist/" target="_blank" rel="noopener noreferrer">
+                  <Button
+                    size="lg"
+                    className="bg-background/20 text-primary-foreground border border-border hover:bg-background/30 rounded-full px-8"
+                  >
+                    Instagram
+                  </Button>
+                </a>
+              </div>
+
+              <div className="border-t border-border pt-8">
+                <p className="text-muted-foreground">© {new Date().getFullYear()} Loek Lutgens. All rights reserved.</p>
+              </div>
+            </div>
+          </section>
         </div>
-      </section>
 
-      <section id="videos">
-        <VideoSlider videos={videos} />
-      </section>
-
-      {/* Contact Section */}
-      <section className="py-20 px-4 md:px-8 bg-primary text-primary-foreground">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">Let's Work Together</h2>
-          <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
-            Available for photography and videography projects. Get in touch to discuss your vision.
-          </p>
-
-          <div className="flex justify-center gap-6 mb-12">
-            <Link href="/contact">
-              <Button
-                size="lg"
-                className="bg-background/20 text-primary-foreground border border-border hover:bg-background/30 rounded-full px-8"
-              >
-                Contact Me
-              </Button>
-            </Link>
-            <a href="https://www.instagram.com/ll_exist/" target="_blank" rel="noopener noreferrer">
-              <Button
-                size="lg"
-                className="bg-background/20 text-primary-foreground border border-border hover:bg-background/30 rounded-full px-8"
-              >
-                Instagram
-              </Button>
-            </a>
-          </div>
-
-          <div className="border-t border-border pt-8">
-            <p className="text-muted-foreground">© {new Date().getFullYear()} Loek Lutgens. All rights reserved.</p>
-          </div>
+        <div
+          className={`transition-all duration-500 ease-out ${
+            siteMode === "innovation"
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 -translate-y-4 pointer-events-none absolute inset-0"
+          }`}
+        >
+          <InnovationSection />
         </div>
-      </section>
+      </div>
 
-      {/* Lightbox */}
       {lightboxOpen && (
         <Lightbox images={filteredPhotos} initialIndex={lightboxIndex} onClose={() => setLightboxOpen(false)} />
       )}

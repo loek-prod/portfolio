@@ -6,35 +6,42 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Mail, Phone, Instagram, ArrowLeft, Menu, X } from "lucide-react"
 import { RollingText } from "@/components/rolling-text"
+import { ModeToggle } from "@/components/mode-toggle"
 
 export default function ContactPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [siteMode, setSiteMode] = useState<"visual" | "innovation">("visual")
 
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation Bar */}
       <nav className="bg-background shadow-md">
-        <div className="flex justify-between items-center p-6 md:p-8 max-w-7xl mx-auto">
+        <div className="flex justify-between items-center p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
           <Link href="/" className="text-foreground">
-            <h1 className="text-2xl md:text-3xl font-bold">LOEK LUTGENS</h1>
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold">LOEK LUTGENS</h1>
           </Link>
 
-          <div className="hidden md:flex gap-6">
+          <div className="hidden md:flex items-center gap-4">
             <Link href="/">
-              <button className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors">
+              <button className="nav-link text-foreground hover:bg-accent px-3 py-2 rounded-md transition-colors">
                 <RollingText text="Home" />
               </button>
             </Link>
             <Link href="/#gallery">
-              <button className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors">
+              <button className="nav-link text-foreground hover:bg-accent px-3 py-2 rounded-md transition-colors">
                 <RollingText text="Pictures" />
               </button>
             </Link>
             <Link href="/#videos">
-              <button className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors">
+              <button className="nav-link text-foreground hover:bg-accent px-3 py-2 rounded-md transition-colors">
                 <RollingText text="Videos" />
               </button>
             </Link>
+            <button className="nav-link text-foreground bg-accent px-3 py-2 rounded-md transition-colors">
+              <RollingText text="Contact" />
+            </button>
+            <div className="h-6 w-px bg-border mx-2" />
+            <ModeToggle mode={siteMode} onModeChange={setSiteMode} size="compact" />
           </div>
 
           <button
@@ -49,6 +56,9 @@ export default function ContactPage() {
         {mobileMenuOpen && (
           <div className="md:hidden bg-background border-t border-border shadow-lg">
             <div className="flex flex-col p-4 space-y-2">
+              <div className="flex justify-center py-3 border-b border-border mb-2">
+                <ModeToggle mode={siteMode} onModeChange={setSiteMode} size="compact" />
+              </div>
               <Link href="/" onClick={() => setMobileMenuOpen(false)}>
                 <button className="w-full text-foreground hover:bg-accent px-4 py-3 rounded-md transition-colors text-left">
                   Home
@@ -64,6 +74,9 @@ export default function ContactPage() {
                   Videos
                 </button>
               </Link>
+              <button className="w-full text-foreground bg-accent px-4 py-3 rounded-md transition-colors text-left">
+                Contact
+              </button>
             </div>
           </div>
         )}
