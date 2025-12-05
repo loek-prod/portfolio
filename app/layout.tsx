@@ -1,15 +1,22 @@
-import type { Metadata } from 'next'
-import { GeistSans } from 'geist/font/sans'
-import { GeistMono } from 'geist/font/mono'
-import { Analytics } from '@vercel/analytics/next'
-import './globals.css'
+import type React from "react"
+import type { Metadata } from "next"
+// <CHANGE> Replaced Geist with Inter (closest free alternative to Söhne)
+import { Inter } from "next/font/google"
+import { Analytics } from "@vercel/analytics/next"
+import "./globals.css"
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+})
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.app',
+  title: "Loek Lutgens | Portfolio",
+  description: "Photography and Videography Portfolio by Loek Lutgens",
+  generator: "v0.app",
   icons: {
-    icon: '/icon.svg',
+    icon: "/icon.svg",
   },
 }
 
@@ -20,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-sans antialiased ${GeistSans.variable} ${GeistMono.variable}`}>
+      <body className={`font-sans antialiased ${inter.variable}`}>
         {children}
         <Analytics />
       </body>

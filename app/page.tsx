@@ -114,10 +114,6 @@ const videos = [
     title: "",
   },
   {
-    id: "qH0-j4DaPyw",
-    title: "",
-  },
-  {
     id: "EFuZUPn6Pfw",
     title: "",
   },
