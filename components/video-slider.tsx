@@ -21,7 +21,7 @@ export function VideoSlider({ videos }: VideoSliderProps) {
   const videoRefs = useRef<(HTMLIFrameElement | null)[]>([])
   const containerRefs = useRef<(HTMLDivElement | null)[]>([])
 
-  const slideWidth = 85 // percentage of viewport
+  const slideWidth = 70 // percentage of viewport
 
   const getSlidePosition = (index: number) => {
     return index - currentIndex
@@ -93,8 +93,8 @@ export function VideoSlider({ videos }: VideoSliderProps) {
   }
 
   return (
-    <div className="relative w-full bg-primary overflow-hidden select-none pt-16 md:pt-20 pb-12 md:pb-16">
-      <div className="relative w-full h-[50vh] md:h-[55vh] cursor-pointer" onClick={handleContainerClick}>
+    <div className="relative w-full bg-primary overflow-hidden select-none pt-24 md:pt-32 pb-16 md:pb-20">
+      <div className="relative w-full h-[45vh] md:h-[50vh] cursor-pointer" onClick={handleContainerClick}>
         <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
           {videos.map((video, index) => {
             const position = getSlidePosition(index)
@@ -160,7 +160,7 @@ export function VideoSlider({ videos }: VideoSliderProps) {
         </div>
       </div>
 
-      <div className="relative w-full flex items-center justify-center gap-4 mt-16 md:mt-20 z-50">
+      <div className="relative w-full flex items-center justify-center gap-4 mt-20 md:mt-24 z-50">
         <Button
           onClick={(e) => {
             e.stopPropagation()
