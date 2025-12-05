@@ -29,16 +29,16 @@ export function VideoSlider({ videos }: VideoSliderProps) {
 
   const getScale = (position: number) => {
     const absPos = Math.abs(position)
-    if (absPos === 0) return 1.0 // center
-    if (absPos === 1) return 0.92 // neighbors
-    return 0.85 // further away
+    if (absPos === 0) return 1.0
+    if (absPos === 1) return 0.92
+    return 0.85
   }
 
   const getOpacity = (position: number) => {
     const absPos = Math.abs(position)
-    if (absPos === 0) return 1.0 // center
-    if (absPos === 1) return 0.7 // neighbors
-    return 0.4 // further away
+    if (absPos === 0) return 1.0
+    if (absPos === 1) return 0.7
+    return 0.4
   }
 
   const togglePlayPause = (index: number, e: React.MouseEvent) => {
@@ -93,11 +93,8 @@ export function VideoSlider({ videos }: VideoSliderProps) {
   }
 
   return (
-    <div className="relative w-full bg-primary overflow-hidden select-none flex flex-col items-center py-12">
-      <div
-        className="relative w-full h-[65vh] flex items-center justify-center cursor-pointer"
-        onClick={handleContainerClick}
-      >
+    <div className="relative w-full bg-primary overflow-hidden select-none py-16 md:py-20">
+      <div className="relative w-full h-[50vh] md:h-[60vh] cursor-pointer" onClick={handleContainerClick}>
         <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
           {videos.map((video, index) => {
             const position = getSlidePosition(index)
@@ -163,7 +160,7 @@ export function VideoSlider({ videos }: VideoSliderProps) {
         </div>
       </div>
 
-      <div className="relative w-full flex items-center justify-center gap-4 mt-10 z-50">
+      <div className="relative w-full flex items-center justify-center gap-4 mt-8 z-50">
         <Button
           onClick={(e) => {
             e.stopPropagation()
