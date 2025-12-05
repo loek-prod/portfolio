@@ -315,7 +315,7 @@ export default function Portfolio() {
             </div>
           </section>
 
-          <section id="videos" className="mt-24 md:mt-32 pt-8 md:pt-12">
+          <section id="videos" className="mt-16 md:mt-20">
             <VideoSlider videos={videos} />
           </section>
 
