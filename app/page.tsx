@@ -195,11 +195,11 @@ export default function Portfolio() {
         <ModeIntro mode={siteMode} onModeChange={setSiteMode} onComplete={() => setShowModeIntro(false)} />
       )}
 
-      <header id="home" className="relative h-[60vh] overflow-hidden">
+      <header id="home" className="relative h-[50vh] md:h-[60vh] overflow-hidden">
         <nav className="absolute top-0 left-0 right-0 z-20 bg-background shadow-md">
-          <div className="flex justify-between items-center p-6 md:p-8">
+          <div className="flex justify-between items-center p-4 md:p-6 lg:p-8">
             <div className="text-foreground">
-              <h1 className="text-2xl md:text-3xl font-bold">LOEK LUTGENS</h1>
+              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold">LOEK LUTGENS</h1>
             </div>
             <div className="hidden md:flex gap-6 items-center">
               <button
@@ -249,22 +249,22 @@ export default function Portfolio() {
               <ModeToggle mode={siteMode} onModeChange={setSiteMode} size="compact" />
             </div>
             <button
-              className="md:hidden text-foreground p-2 hover:bg-accent rounded-md transition-colors"
+              className="md:hidden text-foreground p-3 hover:bg-accent rounded-md transition-colors touch-manipulation"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {mobileMenuOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
             </button>
           </div>
           {mobileMenuOpen && (
             <div className="md:hidden bg-background border-t border-border shadow-lg">
-              <div className="flex flex-col p-4 space-y-2">
-                <div className="flex justify-center py-3 border-b border-border mb-2">
+              <div className="flex flex-col p-4 space-y-3">
+                <div className="flex justify-center py-4 border-b border-border mb-2">
                   <ModeToggle mode={siteMode} onModeChange={setSiteMode} size="compact" />
                 </div>
                 <button
                   onClick={() => scrollToSection("home")}
-                  className="text-foreground hover:bg-accent px-4 py-3 rounded-md transition-colors text-left"
+                  className="text-foreground hover:bg-accent px-5 py-4 rounded-md transition-colors text-left text-lg touch-manipulation"
                 >
                   Home
                 </button>
@@ -272,20 +272,20 @@ export default function Portfolio() {
                   <>
                     <button
                       onClick={() => scrollToSection("videos")}
-                      className="text-foreground hover:bg-accent px-4 py-3 rounded-md transition-colors text-left"
+                      className="text-foreground hover:bg-accent px-5 py-4 rounded-md transition-colors text-left text-lg touch-manipulation"
                     >
                       Videos
                     </button>
                     <button
                       onClick={() => scrollToSection("gallery")}
-                      className="text-foreground hover:bg-accent px-4 py-3 rounded-md transition-colors text-left"
+                      className="text-foreground hover:bg-accent px-5 py-4 rounded-md transition-colors text-left text-lg touch-manipulation"
                     >
                       Pictures
                     </button>
                   </>
                 )}
                 <Link href="/contact">
-                  <button className="w-full text-foreground hover:bg-accent px-4 py-3 rounded-md transition-colors text-left">
+                  <button className="w-full text-foreground hover:bg-accent px-5 py-4 rounded-md transition-colors text-left text-lg touch-manipulation">
                     Contact
                   </button>
                 </Link>
@@ -327,26 +327,31 @@ export default function Portfolio() {
             </div>
           </section>
 
-          <section className="py-20 px-4 md:px-8 bg-primary text-primary-foreground">
+          <section className="py-12 md:py-20 px-4 md:px-8 bg-primary text-primary-foreground">
             <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">Let's Work Together</h2>
-              <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">Let's Work Together</h2>
+              <p className="text-lg md:text-xl text-muted-foreground mb-8 md:mb-12 max-w-2xl mx-auto px-4">
                 Available for photography and videography projects. Get in touch to discuss your vision.
               </p>
 
-              <div className="flex justify-center gap-6 mb-12">
-                <Link href="/contact">
+              <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8 md:mb-12 px-4">
+                <Link href="/contact" className="w-full sm:w-auto">
                   <Button
                     size="lg"
-                    className="bg-background/20 text-primary-foreground border border-border hover:bg-background/30 rounded-full px-8"
+                    className="w-full sm:w-auto bg-background/20 text-primary-foreground border border-border hover:bg-background/30 rounded-full px-8 py-6 text-lg touch-manipulation"
                   >
                     Contact Me
                   </Button>
                 </Link>
-                <a href="https://www.instagram.com/ll_exist/" target="_blank" rel="noopener noreferrer">
+                <a
+                  href="https://www.instagram.com/ll_exist/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto"
+                >
                   <Button
                     size="lg"
-                    className="bg-background/20 text-primary-foreground border border-border hover:bg-background/30 rounded-full px-8"
+                    className="w-full sm:w-auto bg-background/20 text-primary-foreground border border-border hover:bg-background/30 rounded-full px-8 py-6 text-lg touch-manipulation"
                   >
                     Instagram
                   </Button>
@@ -354,7 +359,9 @@ export default function Portfolio() {
               </div>
 
               <div className="border-t border-border pt-8">
-                <p className="text-muted-foreground">© {new Date().getFullYear()} Loek Lutgens. All rights reserved.</p>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  © {new Date().getFullYear()} Loek Lutgens. All rights reserved.
+                </p>
               </div>
             </div>
           </section>

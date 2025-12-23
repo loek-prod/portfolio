@@ -45,11 +45,11 @@ export function LoadingScreen({ photos, onComplete }: LoadingScreenProps) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        padding: "1rem",
       }}
     >
       <div className="loading-content">
-        {/* Large Title */}
-        <h1 className="loading-title">Loek Lutgens</h1>
+        <h1 className="loading-title text-4xl md:text-6xl lg:text-7xl">Loek Lutgens</h1>
 
         <div className={`loading-stacked-photos ${photosFadeOut ? "photos-fade-out" : ""}`}>
           {displayPhotos.map((photo, index) => (
@@ -65,7 +65,7 @@ export function LoadingScreen({ photos, onComplete }: LoadingScreenProps) {
                 alt={photo.alt}
                 width={600}
                 height={400}
-                className="stacked-image"
+                className="stacked-image w-[280px] md:w-[400px] lg:w-[600px]"
                 priority
               />
             </div>

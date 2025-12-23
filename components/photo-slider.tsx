@@ -20,7 +20,7 @@ interface PhotoSliderProps {
 export function PhotoSlider({ photos }: PhotoSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
 
-  const slideWidth = 85 // percentage of viewport
+  const slideWidth = window.innerWidth < 768 ? 90 : 85
 
   // Calculate position of each slide relative to center (0 = center, -1 = left, 1 = right)
   const getSlidePosition = (index: number) => {
@@ -63,8 +63,12 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
   }
 
   return (
-    <div className="relative w-full h-screen bg-gradient-to-b from-accent to-background overflow-hidden select-none">
-      <div className="absolute inset-0 flex items-center justify-center cursor-pointer" onClick={handleContainerClick}>
+    // Improved mobile height and touch handling
+    <div className="relative w-full h-[85vh] md:h-screen bg-gradient-to-b from-accent to-background overflow-hidden select-none touch-manipulation">
+      <div
+        className="absolute inset-0 flex items-center justify-center cursor-pointer touch-manipulation"
+        onClick={handleContainerClick}
+      >
         <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
           {photos.map((photo, index) => {
             const position = getSlidePosition(index)
@@ -84,7 +88,7 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
                   zIndex: Math.round(100 - Math.abs(position) * 10),
                 }}
               >
-                <div className="relative w-full h-[80vh] flex items-center justify-center">
+                <div className="relative w-full h-[70vh] md:h-[80vh] flex items-center justify-center">
                   <Image
                     src={photo.src || "/placeholder.svg"}
                     alt={photo.alt}
@@ -98,8 +102,8 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
                     sizes="90vw"
                     draggable={false}
                   />
-                  <div className="absolute bottom-4 left-4 bg-black/50 backdrop-blur-sm px-4 py-2 rounded-full">
-                    <span className="text-white text-sm font-medium">{photo.category}</span>
+                  <div className="absolute bottom-3 md:bottom-4 left-3 md:left-4 bg-black/50 backdrop-blur-sm px-3 md:px-4 py-2 rounded-full">
+                    <span className="text-white text-xs md:text-sm font-medium">{photo.category}</span>
                   </div>
                 </div>
               </div>
@@ -108,17 +112,16 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
         </div>
       </div>
 
-      {/* Navigation Arrows */}
       <Button
         onClick={(e) => {
           e.stopPropagation()
           goToPrev()
         }}
         disabled={currentIndex === 0}
-        className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-50 bg-background/90 hover:bg-background text-foreground rounded-full w-14 h-14 p-0 shadow-xl disabled:opacity-30 pointer-events-auto"
+        className="absolute left-3 md:left-4 lg:left-8 top-1/2 -translate-y-1/2 z-50 bg-background/90 hover:bg-background text-foreground rounded-full w-12 h-12 md:w-14 md:h-14 p-0 shadow-xl disabled:opacity-30 pointer-events-auto touch-manipulation"
         aria-label="Previous photo"
       >
-        <ChevronLeft className="h-8 w-8" />
+        <ChevronLeft className="h-6 w-6 md:h-8 md:w-8" />
       </Button>
 
       <Button
@@ -127,15 +130,14 @@ export function PhotoSlider({ photos }: PhotoSliderProps) {
           goToNext()
         }}
         disabled={currentIndex === photos.length - 1}
-        className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-50 bg-background/90 hover:bg-background text-foreground rounded-full w-14 h-14 p-0 shadow-xl disabled:opacity-30 pointer-events-auto"
+        className="absolute right-3 md:right-4 lg:right-8 top-1/2 -translate-y-1/2 z-50 bg-background/90 hover:bg-background text-foreground rounded-full w-12 h-12 md:w-14 md:h-14 p-0 shadow-xl disabled:opacity-30 pointer-events-auto touch-manipulation"
         aria-label="Next photo"
       >
-        <ChevronRight className="h-8 w-8" />
+        <ChevronRight className="h-6 w-6 md:h-8 md:w-8" />
       </Button>
 
-      {/* Progress Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-background/90 backdrop-blur-sm px-6 py-3 rounded-full shadow-xl">
-        <span className="text-foreground font-medium">
+      <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-background/90 backdrop-blur-sm px-5 md:px-6 py-2.5 md:py-3 rounded-full shadow-xl">
+        <span className="text-foreground font-medium text-sm md:text-base">
           {currentIndex + 1} / {photos.length}
         </span>
       </div>

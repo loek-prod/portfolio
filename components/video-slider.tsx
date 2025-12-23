@@ -21,7 +21,7 @@ export function VideoSlider({ videos }: VideoSliderProps) {
   const videoRefs = useRef<(HTMLIFrameElement | null)[]>([])
   const containerRefs = useRef<(HTMLDivElement | null)[]>([])
 
-  const slideWidth = 70 // percentage of viewport
+  const slideWidth = typeof window !== "undefined" && window.innerWidth < 768 ? 85 : 70
 
   const getSlidePosition = (index: number) => {
     return index - currentIndex
@@ -93,8 +93,11 @@ export function VideoSlider({ videos }: VideoSliderProps) {
   }
 
   return (
-    <div className="relative w-full bg-primary overflow-hidden select-none pt-24 md:pt-32 pb-16 md:pb-20">
-      <div className="relative w-full h-[45vh] md:h-[50vh] cursor-pointer" onClick={handleContainerClick}>
+    <div className="relative w-full bg-primary overflow-hidden select-none pt-16 md:pt-24 lg:pt-32 pb-12 md:pb-16 lg:pb-20">
+      <div
+        className="relative w-full h-[40vh] md:h-[45vh] lg:h-[50vh] cursor-pointer touch-manipulation"
+        onClick={handleContainerClick}
+      >
         <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
           {videos.map((video, index) => {
             const position = getSlidePosition(index)
@@ -118,7 +121,7 @@ export function VideoSlider({ videos }: VideoSliderProps) {
               >
                 <div
                   ref={(el) => (containerRefs.current[index] = el)}
-                  className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl group"
+                  className="relative w-full aspect-video rounded-xl md:rounded-2xl overflow-hidden shadow-2xl group"
                 >
                   <iframe
                     ref={(el) => (videoRefs.current[index] = el)}
@@ -132,24 +135,24 @@ export function VideoSlider({ videos }: VideoSliderProps) {
                     className="w-full h-full pointer-events-auto"
                   ></iframe>
                   <div className="absolute inset-0 flex items-center justify-center bg-primary/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3 md:gap-4">
                       <button
                         onClick={(e) => togglePlayPause(index, e)}
-                        className="bg-background/90 hover:bg-background rounded-full p-6 transition-all hover:scale-110 pointer-events-auto cursor-pointer"
+                        className="bg-background/90 hover:bg-background rounded-full p-4 md:p-6 transition-all hover:scale-110 pointer-events-auto cursor-pointer touch-manipulation"
                         aria-label={isPlaying ? "Pause video" : "Play video"}
                       >
                         {isPlaying ? (
-                          <Pause className="h-10 w-10 text-foreground" fill="currentColor" />
+                          <Pause className="h-8 w-8 md:h-10 md:w-10 text-foreground" fill="currentColor" />
                         ) : (
-                          <Play className="h-10 w-10 text-foreground" fill="currentColor" />
+                          <Play className="h-8 w-8 md:h-10 md:w-10 text-foreground" fill="currentColor" />
                         )}
                       </button>
                       <button
                         onClick={(e) => toggleFullscreen(index, e)}
-                        className="bg-background/90 hover:bg-background rounded-full p-6 transition-all hover:scale-110 pointer-events-auto cursor-pointer"
+                        className="bg-background/90 hover:bg-background rounded-full p-4 md:p-6 transition-all hover:scale-110 pointer-events-auto cursor-pointer touch-manipulation"
                         aria-label="Toggle fullscreen"
                       >
-                        <Maximize className="h-10 w-10 text-foreground" />
+                        <Maximize className="h-8 w-8 md:h-10 md:w-10 text-foreground" />
                       </button>
                     </div>
                   </div>
@@ -160,21 +163,21 @@ export function VideoSlider({ videos }: VideoSliderProps) {
         </div>
       </div>
 
-      <div className="relative w-full flex items-center justify-center gap-4 mt-20 md:mt-24 z-50">
+      <div className="relative w-full flex items-center justify-center gap-3 md:gap-4 mt-12 md:mt-16 lg:mt-20 z-50 px-4">
         <Button
           onClick={(e) => {
             e.stopPropagation()
             goToPrev()
           }}
           disabled={currentIndex === 0}
-          className="bg-background/20 hover:bg-background/30 backdrop-blur-sm text-primary-foreground border-border rounded-full w-12 h-12 md:w-14 md:h-14 p-0 disabled:opacity-30 pointer-events-auto"
+          className="bg-background/20 hover:bg-background/30 backdrop-blur-sm text-primary-foreground border-border rounded-full w-12 h-12 md:w-14 md:h-14 p-0 disabled:opacity-30 pointer-events-auto touch-manipulation"
           aria-label="Previous video"
         >
-          <ChevronLeft className="h-6 w-6 md:h-8 md:w-8" />
+          <ChevronLeft className="h-5 w-5 md:h-6 md:w-6 lg:h-8 lg:w-8" />
         </Button>
 
-        <div className="flex items-center gap-3 bg-background/10 backdrop-blur-sm px-6 py-3 rounded-full">
-          <span className="text-primary-foreground font-medium">
+        <div className="flex items-center gap-3 bg-background/10 backdrop-blur-sm px-5 md:px-6 py-2.5 md:py-3 rounded-full">
+          <span className="text-primary-foreground font-medium text-sm md:text-base">
             {currentIndex + 1} / {videos.length}
           </span>
         </div>
@@ -185,10 +188,10 @@ export function VideoSlider({ videos }: VideoSliderProps) {
             goToNext()
           }}
           disabled={currentIndex === videos.length - 1}
-          className="bg-background/20 hover:bg-background/30 backdrop-blur-sm text-primary-foreground border-border rounded-full w-12 h-12 md:w-14 md:h-14 p-0 disabled:opacity-30 pointer-events-auto"
+          className="bg-background/20 hover:bg-background/30 backdrop-blur-sm text-primary-foreground border-border rounded-full w-12 h-12 md:w-14 md:h-14 p-0 disabled:opacity-30 pointer-events-auto touch-manipulation"
           aria-label="Next video"
         >
-          <ChevronRight className="h-6 w-6 md:h-8 md:w-8" />
+          <ChevronRight className="h-5 w-5 md:h-6 md:w-6 lg:h-8 lg:w-8" />
         </Button>
       </div>
     </div>
