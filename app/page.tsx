@@ -175,13 +175,17 @@ export default function Portfolio() {
   const handleLoadingComplete = () => {
     setIsLoading(false)
     setShowModeIntro(true)
-    sessionStorage.setItem("hasSeenLoading", "true")
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("hasSeenLoading", "true")
+    }
   }
 
   useEffect(() => {
-    const hasSeenLoading = sessionStorage.getItem("hasSeenLoading")
-    if (!hasSeenLoading) {
-      setIsLoading(true)
+    if (typeof window !== "undefined") {
+      const hasSeenLoading = sessionStorage.getItem("hasSeenLoading")
+      if (!hasSeenLoading) {
+        setIsLoading(true)
+      }
     }
   }, [])
 
