@@ -142,6 +142,7 @@ export default function Portfolio() {
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   const categories = [
     "All",
@@ -165,9 +166,11 @@ export default function Portfolio() {
   }
 
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" })
+    if (typeof window !== "undefined") {
+      const element = document.getElementById(sectionId)
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" })
+      }
     }
     setMobileMenuOpen(false)
   }
@@ -181,13 +184,16 @@ export default function Portfolio() {
   }
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const hasSeenLoading = sessionStorage.getItem("hasSeenLoading")
-      if (!hasSeenLoading) {
-        setIsLoading(true)
-      }
+    setMounted(true)
+    const hasSeenLoading = sessionStorage.getItem("hasSeenLoading")
+    if (!hasSeenLoading) {
+      setIsLoading(true)
     }
   }, [])
+
+  if (!mounted) {
+    return null
+  }
 
   if (isLoading) {
     return <LoadingScreen photos={photos} onComplete={handleLoadingComplete} />
