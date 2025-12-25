@@ -7,11 +7,11 @@ import { Menu, X } from "lucide-react"
 import { PhotoSlider } from "@/components/photo-slider"
 import { VideoSlider } from "@/components/video-slider"
 import { Lightbox } from "@/components/lightbox"
-import { RollingText } from "@/components/rolling-text"
 import { LoadingScreen } from "@/components/loading-screen"
 import { ModeToggle } from "@/components/mode-toggle"
 import { ModeIntro } from "@/components/mode-intro"
 import { InnovationSection } from "@/components/innovation-section"
+import { MorphicNavbar } from "@/components/morphic-navbar"
 
 const photos = [
   {
@@ -212,49 +212,7 @@ export default function Portfolio() {
               <h1 className="text-xl md:text-2xl lg:text-3xl font-bold">LOEK LUTGENS</h1>
             </div>
             <div className="hidden md:flex gap-6 items-center">
-              <button
-                onClick={() => scrollToSection("home")}
-                className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors"
-              >
-                <RollingText text="Home" />
-              </button>
-              {siteMode === "visual" ? (
-                <>
-                  <button
-                    onClick={() => scrollToSection("videos")}
-                    className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors"
-                  >
-                    <RollingText text="Videos" />
-                  </button>
-                  <button
-                    onClick={() => scrollToSection("gallery")}
-                    className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors"
-                  >
-                    <RollingText text="Pictures" />
-                  </button>
-                </>
-              ) : (
-                <>
-                  {/* Placeholder buttons to maintain spacing */}
-                  <button
-                    onClick={() => scrollToSection("projects")}
-                    className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors"
-                  >
-                    <RollingText text="Projects" />
-                  </button>
-                  <button
-                    onClick={() => scrollToSection("about")}
-                    className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors"
-                  >
-                    <RollingText text="About" />
-                  </button>
-                </>
-              )}
-              <Link href="/contact">
-                <button className="nav-link text-foreground hover:bg-accent px-4 py-2 rounded-md transition-colors">
-                  <RollingText text="Contact" />
-                </button>
-              </Link>
+              <MorphicNavbar mode={siteMode} onNavigate={scrollToSection} currentPage="home" />
               <div className="h-6 w-px bg-border mx-2" />
               <ModeToggle mode={siteMode} onModeChange={setSiteMode} size="compact" />
             </div>
@@ -333,7 +291,7 @@ export default function Portfolio() {
           >
             <div className="absolute inset-0 bg-background/40 backdrop-blur-sm"></div>
             <div className="relative z-10">
-              <PhotoSlider photos={filteredPhotos} />
+              <PhotoSlider photos={filteredPhotos} onOpenLightbox={openLightbox} />
             </div>
           </section>
 

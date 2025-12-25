@@ -1,8 +1,7 @@
 "use client"
 
 import type React from "react"
-
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { ChevronLeft, ChevronRight, Play, Pause, Maximize } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -18,10 +17,25 @@ interface VideoSliderProps {
 export function VideoSlider({ videos }: VideoSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [playingVideos, setPlayingVideos] = useState<Set<number>>(new Set())
+  const [slideWidth, setSlideWidth] = useState(70)
   const videoRefs = useRef<(HTMLIFrameElement | null)[]>([])
   const containerRefs = useRef<(HTMLDivElement | null)[]>([])
 
-  const slideWidth = typeof window !== "undefined" && window.innerWidth < 768 ? 85 : 70
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  const [touchEnd, setTouchEnd] = useState<number | null>(null)
+  const [isSwiping, setIsSwiping] = useState(false)
+  const [swipeOffset, setSwipeOffset] = useState(0)
+
+  const minSwipeDistance = 50
+
+  useEffect(() => {
+    const updateWidth = () => {
+      setSlideWidth(window.innerWidth < 768 ? 85 : 70)
+    }
+    updateWidth()
+    window.addEventListener("resize", updateWidth)
+    return () => window.removeEventListener("resize", updateWidth)
+  }, [])
 
   const getSlidePosition = (index: number) => {
     return index - currentIndex
@@ -41,7 +55,7 @@ export function VideoSlider({ videos }: VideoSliderProps) {
     return 0.4
   }
 
-  const togglePlayPause = (index: number, e: React.MouseEvent) => {
+  const togglePlayPause = (index: number, e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation()
     const iframe = videoRefs.current[index]
     if (iframe && iframe.contentWindow) {
@@ -59,7 +73,7 @@ export function VideoSlider({ videos }: VideoSliderProps) {
     }
   }
 
-  const toggleFullscreen = (index: number, e: React.MouseEvent) => {
+  const toggleFullscreen = (index: number, e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation()
     const container = containerRefs.current[index]
     if (!container) return
@@ -81,30 +95,63 @@ export function VideoSlider({ videos }: VideoSliderProps) {
     setCurrentIndex((prev) => Math.max(prev - 1, 0))
   }
 
-  const handleContainerClick = (e: React.MouseEvent) => {
-    const windowWidth = window.innerWidth
-    const clickX = e.clientX
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null)
+    setTouchStart(e.targetTouches[0].clientX)
+    setIsSwiping(true)
+    setSwipeOffset(0)
+  }
 
-    if (clickX > windowWidth / 2) {
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (!touchStart) return
+    const currentTouch = e.targetTouches[0].clientX
+    setTouchEnd(currentTouch)
+    const diff = currentTouch - touchStart
+    setSwipeOffset(diff * 0.3)
+  }
+
+  const onTouchEnd = () => {
+    setIsSwiping(false)
+    setSwipeOffset(0)
+
+    if (!touchStart || !touchEnd) return
+
+    const distance = touchStart - touchEnd
+    const isLeftSwipe = distance > minSwipeDistance
+    const isRightSwipe = distance < -minSwipeDistance
+
+    if (isLeftSwipe && currentIndex < videos.length - 1) {
       goToNext()
-    } else {
+    } else if (isRightSwipe && currentIndex > 0) {
       goToPrev()
     }
+
+    setTouchStart(null)
+    setTouchEnd(null)
   }
 
   return (
-    <div className="relative w-full bg-primary overflow-hidden select-none pt-16 md:pt-24 lg:pt-32 pb-12 md:pb-16 lg:pb-20">
+    <div className="relative w-full bg-primary overflow-hidden select-none pt-16 md:pt-24 lg:pt-32 pb-8 md:pb-12">
       <div
-        className="relative w-full h-[40vh] md:h-[45vh] lg:h-[50vh] cursor-pointer touch-manipulation"
-        onClick={handleContainerClick}
+        className="relative w-full h-[45vh] md:h-[50vh] lg:h-[55vh] touch-pan-y"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
       >
-        <div className="relative w-full h-full flex items-center justify-center pointer-events-none">
+        <div
+          className="relative w-full h-full flex items-center justify-center"
+          style={{
+            transform: `translateX(${swipeOffset}px)`,
+            transition: isSwiping ? "none" : "transform 0.3s ease-out",
+          }}
+        >
           {videos.map((video, index) => {
             const position = getSlidePosition(index)
             const scale = getScale(position)
             const opacity = getOpacity(position)
             const isVisible = Math.abs(position) <= 2
             const isPlaying = playingVideos.has(index)
+            const isCurrent = position === 0
 
             return (
               <div
@@ -132,13 +179,16 @@ export function VideoSlider({ videos }: VideoSliderProps) {
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
-                    className="w-full h-full pointer-events-auto"
+                    className="w-full h-full"
                   ></iframe>
-                  <div className="absolute inset-0 flex items-center justify-center bg-primary/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
-                    <div className="flex items-center gap-3 md:gap-4">
+
+                  <div
+                    className={`absolute inset-0 flex items-center justify-center bg-primary/30 transition-opacity duration-300 z-10 ${isCurrent ? "opacity-100 md:opacity-0 md:group-hover:opacity-100" : "opacity-0"}`}
+                  >
+                    <div className="flex items-center gap-4 md:gap-6">
                       <button
                         onClick={(e) => togglePlayPause(index, e)}
-                        className="bg-background/90 hover:bg-background rounded-full p-4 md:p-6 transition-all hover:scale-110 pointer-events-auto cursor-pointer touch-manipulation"
+                        className="bg-background/90 hover:bg-background rounded-full p-4 md:p-5 transition-all hover:scale-110 touch-manipulation"
                         aria-label={isPlaying ? "Pause video" : "Play video"}
                       >
                         {isPlaying ? (
@@ -149,7 +199,7 @@ export function VideoSlider({ videos }: VideoSliderProps) {
                       </button>
                       <button
                         onClick={(e) => toggleFullscreen(index, e)}
-                        className="bg-background/90 hover:bg-background rounded-full p-4 md:p-6 transition-all hover:scale-110 pointer-events-auto cursor-pointer touch-manipulation"
+                        className="bg-background/90 hover:bg-background rounded-full p-4 md:p-5 transition-all hover:scale-110 touch-manipulation"
                         aria-label="Toggle fullscreen"
                       >
                         <Maximize className="h-8 w-8 md:h-10 md:w-10 text-foreground" />
@@ -163,36 +213,35 @@ export function VideoSlider({ videos }: VideoSliderProps) {
         </div>
       </div>
 
-      <div className="relative w-full flex items-center justify-center gap-3 md:gap-4 mt-12 md:mt-16 lg:mt-20 z-50 px-4">
-        <Button
-          onClick={(e) => {
-            e.stopPropagation()
-            goToPrev()
-          }}
-          disabled={currentIndex === 0}
-          className="bg-background/20 hover:bg-background/30 backdrop-blur-sm text-primary-foreground border-border rounded-full w-12 h-12 md:w-14 md:h-14 p-0 disabled:opacity-30 pointer-events-auto touch-manipulation"
-          aria-label="Previous video"
-        >
-          <ChevronLeft className="h-5 w-5 md:h-6 md:w-6 lg:h-8 lg:w-8" />
-        </Button>
+      {/* Navigation buttons and counter */}
+      <div className="relative w-full flex flex-col items-center gap-4 mt-8 md:mt-12 z-50 px-4">
+        <div className="flex items-center gap-4 md:gap-6">
+          <Button
+            onClick={goToPrev}
+            disabled={currentIndex === 0}
+            className="bg-background/20 hover:bg-background/30 backdrop-blur-sm text-primary-foreground border-border rounded-full w-14 h-14 md:w-14 md:h-14 p-0 disabled:opacity-30 touch-manipulation"
+            aria-label="Previous video"
+          >
+            <ChevronLeft className="h-6 w-6 md:h-7 md:w-7" />
+          </Button>
 
-        <div className="flex items-center gap-3 bg-background/10 backdrop-blur-sm px-5 md:px-6 py-2.5 md:py-3 rounded-full">
-          <span className="text-primary-foreground font-medium text-sm md:text-base">
-            {currentIndex + 1} / {videos.length}
-          </span>
+          <div className="flex items-center gap-3 bg-background/10 backdrop-blur-sm px-6 py-3 rounded-full">
+            <span className="text-primary-foreground font-medium text-base md:text-lg">
+              {currentIndex + 1} / {videos.length}
+            </span>
+          </div>
+
+          <Button
+            onClick={goToNext}
+            disabled={currentIndex === videos.length - 1}
+            className="bg-background/20 hover:bg-background/30 backdrop-blur-sm text-primary-foreground border-border rounded-full w-14 h-14 md:w-14 md:h-14 p-0 disabled:opacity-30 touch-manipulation"
+            aria-label="Next video"
+          >
+            <ChevronRight className="h-6 w-6 md:h-7 md:w-7" />
+          </Button>
         </div>
 
-        <Button
-          onClick={(e) => {
-            e.stopPropagation()
-            goToNext()
-          }}
-          disabled={currentIndex === videos.length - 1}
-          className="bg-background/20 hover:bg-background/30 backdrop-blur-sm text-primary-foreground border-border rounded-full w-12 h-12 md:w-14 md:h-14 p-0 disabled:opacity-30 pointer-events-auto touch-manipulation"
-          aria-label="Next video"
-        >
-          <ChevronRight className="h-5 w-5 md:h-6 md:w-6 lg:h-8 lg:w-8" />
-        </Button>
+        <span className="text-primary-foreground/60 text-xs md:hidden">Swipe to navigate</span>
       </div>
     </div>
   )

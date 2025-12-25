@@ -73,10 +73,10 @@ export function InnovationSection() {
           return (
             <div
               key={index}
-              className="group relative bg-card border border-border rounded-2xl p-8 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+              className="relative bg-card border border-border rounded-2xl p-8 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
             >
               {/* Icon */}
-              <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+              <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-6 hover:bg-primary/20 transition-colors">
                 <IconComponent className="w-7 h-7 text-primary" />
               </div>
 

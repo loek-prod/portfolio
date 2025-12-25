@@ -1,8 +1,7 @@
 "use client"
 
 import type React from "react"
-
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { X, ChevronLeft, ChevronRight } from "lucide-react"
@@ -17,8 +16,10 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex)
   const [touchStart, setTouchStart] = useState<number | null>(null)
   const [touchEnd, setTouchEnd] = useState<number | null>(null)
+  const [swipeOffset, setSwipeOffset] = useState(0)
+  const [isSwiping, setIsSwiping] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  // Minimum swipe distance (in px)
   const minSwipeDistance = 50
 
   const goToNext = useCallback(() => {
@@ -32,13 +33,22 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null)
     setTouchStart(e.targetTouches[0].clientX)
+    setIsSwiping(true)
+    setSwipeOffset(0)
   }
 
   const onTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX)
+    if (!touchStart) return
+    const currentTouch = e.targetTouches[0].clientX
+    setTouchEnd(currentTouch)
+    const diff = currentTouch - touchStart
+    setSwipeOffset(diff)
   }
 
   const onTouchEnd = () => {
+    setIsSwiping(false)
+    setSwipeOffset(0)
+
     if (!touchStart || !touchEnd) return
 
     const distance = touchStart - touchEnd
@@ -50,6 +60,9 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
     } else if (isRightSwipe) {
       goToPrevious()
     }
+
+    setTouchStart(null)
+    setTouchEnd(null)
   }
 
   useEffect(() => {
@@ -70,54 +83,61 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
 
   return (
     <div className="fixed inset-0 z-50 bg-primary/95 flex items-center justify-center">
-      {/* Close Button */}
+      {/* Close Button - larger touch target */}
       <Button
         onClick={onClose}
-        className="absolute top-4 right-4 z-50 bg-background/10 hover:bg-background/20 text-primary-foreground rounded-full w-12 h-12 p-0"
+        className="absolute top-4 right-4 z-50 bg-background/10 hover:bg-background/20 text-primary-foreground rounded-full w-14 h-14 p-0 touch-manipulation"
         aria-label="Close lightbox"
       >
-        <X className="h-6 w-6" />
+        <X className="h-7 w-7" />
       </Button>
 
-      {/* Previous Button */}
+      {/* Previous Button - larger touch target */}
       <Button
         onClick={goToPrevious}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-50 bg-background/10 hover:bg-background/20 text-primary-foreground rounded-full w-14 h-14 p-0"
+        className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-50 bg-background/10 hover:bg-background/20 text-primary-foreground rounded-full w-14 h-14 p-0 touch-manipulation"
         aria-label="Previous image"
       >
         <ChevronLeft className="h-8 w-8" />
       </Button>
 
-      {/* Next Button */}
+      {/* Next Button - larger touch target */}
       <Button
         onClick={goToNext}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-50 bg-background/10 hover:bg-background/20 text-primary-foreground rounded-full w-14 h-14 p-0"
+        className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-50 bg-background/10 hover:bg-background/20 text-primary-foreground rounded-full w-14 h-14 p-0 touch-manipulation"
         aria-label="Next image"
       >
         <ChevronRight className="h-8 w-8" />
       </Button>
 
-      {/* Image Container */}
       <div
-        className="relative w-full h-full flex items-center justify-center p-4 md:p-8"
+        ref={containerRef}
+        className="relative w-full h-full flex items-center justify-center p-4 md:p-8 touch-pan-y"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        <div className="relative max-w-7xl max-h-full">
+        <div
+          className="relative max-w-7xl max-h-full"
+          style={{
+            transform: `translateX(${swipeOffset * 0.5}px)`,
+            transition: isSwiping ? "none" : "transform 0.3s ease-out",
+          }}
+        >
           <Image
             src={images[currentIndex].src || "/placeholder.svg"}
             alt={images[currentIndex].alt}
             width={1920}
             height={1080}
-            className="w-auto h-auto max-w-full max-h-[90vh] object-contain"
+            className="w-auto h-auto max-w-full max-h-[85vh] object-contain select-none"
             priority
+            draggable={false}
           />
         </div>
       </div>
 
-      {/* Image Info */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-primary-foreground text-center">
+      {/* Image Info - improved mobile layout */}
+      <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 text-primary-foreground text-center">
         <p className="text-sm mb-2">
           {currentIndex + 1} / {images.length}
         </p>
@@ -126,9 +146,9 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
         </span>
       </div>
 
-      {/* Swipe Instructions */}
-      <div className="absolute top-8 left-1/2 -translate-x-1/2 text-primary-foreground/60 text-sm">
-        Swipe or use arrow keys to navigate
+      {/* Swipe hint for mobile */}
+      <div className="absolute top-6 md:top-8 left-1/2 -translate-x-1/2 text-primary-foreground/60 text-xs md:text-sm">
+        Swipe or use arrows to navigate
       </div>
     </div>
   )

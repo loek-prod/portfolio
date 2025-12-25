@@ -5,7 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Mail, Phone, Instagram, ArrowLeft, Menu, X } from "lucide-react"
-import { RollingText } from "@/components/rolling-text"
+import { MorphicNavbar } from "@/components/morphic-navbar"
 import { ModeToggle } from "@/components/mode-toggle"
 
 export default function ContactPage() {
@@ -22,24 +22,7 @@ export default function ContactPage() {
           </Link>
 
           <div className="hidden md:flex items-center gap-4">
-            <Link href="/">
-              <button className="nav-link text-foreground hover:bg-accent px-3 py-2 rounded-md transition-colors">
-                <RollingText text="Home" />
-              </button>
-            </Link>
-            <Link href="/#gallery">
-              <button className="nav-link text-foreground hover:bg-accent px-3 py-2 rounded-md transition-colors">
-                <RollingText text="Pictures" />
-              </button>
-            </Link>
-            <Link href="/#videos">
-              <button className="nav-link text-foreground hover:bg-accent px-3 py-2 rounded-md transition-colors">
-                <RollingText text="Videos" />
-              </button>
-            </Link>
-            <button className="nav-link text-foreground bg-accent px-3 py-2 rounded-md transition-colors">
-              <RollingText text="Contact" />
-            </button>
+            <MorphicNavbar mode={siteMode} currentPage="contact" />
             <div className="h-6 w-px bg-border mx-2" />
             <ModeToggle mode={siteMode} onModeChange={setSiteMode} size="compact" />
           </div>
