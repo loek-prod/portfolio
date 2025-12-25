@@ -1,9 +1,76 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef, useEffect } from "react"
-import { ChevronLeft, ChevronRight, Play, Pause, Maximize } from "lucide-react"
+import { useState, useRef, useEffect, useId, memo } from "react"
+import { ChevronLeft, ChevronRight, Play, Pause, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+
+const GLASS_SHADOW =
+  "shadow-[0_0_6px_rgba(0,0,0,0.03),0_2px_6px_rgba(0,0,0,0.08),inset_3px_3px_0.5px_-3px_rgba(0,0,0,0.9),inset_-3px_-3px_0.5px_-3px_rgba(0,0,0,0.85),inset_1px_1px_1px_-0.5px_rgba(0,0,0,0.6),inset_-1px_-1px_1px_-0.5px_rgba(0,0,0,0.6),inset_0_0_6px_6px_rgba(0,0,0,0.12),inset_0_0_2px_2px_rgba(0,0,0,0.06),0_0_12px_rgba(255,255,255,0.15)]"
+
+const GlassFilter = memo(({ id, scale = 70 }: { id: string; scale?: number }) => (
+  <svg className="hidden">
+    <title>Glass Effect Filter</title>
+    <defs>
+      <filter colorInterpolationFilters="sRGB" height="200%" id={id} width="200%" x="-50%" y="-50%">
+        <feTurbulence baseFrequency="0.05 0.05" numOctaves="1" result="turbulence" seed="1" type="fractalNoise" />
+        <feGaussianBlur in="turbulence" result="blurredNoise" stdDeviation="2" />
+        <feDisplacementMap
+          in="SourceGraphic"
+          in2="blurredNoise"
+          result="displaced"
+          scale={scale}
+          xChannelSelector="R"
+          yChannelSelector="B"
+        />
+        <feGaussianBlur in="displaced" result="finalBlur" stdDeviation="4" />
+        <feComposite in="finalBlur" in2="finalBlur" operator="over" />
+      </filter>
+    </defs>
+  </svg>
+))
+GlassFilter.displayName = "GlassFilter"
+
+function LiquidGlassButton({
+  children,
+  onClick,
+  className,
+  ariaLabel,
+}: {
+  children: React.ReactNode
+  onClick: (e: React.MouseEvent | React.TouchEvent) => void
+  className?: string
+  ariaLabel: string
+}) {
+  const filterId = useId()
+
+  return (
+    <>
+      <button
+        onClick={onClick}
+        onTouchEnd={(e) => {
+          e.preventDefault()
+          onClick(e)
+        }}
+        className={cn(
+          "relative rounded-full p-3 md:p-4 transition-all duration-300 hover:scale-110 active:scale-95 touch-manipulation",
+          "bg-white/20 backdrop-blur-md border border-white/30",
+          className,
+        )}
+        aria-label={ariaLabel}
+      >
+        <div className={cn("pointer-events-none absolute inset-0 rounded-full transition-all", GLASS_SHADOW)} />
+        <div
+          className="-z-10 pointer-events-none absolute inset-0 isolate overflow-hidden rounded-full"
+          style={{ backdropFilter: `url("#${filterId}")` }}
+        />
+        <span className="relative z-10">{children}</span>
+      </button>
+      <GlassFilter id={filterId} scale={70} />
+    </>
+  )
+}
 
 interface Video {
   id: string
@@ -20,6 +87,8 @@ export function VideoSlider({ videos }: VideoSliderProps) {
   const [slideWidth, setSlideWidth] = useState(70)
   const videoRefs = useRef<(HTMLIFrameElement | null)[]>([])
   const containerRefs = useRef<(HTMLDivElement | null)[]>([])
+  const [showControls, setShowControls] = useState(true)
+  const hideControlsTimeout = useRef<NodeJS.Timeout | null>(null)
 
   const [touchStart, setTouchStart] = useState<number | null>(null)
   const [touchEnd, setTouchEnd] = useState<number | null>(null)
@@ -36,6 +105,38 @@ export function VideoSlider({ videos }: VideoSliderProps) {
     window.addEventListener("resize", updateWidth)
     return () => window.removeEventListener("resize", updateWidth)
   }, [])
+
+  useEffect(() => {
+    const currentIsPlaying = playingVideos.has(currentIndex)
+
+    if (currentIsPlaying) {
+      // Hide controls after 2 seconds when playing
+      hideControlsTimeout.current = setTimeout(() => {
+        setShowControls(false)
+      }, 2000)
+    } else {
+      // Show controls when paused
+      setShowControls(true)
+    }
+
+    return () => {
+      if (hideControlsTimeout.current) {
+        clearTimeout(hideControlsTimeout.current)
+      }
+    }
+  }, [playingVideos, currentIndex])
+
+  const handleVideoAreaTap = () => {
+    setShowControls(true)
+    if (hideControlsTimeout.current) {
+      clearTimeout(hideControlsTimeout.current)
+    }
+    if (playingVideos.has(currentIndex)) {
+      hideControlsTimeout.current = setTimeout(() => {
+        setShowControls(false)
+      }, 3000)
+    }
+  }
 
   const getSlidePosition = (index: number) => {
     return index - currentIndex
@@ -66,6 +167,7 @@ export function VideoSlider({ videos }: VideoSliderProps) {
           newSet.delete(index)
           return newSet
         })
+        setShowControls(true)
       } else {
         iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', "*")
         setPlayingVideos((prev) => new Set(prev).add(index))
@@ -73,57 +175,25 @@ export function VideoSlider({ videos }: VideoSliderProps) {
     }
   }
 
-  const toggleFullscreen = async (index: number, e: React.MouseEvent | React.TouchEvent) => {
+  const openFullscreen = (index: number, e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation()
+    e.preventDefault()
 
-    const iframe = videoRefs.current[index]
-    const container = containerRefs.current[index]
+    const video = videos[index]
+    if (!video) return
 
-    if (!iframe || !container) return
-
-    try {
-      // Check if already in fullscreen
-      if (document.fullscreenElement || (document as any).webkitFullscreenElement) {
-        // Exit fullscreen
-        if (document.exitFullscreen) {
-          await document.exitFullscreen()
-        } else if ((document as any).webkitExitFullscreen) {
-          ;(document as any).webkitExitFullscreen()
-        }
-      } else {
-        // Enter fullscreen - try iframe first (better for videos)
-        if (iframe.requestFullscreen) {
-          await iframe.requestFullscreen()
-        } else if ((iframe as any).webkitRequestFullscreen) {
-          // Safari iOS support
-          ;(iframe as any).webkitRequestFullscreen()
-        } else if ((iframe as any).webkitEnterFullscreen) {
-          // Older iOS Safari
-          ;(iframe as any).webkitEnterFullscreen()
-        } else if (container.requestFullscreen) {
-          // Fallback to container
-          await container.requestFullscreen()
-        } else if ((container as any).webkitRequestFullscreen) {
-          ;(container as any).webkitRequestFullscreen()
-        }
-      }
-    } catch (err) {
-      console.error(`Fullscreen error: ${err}`)
-      // If fullscreen fails, try to make video play in native fullscreen
-      const iframe = videoRefs.current[index]
-      if (iframe && iframe.contentWindow) {
-        // Tell YouTube player to go fullscreen
-        iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', "*")
-      }
-    }
+    // Open YouTube video directly - works on all devices including iOS
+    window.open(`https://www.youtube.com/watch?v=${video.id}`, "_blank")
   }
 
   const goToNext = () => {
     setCurrentIndex((prev) => Math.min(prev + 1, videos.length - 1))
+    setShowControls(true)
   }
 
   const goToPrev = () => {
     setCurrentIndex((prev) => Math.max(prev - 1, 0))
+    setShowControls(true)
   }
 
   const onTouchStart = (e: React.TouchEvent) => {
@@ -200,6 +270,7 @@ export function VideoSlider({ videos }: VideoSliderProps) {
                 <div
                   ref={(el) => (containerRefs.current[index] = el)}
                   className="relative w-full aspect-video rounded-xl md:rounded-2xl overflow-hidden shadow-2xl group"
+                  onClick={handleVideoAreaTap}
                 >
                   <iframe
                     ref={(el) => (videoRefs.current[index] = el)}
@@ -214,27 +285,33 @@ export function VideoSlider({ videos }: VideoSliderProps) {
                   ></iframe>
 
                   <div
-                    className={`absolute inset-0 flex items-center justify-center bg-primary/30 transition-opacity duration-300 z-10 ${isCurrent ? "opacity-100 md:opacity-0 md:group-hover:opacity-100" : "opacity-0"}`}
+                    className={cn(
+                      "absolute inset-0 flex items-center justify-center transition-opacity duration-500 z-10",
+                      isCurrent && showControls ? "opacity-100" : "opacity-0 pointer-events-none",
+                    )}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleVideoAreaTap()
+                    }}
                   >
-                    <div className="flex items-center gap-4 md:gap-6">
-                      <button
+                    <div className="flex items-center gap-6">
+                      <LiquidGlassButton
                         onClick={(e) => togglePlayPause(index, e)}
-                        className="bg-background/90 hover:bg-background rounded-full p-4 md:p-5 transition-all hover:scale-110 touch-manipulation"
-                        aria-label={isPlaying ? "Pause video" : "Play video"}
+                        ariaLabel={isPlaying ? "Pause video" : "Play video"}
                       >
                         {isPlaying ? (
-                          <Pause className="h-8 w-8 md:h-10 md:w-10 text-foreground" fill="currentColor" />
+                          <Pause className="h-6 w-6 md:h-8 md:w-8 text-white" fill="currentColor" />
                         ) : (
-                          <Play className="h-8 w-8 md:h-10 md:w-10 text-foreground" fill="currentColor" />
+                          <Play className="h-6 w-6 md:h-8 md:w-8 text-white" fill="currentColor" />
                         )}
-                      </button>
-                      <button
-                        onClick={(e) => toggleFullscreen(index, e)}
-                        className="bg-background/90 hover:bg-background rounded-full p-4 md:p-5 transition-all hover:scale-110 touch-manipulation"
-                        aria-label="Toggle fullscreen"
+                      </LiquidGlassButton>
+
+                      <LiquidGlassButton
+                        onClick={(e) => openFullscreen(index, e)}
+                        ariaLabel="Watch fullscreen on YouTube"
                       >
-                        <Maximize className="h-8 w-8 md:h-10 md:w-10 text-foreground" />
-                      </button>
+                        <ExternalLink className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                      </LiquidGlassButton>
                     </div>
                   </div>
                 </div>
