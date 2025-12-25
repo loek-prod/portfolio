@@ -11,8 +11,35 @@ interface LoadingScreenProps {
 export function LoadingScreen({ photos, onComplete }: LoadingScreenProps) {
   const [isExiting, setIsExiting] = useState(false)
   const [photosFadeOut, setPhotosFadeOut] = useState(false)
+  const [imagesLoaded, setImagesLoaded] = useState(false)
+
+  const displayPhotos = photos.slice(0, 7)
 
   useEffect(() => {
+    const imagePromises = displayPhotos.map((photo) => {
+      return new Promise((resolve, reject) => {
+        const img = new window.Image()
+        img.src = photo.src
+        img.onload = resolve
+        img.onerror = reject
+      })
+    })
+
+    Promise.all(imagePromises)
+      .then(() => {
+        console.log("[v0] All loading screen images loaded")
+        setImagesLoaded(true)
+      })
+      .catch((error) => {
+        console.error("[v0] Error loading images:", error)
+        // Even if some images fail, proceed after a timeout
+        setTimeout(() => setImagesLoaded(true), 1000)
+      })
+  }, [])
+
+  useEffect(() => {
+    if (!imagesLoaded) return
+
     const photoFadeTimer = setTimeout(() => {
       setPhotosFadeOut(true)
     }, 3000)
@@ -27,9 +54,7 @@ export function LoadingScreen({ photos, onComplete }: LoadingScreenProps) {
       clearTimeout(photoFadeTimer)
       clearTimeout(exitTimer)
     }
-  }, [onComplete])
-
-  const displayPhotos = photos.slice(0, 7)
+  }, [onComplete, imagesLoaded])
 
   return (
     <div
@@ -51,26 +76,28 @@ export function LoadingScreen({ photos, onComplete }: LoadingScreenProps) {
       <div className="loading-content">
         <h1 className="loading-title text-4xl md:text-6xl lg:text-7xl">Loek Lutgens</h1>
 
-        <div className={`loading-stacked-photos ${photosFadeOut ? "photos-fade-out" : ""}`}>
-          {displayPhotos.map((photo, index) => (
-            <div
-              key={index}
-              className="stacked-photo"
-              style={{
-                animationDelay: `${index * 0.4}s`,
-              }}
-            >
-              <Image
-                src={photo.src || "/placeholder.svg"}
-                alt={photo.alt}
-                width={600}
-                height={400}
-                className="stacked-image w-[280px] md:w-[400px] lg:w-[600px]"
-                priority
-              />
-            </div>
-          ))}
-        </div>
+        {imagesLoaded && (
+          <div className={`loading-stacked-photos ${photosFadeOut ? "photos-fade-out" : ""}`}>
+            {displayPhotos.map((photo, index) => (
+              <div
+                key={index}
+                className="stacked-photo"
+                style={{
+                  animationDelay: `${index * 0.4}s`,
+                }}
+              >
+                <Image
+                  src={photo.src || "/placeholder.svg"}
+                  alt={photo.alt}
+                  width={600}
+                  height={400}
+                  className="stacked-image w-[280px] md:w-[400px] lg:w-[600px]"
+                  priority
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

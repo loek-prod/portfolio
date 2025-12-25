@@ -73,17 +73,48 @@ export function VideoSlider({ videos }: VideoSliderProps) {
     }
   }
 
-  const toggleFullscreen = (index: number, e: React.MouseEvent | React.TouchEvent) => {
+  const toggleFullscreen = async (index: number, e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation()
-    const container = containerRefs.current[index]
-    if (!container) return
 
-    if (document.fullscreenElement) {
-      document.exitFullscreen()
-    } else {
-      container.requestFullscreen().catch((err) => {
-        console.error(`Error attempting to enable fullscreen: ${err.message}`)
-      })
+    const iframe = videoRefs.current[index]
+    const container = containerRefs.current[index]
+
+    if (!iframe || !container) return
+
+    try {
+      // Check if already in fullscreen
+      if (document.fullscreenElement || (document as any).webkitFullscreenElement) {
+        // Exit fullscreen
+        if (document.exitFullscreen) {
+          await document.exitFullscreen()
+        } else if ((document as any).webkitExitFullscreen) {
+          ;(document as any).webkitExitFullscreen()
+        }
+      } else {
+        // Enter fullscreen - try iframe first (better for videos)
+        if (iframe.requestFullscreen) {
+          await iframe.requestFullscreen()
+        } else if ((iframe as any).webkitRequestFullscreen) {
+          // Safari iOS support
+          ;(iframe as any).webkitRequestFullscreen()
+        } else if ((iframe as any).webkitEnterFullscreen) {
+          // Older iOS Safari
+          ;(iframe as any).webkitEnterFullscreen()
+        } else if (container.requestFullscreen) {
+          // Fallback to container
+          await container.requestFullscreen()
+        } else if ((container as any).webkitRequestFullscreen) {
+          ;(container as any).webkitRequestFullscreen()
+        }
+      }
+    } catch (err) {
+      console.error(`Fullscreen error: ${err}`)
+      // If fullscreen fails, try to make video play in native fullscreen
+      const iframe = videoRefs.current[index]
+      if (iframe && iframe.contentWindow) {
+        // Tell YouTube player to go fullscreen
+        iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', "*")
+      }
     }
   }
 
