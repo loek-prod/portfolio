@@ -258,11 +258,12 @@ export function VideoSlider({ videos }: VideoSliderProps) {
             return (
               <div
                 key={index}
-                className="absolute transition-all duration-300 ease-out"
+                className="absolute transition-all duration-300 ease-out flex items-center justify-center"
                 style={{
                   transform: `translateX(${position * slideWidth}vw) scale(${scale})`,
                   opacity: isVisible ? opacity : 0,
                   width: `${slideWidth}vw`,
+                  height: "100%",
                   maxWidth: "1400px",
                   zIndex: Math.round(100 - Math.abs(position) * 10),
                   pointerEvents: isVisible ? "auto" : "none",
@@ -271,8 +272,8 @@ export function VideoSlider({ videos }: VideoSliderProps) {
                 <div
                   ref={(el) => (containerRefs.current[index] = el)}
                   className={cn(
-                    "relative w-full rounded-xl md:rounded-2xl overflow-hidden shadow-2xl group",
-                    video.portrait ? "aspect-[9/16]" : "aspect-video"
+                    "relative rounded-xl md:rounded-2xl overflow-hidden shadow-2xl group",
+                    video.portrait ? "h-full aspect-[9/16] mx-auto" : "w-full aspect-video"
                   )}
                   onClick={handleVideoAreaTap}
                 >
