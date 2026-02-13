@@ -27,7 +27,7 @@ export function MorphicNavbar({ mode, onNavigate, currentPage = "home" }: Morphi
       return [
         { id: "home", label: "Home", type: "scroll" },
         { id: "videos", label: "Videos", type: "scroll" },
-        { id: "pictures", label: "Pictures", type: "scroll" },
+        { id: "gallery", label: "Pictures", type: "scroll" },
         { id: "contact", label: "Contact", type: "link", href: "/contact" },
       ]
     } else {
