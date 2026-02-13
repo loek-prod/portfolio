@@ -115,26 +115,37 @@ const videos = [
   {
     id: "2X-7H1_Nz94",
     title: "",
+    portrait: false,
   },
   {
     id: "fcNs7xLVLB4",
     title: "",
+    portrait: false,
   },
   {
     id: "EFuZUPn6Pfw",
     title: "",
+    portrait: false,
   },
   {
     id: "VGCzEnAJiQ0",
     title: "",
+    portrait: false,
   },
   {
     id: "G_N6h50NA_k",
     title: "",
+    portrait: false,
   },
   {
     id: "RU18Qln-Xvo",
     title: "",
+    portrait: false,
+  },
+  {
+    id: "u-5Frj2SZ-0",
+    title: "",
+    portrait: true,
   },
 ]
 

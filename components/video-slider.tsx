@@ -75,6 +75,7 @@ function LiquidGlassButton({
 interface Video {
   id: string
   title: string
+  portrait?: boolean
 }
 
 interface VideoSliderProps {
@@ -269,7 +270,10 @@ export function VideoSlider({ videos }: VideoSliderProps) {
               >
                 <div
                   ref={(el) => (containerRefs.current[index] = el)}
-                  className="relative w-full aspect-video rounded-xl md:rounded-2xl overflow-hidden shadow-2xl group"
+                  className={cn(
+                    "relative w-full rounded-xl md:rounded-2xl overflow-hidden shadow-2xl group",
+                    video.portrait ? "aspect-[9/16]" : "aspect-video"
+                  )}
                   onClick={handleVideoAreaTap}
                 >
                   <iframe
