@@ -12,8 +12,8 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "Loek Lutgens | Portfolio",
-  description: "Photography and Videography Portfolio by Loek Lutgens",
+  title: "L'exist | Portfolio",
+  description: "Photography and Videography Portfolio by L'exist",
   generator: "v0.app",
   icons: {
     icon: "/icon.svg",

@@ -18,7 +18,14 @@ export default function ContactPage() {
       <nav className="bg-background shadow-md">
         <div className="flex justify-between items-center p-4 md:p-6 lg:p-8 max-w-7xl mx-auto">
           <Link href="/" className="text-foreground">
-            <h1 className="text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold">LOEK LUTGENS</h1>
+            <Image
+              src="/images/lexist-logo.png"
+              alt="L'exist"
+              width={150}
+              height={45}
+              className="w-[100px] md:w-[120px] lg:w-[150px] h-auto"
+              priority
+            />
           </Link>
 
           <div className="hidden md:flex items-center gap-4">
