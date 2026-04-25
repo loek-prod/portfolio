@@ -61,10 +61,10 @@ export function MorphicNavbar({ mode, onNavigate, currentPage = "home" }: Morphi
 
           const content = (
             <div
-              className={`flex items-center justify-center px-4 md:px-5 py-2 md:py-2.5 text-sm md:text-base transition-all duration-300 cursor-pointer text-[rgba(208,126,66,1)] ${
+              className={`flex items-center justify-center px-4 md:px-5 py-2 md:py-2.5 text-sm md:text-base transition-all duration-300 cursor-pointer ${
                 isActive
-                  ? "mx-2 rounded-xl bg-muted-foreground/20 font-semibold text-foreground"
-                  : `text-muted-foreground hover:text-foreground ${
+                  ? "mx-2 rounded-xl bg-secondary font-semibold text-secondary-foreground"
+                  : `text-muted-foreground hover:text-accent ${
                       (prevActive || isFirst) && "rounded-l-xl"
                     } ${(nextActive || isLast) && "rounded-r-xl"}`
               }`}
