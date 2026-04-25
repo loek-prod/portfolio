@@ -27,11 +27,9 @@ export function LoadingScreen({ photos, onComplete }: LoadingScreenProps) {
 
     Promise.all(imagePromises)
       .then(() => {
-        console.log("[v0] All loading screen images loaded")
         setImagesLoaded(true)
       })
-      .catch((error) => {
-        console.error("[v0] Error loading images:", error)
+      .catch(() => {
         // Even if some images fail, proceed after a timeout
         setTimeout(() => setImagesLoaded(true), 1000)
       })
@@ -74,7 +72,16 @@ export function LoadingScreen({ photos, onComplete }: LoadingScreenProps) {
       }}
     >
       <div className="loading-content">
-        <h1 className="loading-title text-4xl md:text-6xl lg:text-7xl">Loek Lutgens</h1>
+        <div className="loading-title">
+          <Image
+            src="/images/lexist-logo.png"
+            alt="L'exist"
+            width={400}
+            height={120}
+            className="w-[200px] md:w-[300px] lg:w-[400px] h-auto"
+            priority
+          />
+        </div>
 
         {imagesLoaded && (
           <div className={`loading-stacked-photos ${photosFadeOut ? "photos-fade-out" : ""}`}>

@@ -17,7 +17,6 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
   const [touchStart, setTouchStart] = useState<number | null>(null)
   const [touchEnd, setTouchEnd] = useState<number | null>(null)
   const [swipeOffset, setSwipeOffset] = useState(0)
-  const [isSwiping, setIsSwiping] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const minSwipeDistance = 50
@@ -33,7 +32,6 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null)
     setTouchStart(e.targetTouches[0].clientX)
-    setIsSwiping(true)
     setSwipeOffset(0)
   }
 
@@ -41,23 +39,17 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
     if (!touchStart) return
     const currentTouch = e.targetTouches[0].clientX
     setTouchEnd(currentTouch)
-    const diff = currentTouch - touchStart
-    setSwipeOffset(diff)
+    setSwipeOffset(currentTouch - touchStart)
   }
 
   const onTouchEnd = () => {
-    setIsSwiping(false)
     setSwipeOffset(0)
-
     if (!touchStart || !touchEnd) return
 
     const distance = touchStart - touchEnd
-    const isLeftSwipe = distance > minSwipeDistance
-    const isRightSwipe = distance < -minSwipeDistance
-
-    if (isLeftSwipe) {
+    if (distance > minSwipeDistance) {
       goToNext()
-    } else if (isRightSwipe) {
+    } else if (distance < -minSwipeDistance) {
       goToPrevious()
     }
 
@@ -121,7 +113,7 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
           className="relative max-w-7xl max-h-full"
           style={{
             transform: `translateX(${swipeOffset * 0.5}px)`,
-            transition: isSwiping ? "none" : "transform 0.3s ease-out",
+            transition: swipeOffset !== 0 ? "none" : "transform 0.3s ease-out",
           }}
         >
           <Image

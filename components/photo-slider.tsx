@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect, useRef } from "react"
+import { useState, useRef } from "react"
 import Image from "next/image"
 import { ChevronLeft, ChevronRight, Maximize } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -19,24 +19,13 @@ interface PhotoSliderProps {
 
 export function PhotoSlider({ photos, onOpenLightbox }: PhotoSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [slideWidth, setSlideWidth] = useState(85)
-
   const [touchStart, setTouchStart] = useState<number | null>(null)
   const [touchEnd, setTouchEnd] = useState<number | null>(null)
-  const [isSwiping, setIsSwiping] = useState(false)
   const [swipeOffset, setSwipeOffset] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const minSwipeDistance = 50
-
-  useEffect(() => {
-    const updateWidth = () => {
-      setSlideWidth(window.innerWidth < 768 ? 90 : 85)
-    }
-    updateWidth()
-    window.addEventListener("resize", updateWidth)
-    return () => window.removeEventListener("resize", updateWidth)
-  }, [])
+  const slideWidth = typeof window !== "undefined" && window.innerWidth < 768 ? 90 : 85
 
   const getSlidePosition = (index: number) => {
     return index - currentIndex
@@ -67,7 +56,6 @@ export function PhotoSlider({ photos, onOpenLightbox }: PhotoSliderProps) {
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null)
     setTouchStart(e.targetTouches[0].clientX)
-    setIsSwiping(true)
     setSwipeOffset(0)
   }
 
@@ -75,24 +63,17 @@ export function PhotoSlider({ photos, onOpenLightbox }: PhotoSliderProps) {
     if (!touchStart) return
     const currentTouch = e.targetTouches[0].clientX
     setTouchEnd(currentTouch)
-    // Calculate visual offset during swipe
-    const diff = currentTouch - touchStart
-    setSwipeOffset(diff * 0.3) // Dampen the effect
+    setSwipeOffset((currentTouch - touchStart) * 0.3)
   }
 
   const onTouchEnd = () => {
-    setIsSwiping(false)
     setSwipeOffset(0)
-
     if (!touchStart || !touchEnd) return
 
     const distance = touchStart - touchEnd
-    const isLeftSwipe = distance > minSwipeDistance
-    const isRightSwipe = distance < -minSwipeDistance
-
-    if (isLeftSwipe && currentIndex < photos.length - 1) {
+    if (distance > minSwipeDistance && currentIndex < photos.length - 1) {
       goToNext()
-    } else if (isRightSwipe && currentIndex > 0) {
+    } else if (distance < -minSwipeDistance && currentIndex > 0) {
       goToPrev()
     }
 
@@ -118,13 +99,13 @@ export function PhotoSlider({ photos, onOpenLightbox }: PhotoSliderProps) {
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        <div
-          className="relative w-full h-full flex items-center justify-center"
-          style={{
-            transform: `translateX(${swipeOffset}px)`,
-            transition: isSwiping ? "none" : "transform 0.3s ease-out",
-          }}
-        >
+          <div
+            className="relative w-full h-full flex items-center justify-center"
+            style={{
+              transform: `translateX(${swipeOffset}px)`,
+              transition: swipeOffset !== 0 ? "none" : "transform 0.3s ease-out",
+            }}
+          >
           {photos.map((photo, index) => {
             const position = getSlidePosition(index)
             const scale = getScale(position)

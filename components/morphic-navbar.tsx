@@ -27,7 +27,7 @@ export function MorphicNavbar({ mode, onNavigate, currentPage = "home" }: Morphi
       return [
         { id: "home", label: "Home", type: "scroll" },
         { id: "videos", label: "Videos", type: "scroll" },
-        { id: "pictures", label: "Pictures", type: "scroll" },
+        { id: "gallery", label: "Pictures", type: "scroll" },
         { id: "contact", label: "Contact", type: "link", href: "/contact" },
       ]
     } else {
@@ -63,8 +63,8 @@ export function MorphicNavbar({ mode, onNavigate, currentPage = "home" }: Morphi
             <div
               className={`flex items-center justify-center px-4 md:px-5 py-2 md:py-2.5 text-sm md:text-base transition-all duration-300 cursor-pointer ${
                 isActive
-                  ? "mx-2 rounded-xl bg-muted-foreground/20 font-semibold text-foreground"
-                  : `text-muted-foreground hover:text-foreground ${
+                  ? "mx-2 rounded-xl bg-secondary font-semibold text-secondary-foreground"
+                  : `text-muted-foreground hover:text-accent ${
                       (prevActive || isFirst) && "rounded-l-xl"
                     } ${(nextActive || isLast) && "rounded-r-xl"}`
               }`}

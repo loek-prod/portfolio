@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Menu, X } from "lucide-react"
@@ -224,7 +225,14 @@ export default function Portfolio() {
         <nav className="absolute top-0 left-0 right-0 z-20 bg-background shadow-md">
           <div className="flex justify-between items-center p-4 md:p-6 lg:p-8">
             <div className="text-foreground">
-              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold">LOEK LUTGENS</h1>
+              <Image
+                src="/images/lexist-logo.png"
+                alt="L'exist"
+                width={150}
+                height={45}
+                className="w-[100px] md:w-[120px] lg:w-[150px] h-auto"
+                priority
+              />
             </div>
             <div className="hidden md:flex gap-6 items-center">
               <MorphicNavbar mode={siteMode} onNavigate={scrollToSection} currentPage="home" />
@@ -343,7 +351,7 @@ export default function Portfolio() {
 
               <div className="border-t border-border pt-8">
                 <p className="text-sm md:text-base text-muted-foreground">
-                  © {new Date().getFullYear()} Loek Lutgens. All rights reserved.
+                  © {new Date().getFullYear()} L&apos;exist. All rights reserved.
                 </p>
               </div>
             </div>
