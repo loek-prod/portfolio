@@ -27,11 +27,9 @@ export function LoadingScreen({ photos, onComplete }: LoadingScreenProps) {
 
     Promise.all(imagePromises)
       .then(() => {
-        console.log("[v0] All loading screen images loaded")
         setImagesLoaded(true)
       })
-      .catch((error) => {
-        console.error("[v0] Error loading images:", error)
+      .catch(() => {
         // Even if some images fail, proceed after a timeout
         setTimeout(() => setImagesLoaded(true), 1000)
       })
