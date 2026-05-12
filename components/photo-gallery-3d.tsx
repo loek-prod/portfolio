@@ -72,11 +72,12 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
     touchEndX.current = null
   }
 
-  // Responsive values
-  const stackSpacing = isMobile ? 20 : 40
-  const verticalStep = isMobile ? 15 : 28
-  const maxWidth = isMobile ? "90vw" : "min(85vw, 900px)"
-  const maxHeight = isMobile ? "45vh" : "min(65vh, 650px)"
+  // Responsive values - sized to fit within padded container
+  const stackSpacing = isMobile ? 15 : 35
+  const verticalStep = isMobile ? 12 : 24
+  // Smaller max sizes to ensure containment with padding
+  const maxImageWidth = isMobile ? "75vw" : "min(70vw, 750px)"
+  const maxImageHeight = isMobile ? "35vh" : "min(50vh, 500px)"
 
   // Calculate card position relative to active index
   const getCardStyle = (index: number) => {
@@ -141,27 +142,33 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
   return (
     <div 
       className="relative w-full bg-background overflow-hidden flex flex-col"
-      style={{ minHeight: isMobile ? "75vh" : "90vh" }}
+      style={{ minHeight: isMobile ? "70vh" : "85vh" }}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      {/* 3D Perspective Container - takes up main space */}
+      {/* 3D Perspective Container with equal padding on all sides */}
       <div 
         className="flex-1 relative flex items-center justify-center"
         style={{
-          perspective: isMobile ? "800px" : "1200px",
-          perspectiveOrigin: "50% 50%",
+          padding: isMobile ? "24px 16px" : "48px 40px",
         }}
       >
         <div 
-          className="relative flex items-center justify-center"
+          className="relative w-full h-full flex items-center justify-center"
           style={{
-            transformStyle: "preserve-3d",
-            width: maxWidth,
-            height: maxHeight,
+            perspective: isMobile ? "800px" : "1200px",
+            perspectiveOrigin: "50% 50%",
           }}
         >
+          <div 
+            className="relative flex items-center justify-center"
+            style={{
+              transformStyle: "preserve-3d",
+              width: maxImageWidth,
+              height: maxImageHeight,
+            }}
+          >
           {photos.map((photo, index) => {
             const isActive = index === activeIndex
             const style = getCardStyle(index)
@@ -182,30 +189,32 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
                   pointerEvents: isActive ? "auto" : "none",
                 }}
               >
-                {/* Outer wrapper with solid background to prevent bleed-through */}
+                {/* Card wrapper - no overflow hidden on active card to prevent clipping */}
                 <div 
-                  className="relative rounded-xl overflow-hidden max-w-full max-h-full bg-background"
+                  className={`relative rounded-xl max-w-full max-h-full bg-background ${
+                    isActive ? "" : "overflow-hidden"
+                  }`}
                   style={{
                     boxShadow: isActive 
                       ? "0 35px 70px -15px rgba(0, 0, 0, 0.6)"
                       : `0 ${Math.max(5, 20 - absOffset * 4)}px ${Math.max(10, 40 - absOffset * 8)}px -10px rgba(0, 0, 0, ${Math.max(0.1, 0.35 - absOffset * 0.08)})`,
-                    // Ensure solid background covers any transparency
                     backfaceVisibility: "hidden",
                   }}
                 >
-                  {/* Solid white backing layer to prevent any bleed */}
-                  <div className="absolute inset-0 bg-background" />
+                  {/* Solid backing layer to prevent bleed */}
+                  <div className="absolute inset-0 bg-background rounded-xl" />
                   
                   <Image
                     src={photo.src}
                     alt={photo.alt}
-                    width={900}
-                    height={650}
-                    className={`relative w-auto h-auto object-contain ${
+                    width={750}
+                    height={500}
+                    className={`relative w-auto h-auto rounded-xl ${
                       isMobile 
-                        ? "max-w-[90vw] max-h-[45vh]" 
-                        : "max-w-[min(85vw,900px)] max-h-[min(65vh,650px)]"
+                        ? "max-w-[75vw] max-h-[35vh]" 
+                        : "max-w-[min(70vw,750px)] max-h-[min(50vh,500px)]"
                     }`}
+                    style={{ objectFit: "contain" }}
                     draggable={false}
                     priority={isActive || absOffset <= 1}
                     quality={isActive ? 90 : 40}
@@ -236,6 +245,7 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
               </div>
             )
           })}
+          </div>
         </div>
       </div>
 
