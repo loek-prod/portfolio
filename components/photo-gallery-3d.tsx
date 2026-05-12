@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import { ChevronLeft, ChevronRight, Maximize } from "lucide-react"
 
@@ -19,6 +19,8 @@ interface PhotoGallery3DProps {
 export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [isMobile, setIsMobile] = useState(false)
+  const touchStartX = useRef<number | null>(null)
+  const touchEndX = useRef<number | null>(null)
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768)
@@ -40,6 +42,34 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
     if (onOpenLightbox) {
       onOpenLightbox(activeIndex)
     }
+  }
+
+  // Swipe handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX
+  }
+
+  const handleTouchEnd = () => {
+    if (touchStartX.current === null || touchEndX.current === null) return
+    
+    const swipeDistance = touchStartX.current - touchEndX.current
+    const minSwipeDistance = 50
+    
+    if (swipeDistance > minSwipeDistance) {
+      // Swiped left - go to next
+      goToNext()
+    } else if (swipeDistance < -minSwipeDistance) {
+      // Swiped right - go to previous
+      goToPrev()
+    }
+    
+    // Reset
+    touchStartX.current = null
+    touchEndX.current = null
   }
 
   // Responsive values
@@ -97,17 +127,23 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
 
   if (photos.length === 0) {
     return (
-      <div className="w-full h-[60vh] md:h-[70vh] bg-background flex items-center justify-center">
+      <div className="w-full h-[70vh] md:h-[85vh] bg-background flex items-center justify-center">
         <p className="text-muted-foreground">No photos to display</p>
       </div>
     )
   }
 
   return (
-    <div className="relative w-full h-[60vh] md:h-[80vh] bg-background overflow-hidden">
-      {/* 3D Perspective Container */}
+    <div 
+      className="relative w-full bg-background overflow-hidden flex flex-col"
+      style={{ minHeight: isMobile ? "75vh" : "90vh" }}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* 3D Perspective Container - takes up main space */}
       <div 
-        className="absolute inset-0 flex items-center justify-center"
+        className="flex-1 relative flex items-center justify-center"
         style={{
           perspective: isMobile ? "800px" : "1200px",
           perspectiveOrigin: "50% 50%",
@@ -195,17 +231,17 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
         </div>
       </div>
 
-      {/* Navigation - touch-friendly 44px minimum tap targets */}
-      <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 md:gap-6">
+      {/* Navigation - below the image, not overlapping */}
+      <div className="flex items-center justify-center gap-4 md:gap-6 py-6 md:py-8">
         <button
           onClick={goToPrev}
-          className="bg-foreground/10 hover:bg-foreground/20 active:bg-foreground/30 backdrop-blur-sm rounded-full p-3 transition-all duration-200 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
+          className="bg-foreground/10 hover:bg-foreground/20 active:bg-foreground/30 rounded-full p-3 transition-all duration-200 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
           aria-label="Previous photo"
         >
           <ChevronLeft className="h-6 w-6 text-foreground" />
         </button>
         
-        <div className="bg-foreground/10 backdrop-blur-sm px-4 py-2 rounded-full">
+        <div className="bg-foreground/10 px-4 py-2 rounded-full">
           <span className="text-foreground/80 text-sm font-medium">
             {activeIndex + 1} / {photos.length}
           </span>
@@ -213,12 +249,19 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
         
         <button
           onClick={goToNext}
-          className="bg-foreground/10 hover:bg-foreground/20 active:bg-foreground/30 backdrop-blur-sm rounded-full p-3 transition-all duration-200 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
+          className="bg-foreground/10 hover:bg-foreground/20 active:bg-foreground/30 rounded-full p-3 transition-all duration-200 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
           aria-label="Next photo"
         >
           <ChevronRight className="h-6 w-6 text-foreground" />
         </button>
       </div>
+      
+      {/* Mobile swipe hint */}
+      {isMobile && (
+        <div className="text-center pb-4">
+          <span className="text-foreground/40 text-xs">Swipe to navigate</span>
+        </div>
+      )}
     </div>
   )
 }
