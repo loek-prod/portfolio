@@ -13,7 +13,7 @@ import { ModeToggle } from "@/components/mode-toggle"
 import { ModeIntro } from "@/components/mode-intro"
 import { InnovationSection } from "@/components/innovation-section"
 import { MorphicNavbar } from "@/components/morphic-navbar"
-import { cn } from "@/lib/utils"
+import { VideoFilter } from "@/components/video-filter"
 
 const photos = [
   {
@@ -116,43 +116,61 @@ const photos = [
 const videos = [
   // Corporate
   {
-    id: "2X-7H1_Nz94",
-    title: "Client event Buynamics",
-    portrait: false,
-    category: "Corporate",
-  },
-  {
-    id: "fcNs7xLVLB4",
-    title: "Interview sustainability tool",
-    portrait: false,
-    category: "Corporate",
-  },
-  {
-    id: "MIV0ZJXb2j0",
-    title: "Interview Buynamics IT Team",
-    portrait: false,
-    category: "Corporate",
-  },
-  {
     id: "VGCzEnAJiQ0",
-    title: "WTP - Tutorial",
+    title: "",
+    portrait: false,
+    category: "Corporate",
+  },
+  {
+    id: "2X-7H1_Nz94",
+    title: "",
+    portrait: false,
+    category: "Corporate",
+  },
+  {
+    id: "G_N6h50NA_k",
+    title: "",
+    portrait: false,
+    category: "Corporate",
+  },
+  {
+    id: "RU18Qln-Xvo",
+    title: "",
+    portrait: false,
+    category: "Corporate",
+  },
+  {
+    id: "PhP4les8tj8",
+    title: "",
     portrait: false,
     category: "Corporate",
   },
   // AI Films
   {
-    id: "G_N6h50NA_k",
-    title: "Reunion Promo video",
-    portrait: false,
+    id: "Y6I4mEgfGM0",
+    title: "",
+    portrait: true,
     category: "AI Films",
   },
   {
-    id: "RU18Qln-Xvo",
-    title: "ATOMIC branding video",
-    portrait: false,
+    id: "-V9JmMuPD8M",
+    title: "",
+    portrait: true,
     category: "AI Films",
   },
   // Stories
+  {
+    id: "fcNs7xLVLB4",
+    title: "",
+    portrait: false,
+    category: "Stories",
+  },
+  {
+    id: "MIV0ZJXb2j0",
+    title: "",
+    portrait: false,
+    category: "Stories",
+  },
   {
     id: "u-5Frj2SZ-0",
     title: "",
@@ -163,18 +181,6 @@ const videos = [
     id: "QI_jcTsU46U",
     title: "",
     portrait: false,
-    category: "Stories",
-  },
-  {
-    id: "Y6I4mEgfGM0",
-    title: "",
-    portrait: true,
-    category: "Stories",
-  },
-  {
-    id: "-V9JmMuPD8M",
-    title: "",
-    portrait: true,
     category: "Stories",
   },
 ]
@@ -337,23 +343,15 @@ export default function Portfolio() {
           }`}
         >
           <section id="videos" className="bg-primary">
-            <div className="flex justify-center gap-2 md:gap-4 pt-8 md:pt-12 pb-4 px-4">
-              {videoCategories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedVideoCategory(cat)}
-                  className={cn(
-                    "px-4 md:px-6 py-2 md:py-2.5 rounded-full text-sm md:text-base font-medium transition-all duration-300 touch-manipulation",
-                    selectedVideoCategory === cat
-                      ? "bg-background text-foreground"
-                      : "bg-background/20 text-primary-foreground hover:bg-background/30"
-                  )}
-                >
-                  {cat}
-                </button>
-              ))}
+            <div className="py-8 md:py-12">
+              <VideoFilter
+                categories={videoCategories}
+                selectedCategory={selectedVideoCategory}
+                onCategoryChange={setSelectedVideoCategory}
+              />
             </div>
             <VideoSlider videos={filteredVideos} />
+            <div className="py-8 md:py-12" />
           </section>
 
           <section
