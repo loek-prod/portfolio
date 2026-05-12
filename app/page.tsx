@@ -15,101 +15,124 @@ import { InnovationSection } from "@/components/innovation-section"
 import { MorphicNavbar } from "@/components/morphic-navbar"
 import { VideoFilter } from "@/components/video-filter"
 
+// Aspect ratio types: "panoramic" (>2:1), "landscape" (>1:1), "portrait" (<=1:1)
 const photos = [
-  {
-    src: "/images/photo5.jpg",
-    alt: "Macro photography of textured green leaves",
-    category: "Macro",
-  },
-  {
-    src: "/images/photo-architecture1.jpg",
-    alt: "Vibrant blue architecture with cacti",
-    category: "Architecture",
-  },
-  {
-    src: "/images/photo-pattern.jpg",
-    alt: "Ornate decorative circular pattern",
-    category: "Detail",
-  },
-  {
-    src: "/images/photo-architecture2.jpg",
-    alt: "Vibrant blue architecture with yellow accents",
-    category: "Architecture",
-  },
-  {
-    src: "/images/photo-portrait.jpg",
-    alt: "Portrait of woman on European street",
-    category: "Portrait",
-  },
-  {
-    src: "/images/photo-monkey.jpg",
-    alt: "Wildlife photography of monkey on beach",
-    category: "Wildlife",
-  },
+  // Panoramic photos first (extra wide, >2:1 ratio)
   {
     src: "/images/photo-bridge.jpg",
     alt: "Aerial view of railway bridge",
     category: "Aerial",
-  },
-  {
-    src: "/images/photo-car.jpg",
-    alt: "Vintage Mercedes-Benz automotive photography",
-    category: "Automotive",
-  },
-  {
-    src: "/images/photo-car-mural.jpg",
-    alt: "Car and street art in urban setting",
-    category: "Street",
+    aspectRatio: "panoramic" as const,
   },
   {
     src: "/images/photo-boat-aerial.jpg",
     alt: "Aerial view of boat and swimmers",
     category: "Aerial",
+    aspectRatio: "panoramic" as const,
+  },
+  // Landscape photos second (standard horizontal, 3:2 or 16:9)
+  {
+    src: "/images/photo5.jpg",
+    alt: "Macro photography of textured green leaves",
+    category: "Macro",
+    aspectRatio: "landscape" as const,
   },
   {
-    src: "/images/photo-terrace-portrait.jpg",
-    alt: "Portrait on coastal terrace",
-    category: "Portrait",
+    src: "/images/photo-architecture1.jpg",
+    alt: "Vibrant blue architecture with cacti",
+    category: "Architecture",
+    aspectRatio: "landscape" as const,
   },
   {
-    src: "/images/photo-alley.jpg",
-    alt: "European alley through architectural frame",
+    src: "/images/photo-pattern.jpg",
+    alt: "Ornate decorative circular pattern",
+    category: "Detail",
+    aspectRatio: "landscape" as const,
+  },
+  {
+    src: "/images/photo-architecture2.jpg",
+    alt: "Vibrant blue architecture with yellow accents",
+    category: "Architecture",
+    aspectRatio: "landscape" as const,
+  },
+  {
+    src: "/images/photo-monkey.jpg",
+    alt: "Wildlife photography of monkey on beach",
+    category: "Wildlife",
+    aspectRatio: "landscape" as const,
+  },
+  {
+    src: "/images/photo-car.jpg",
+    alt: "Vintage Mercedes-Benz automotive photography",
+    category: "Automotive",
+    aspectRatio: "landscape" as const,
+  },
+  {
+    src: "/images/photo-car-mural.jpg",
+    alt: "Car and street art in urban setting",
     category: "Street",
-  },
-  {
-    src: "/images/photo-laundry.jpg",
-    alt: "Building facade with laundry",
-    category: "Street",
+    aspectRatio: "landscape" as const,
   },
   {
     src: "/images/photo-palace.jpg",
     alt: "Palace interior with ornate golden ceiling",
     category: "Architecture",
+    aspectRatio: "landscape" as const,
   },
   {
     src: "/images/photo-yellow-coast.jpg",
     alt: "Coastal scene with boats",
     category: "Landscape",
-  },
-  {
-    src: "/images/photo-marrakesh.jpg",
-    alt: "Architectural portrait in Marrakesh",
-    category: "Portrait",
+    aspectRatio: "landscape" as const,
   },
   {
     src: "/images/photo-street-scene.jpg",
     alt: "Street photography scene",
     category: "Street",
+    aspectRatio: "landscape" as const,
   },
   {
     src: "/images/photo-workers.jpg",
     alt: "Construction workers street scene",
     category: "Street",
+    aspectRatio: "landscape" as const,
   },
   {
     src: "/images/photo3.jpg",
     alt: "Mountain landscape with misty peaks",
     category: "Landscape",
+    aspectRatio: "landscape" as const,
+  },
+  // Portrait photos last (vertical orientation)
+  {
+    src: "/images/photo-portrait.jpg",
+    alt: "Portrait of woman on European street",
+    category: "Portrait",
+    aspectRatio: "portrait" as const,
+  },
+  {
+    src: "/images/photo-terrace-portrait.jpg",
+    alt: "Portrait on coastal terrace",
+    category: "Portrait",
+    aspectRatio: "portrait" as const,
+  },
+  {
+    src: "/images/photo-alley.jpg",
+    alt: "European alley through architectural frame",
+    category: "Street",
+    aspectRatio: "portrait" as const,
+  },
+  {
+    src: "/images/photo-laundry.jpg",
+    alt: "Building facade with laundry",
+    category: "Street",
+    aspectRatio: "portrait" as const,
+  },
+  {
+    src: "/images/photo-marrakesh.jpg",
+    alt: "Architectural portrait in Marrakesh",
+    category: "Portrait",
+    aspectRatio: "portrait" as const,
   },
 ]
 

@@ -8,6 +8,7 @@ interface Photo {
   src: string
   alt: string
   category: string
+  aspectRatio?: "panoramic" | "landscape" | "portrait"
 }
 
 interface PhotoGallery3DProps {
