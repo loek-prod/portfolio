@@ -43,10 +43,10 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
   }
 
   // Responsive values
-  const stackSpacing = isMobile ? 15 : 25
-  const verticalStep = isMobile ? 12 : 18
-  const maxWidth = isMobile ? "85vw" : "min(80vw, 500px)"
-  const maxHeight = isMobile ? "40vh" : "min(50vh, 400px)"
+  const stackSpacing = isMobile ? 15 : 30
+  const verticalStep = isMobile ? 12 : 22
+  const maxWidth = isMobile ? "90vw" : "min(85vw, 900px)"
+  const maxHeight = isMobile ? "45vh" : "min(65vh, 650px)"
 
   // Calculate card position relative to active index
   const getCardStyle = (index: number) => {
@@ -155,16 +155,16 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
                   <Image
                     src={photo.src}
                     alt={photo.alt}
-                    width={500}
-                    height={400}
+                    width={900}
+                    height={650}
                     className={`w-auto h-auto object-contain ${
                       isMobile 
-                        ? "max-w-[85vw] max-h-[40vh]" 
-                        : "max-w-[min(80vw,500px)] max-h-[min(50vh,400px)]"
+                        ? "max-w-[90vw] max-h-[45vh]" 
+                        : "max-w-[min(85vw,900px)] max-h-[min(65vh,650px)]"
                     }`}
                     draggable={false}
                     priority
-                    quality={isActive ? 85 : 60}
+                    quality={isActive ? 90 : 60}
                   />
                   
                   {/* Active card overlay with fullscreen button */}
