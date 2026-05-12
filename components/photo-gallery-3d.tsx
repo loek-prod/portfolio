@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Maximize } from "lucide-react"
 
@@ -17,6 +17,14 @@ interface PhotoGallery3DProps {
 
 export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener("resize", checkMobile)
+    return () => window.removeEventListener("resize", checkMobile)
+  }, [])
 
   const handleCardClick = (index: number) => {
     if (selectedIndex === index) {
@@ -37,11 +45,15 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
     setSelectedIndex(null)
   }
 
+  // Responsive card dimensions
+  const cardWidth = isMobile ? 200 : 320
+  const cardHeight = isMobile ? 150 : 240
+  const baseSpacing = isMobile ? 100 : 160
+  const verticalSpacing = isMobile ? 70 : 110
+
   // Calculate position for each card in the diagonal stack
   const getCardStyle = (index: number, total: number) => {
     const isSelected = selectedIndex === index
-    const baseSpacing = 180 // Horizontal spacing between cards
-    const verticalSpacing = 120 // Vertical spacing between cards
     const baseRotateY = -45 // Base Y rotation for 3D effect
     
     // Position cards from bottom-left to top-right
@@ -53,46 +65,53 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
     
     // Transform values
     const rotateY = isSelected ? 0 : baseRotateY
-    const scale = isSelected ? 1.15 : 1
-    const translateZ = isSelected ? 200 : 0
+    const scale = isSelected ? 1.2 : 1
+    const translateZ = isSelected ? 150 : 0
     
     return {
-      transform: `
-        translateX(${xOffset}px) 
-        translateY(${yOffset}px) 
-        translateZ(${translateZ}px)
-        rotateY(${rotateY}deg) 
-        scale(${scale})
-      `,
+      left: `${xOffset}px`,
+      top: `${yOffset}px`,
+      transform: `translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
       zIndex,
       transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
     }
   }
 
-  // Calculate total width needed for the gallery
-  const totalWidth = photos.length * 180 + 300
-  const totalHeight = photos.length * 120 + 400
+  // Calculate container dimensions
+  const containerWidth = photos.length * baseSpacing + cardWidth
+  const containerHeight = photos.length * verticalSpacing + cardHeight
+
+  if (photos.length === 0) {
+    return (
+      <div className="w-full min-h-[60vh] bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">No photos to display</p>
+      </div>
+    )
+  }
 
   return (
     <div 
-      className="relative w-full min-h-screen bg-background overflow-hidden"
+      className="relative w-full bg-background overflow-x-auto overflow-y-hidden"
+      style={{ minHeight: isMobile ? "70vh" : "100vh" }}
       onClick={handleBackgroundClick}
     >
       {/* 3D Perspective Container */}
       <div 
-        className="absolute inset-0 flex items-center justify-center"
+        className="relative w-full h-full flex items-center"
         style={{
           perspective: "1500px",
           perspectiveOrigin: "50% 50%",
+          minHeight: isMobile ? "70vh" : "100vh",
         }}
       >
         <div 
-          className="relative"
+          className="relative mx-auto"
           style={{
             transformStyle: "preserve-3d",
-            width: `${totalWidth}px`,
-            height: `${totalHeight}px`,
-            transform: "translateX(-30%) translateY(10%)",
+            width: `${containerWidth}px`,
+            height: `${containerHeight}px`,
+            marginLeft: isMobile ? "5%" : "10%",
+            marginTop: isMobile ? "5%" : "0",
           }}
         >
           {photos.map((photo, index) => {
@@ -101,19 +120,15 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
             
             return (
               <div
-                key={index}
+                key={`${photo.src}-${index}`}
                 className={`absolute cursor-pointer group ${
-                  isSelected ? "ring-4 ring-accent/50" : ""
+                  isSelected ? "ring-4 ring-accent/50 rounded-lg" : ""
                 }`}
                 style={{
                   ...style,
-                  width: "320px",
-                  height: "240px",
+                  width: `${cardWidth}px`,
+                  height: `${cardHeight}px`,
                   transformStyle: "preserve-3d",
-                  left: "50%",
-                  top: "50%",
-                  marginLeft: "-160px",
-                  marginTop: "-120px",
                 }}
                 onClick={(e) => {
                   e.stopPropagation()
@@ -122,7 +137,7 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
               >
                 {/* Card with shadow */}
                 <div 
-                  className="relative w-full h-full rounded-lg overflow-hidden shadow-2xl"
+                  className="relative w-full h-full rounded-lg overflow-hidden"
                   style={{
                     boxShadow: isSelected 
                       ? "0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 0, 0, 0.1)"
@@ -130,11 +145,11 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
                   }}
                 >
                   <Image
-                    src={photo.src || "/placeholder.svg"}
+                    src={photo.src}
                     alt={photo.alt}
                     fill
                     className="object-cover"
-                    sizes="320px"
+                    sizes={`${cardWidth}px`}
                     draggable={false}
                   />
                   
