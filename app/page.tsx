@@ -5,7 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Menu, X } from "lucide-react"
-import { PhotoSlider } from "@/components/photo-slider"
+import { PhotoGallery3D } from "@/components/photo-gallery-3d"
 import { VideoSlider } from "@/components/video-slider"
 import { Lightbox } from "@/components/lightbox"
 import { LoadingScreen } from "@/components/loading-screen"
@@ -13,140 +13,198 @@ import { ModeToggle } from "@/components/mode-toggle"
 import { ModeIntro } from "@/components/mode-intro"
 import { InnovationSection } from "@/components/innovation-section"
 import { MorphicNavbar } from "@/components/morphic-navbar"
+import { VideoFilter } from "@/components/video-filter"
 
+// Aspect ratio types: "panoramic" (>2:1), "landscape" (>1:1), "portrait" (<=1:1)
 const photos = [
-  {
-    src: "/images/photo5.jpg",
-    alt: "Macro photography of textured green leaves",
-    category: "Macro",
-  },
-  {
-    src: "/images/photo-architecture1.jpg",
-    alt: "Vibrant blue architecture with cacti",
-    category: "Architecture",
-  },
-  {
-    src: "/images/photo-pattern.jpg",
-    alt: "Ornate decorative circular pattern",
-    category: "Detail",
-  },
-  {
-    src: "/images/photo-architecture2.jpg",
-    alt: "Vibrant blue architecture with yellow accents",
-    category: "Architecture",
-  },
-  {
-    src: "/images/photo-portrait.jpg",
-    alt: "Portrait of woman on European street",
-    category: "Portrait",
-  },
-  {
-    src: "/images/photo-monkey.jpg",
-    alt: "Wildlife photography of monkey on beach",
-    category: "Wildlife",
-  },
+  // Panoramic photos first (extra wide, >2:1 ratio)
   {
     src: "/images/photo-bridge.jpg",
     alt: "Aerial view of railway bridge",
     category: "Aerial",
-  },
-  {
-    src: "/images/photo-car.jpg",
-    alt: "Vintage Mercedes-Benz automotive photography",
-    category: "Automotive",
-  },
-  {
-    src: "/images/photo-car-mural.jpg",
-    alt: "Car and street art in urban setting",
-    category: "Street",
+    aspectRatio: "panoramic" as const,
   },
   {
     src: "/images/photo-boat-aerial.jpg",
     alt: "Aerial view of boat and swimmers",
     category: "Aerial",
+    aspectRatio: "panoramic" as const,
+  },
+  // Landscape photos second (standard horizontal, 3:2 or 16:9)
+  {
+    src: "/images/photo5.jpg",
+    alt: "Macro photography of textured green leaves",
+    category: "Macro",
+    aspectRatio: "landscape" as const,
   },
   {
-    src: "/images/photo-terrace-portrait.jpg",
-    alt: "Portrait on coastal terrace",
-    category: "Portrait",
+    src: "/images/photo-architecture1.jpg",
+    alt: "Vibrant blue architecture with cacti",
+    category: "Architecture",
+    aspectRatio: "landscape" as const,
   },
   {
-    src: "/images/photo-alley.jpg",
-    alt: "European alley through architectural frame",
+    src: "/images/photo-pattern.jpg",
+    alt: "Ornate decorative circular pattern",
+    category: "Detail",
+    aspectRatio: "landscape" as const,
+  },
+  {
+    src: "/images/photo-architecture2.jpg",
+    alt: "Vibrant blue architecture with yellow accents",
+    category: "Architecture",
+    aspectRatio: "landscape" as const,
+  },
+  {
+    src: "/images/photo-monkey.jpg",
+    alt: "Wildlife photography of monkey on beach",
+    category: "Wildlife",
+    aspectRatio: "landscape" as const,
+  },
+  {
+    src: "/images/photo-car.jpg",
+    alt: "Vintage Mercedes-Benz automotive photography",
+    category: "Automotive",
+    aspectRatio: "landscape" as const,
+  },
+  {
+    src: "/images/photo-car-mural.jpg",
+    alt: "Car and street art in urban setting",
     category: "Street",
-  },
-  {
-    src: "/images/photo-laundry.jpg",
-    alt: "Building facade with laundry",
-    category: "Street",
+    aspectRatio: "landscape" as const,
   },
   {
     src: "/images/photo-palace.jpg",
     alt: "Palace interior with ornate golden ceiling",
     category: "Architecture",
+    aspectRatio: "landscape" as const,
   },
   {
     src: "/images/photo-yellow-coast.jpg",
     alt: "Coastal scene with boats",
     category: "Landscape",
-  },
-  {
-    src: "/images/photo-marrakesh.jpg",
-    alt: "Architectural portrait in Marrakesh",
-    category: "Portrait",
+    aspectRatio: "landscape" as const,
   },
   {
     src: "/images/photo-street-scene.jpg",
     alt: "Street photography scene",
     category: "Street",
+    aspectRatio: "landscape" as const,
   },
   {
     src: "/images/photo-workers.jpg",
     alt: "Construction workers street scene",
     category: "Street",
+    aspectRatio: "landscape" as const,
   },
   {
     src: "/images/photo3.jpg",
     alt: "Mountain landscape with misty peaks",
     category: "Landscape",
+    aspectRatio: "landscape" as const,
+  },
+  // Portrait photos last (vertical orientation)
+  {
+    src: "/images/photo-portrait.jpg",
+    alt: "Portrait of woman on European street",
+    category: "Portrait",
+    aspectRatio: "portrait" as const,
+  },
+  {
+    src: "/images/photo-terrace-portrait.jpg",
+    alt: "Portrait on coastal terrace",
+    category: "Portrait",
+    aspectRatio: "portrait" as const,
+  },
+  {
+    src: "/images/photo-alley.jpg",
+    alt: "European alley through architectural frame",
+    category: "Street",
+    aspectRatio: "portrait" as const,
+  },
+  {
+    src: "/images/photo-laundry.jpg",
+    alt: "Building facade with laundry",
+    category: "Street",
+    aspectRatio: "portrait" as const,
+  },
+  {
+    src: "/images/photo-marrakesh.jpg",
+    alt: "Architectural portrait in Marrakesh",
+    category: "Portrait",
+    aspectRatio: "portrait" as const,
   },
 ]
 
 const videos = [
-  {
-    id: "2X-7H1_Nz94",
-    title: "",
-    portrait: false,
-  },
-  {
-    id: "fcNs7xLVLB4",
-    title: "",
-    portrait: false,
-  },
-  {
-    id: "MIV0ZJXb2j0",
-    title: "",
-    portrait: false,
-  },
+  // Corporate
   {
     id: "VGCzEnAJiQ0",
     title: "",
     portrait: false,
+    category: "Corporate",
+  },
+  {
+    id: "2X-7H1_Nz94",
+    title: "",
+    portrait: false,
+    category: "Corporate",
   },
   {
     id: "G_N6h50NA_k",
     title: "",
     portrait: false,
+    category: "Corporate",
   },
   {
     id: "RU18Qln-Xvo",
     title: "",
     portrait: false,
+    category: "Corporate",
+  },
+  {
+    id: "PhP4les8tj8",
+    title: "",
+    portrait: false,
+    category: "Corporate",
+  },
+  // AI Films
+  {
+    id: "Y6I4mEgfGM0",
+    title: "",
+    portrait: true,
+    category: "AI Films",
+  },
+  {
+    id: "-V9JmMuPD8M",
+    title: "",
+    portrait: true,
+    category: "AI Films",
+  },
+  // Stories
+  {
+    id: "fcNs7xLVLB4",
+    title: "",
+    portrait: false,
+    category: "Stories",
+  },
+  {
+    id: "MIV0ZJXb2j0",
+    title: "",
+    portrait: false,
+    category: "Stories",
   },
   {
     id: "u-5Frj2SZ-0",
     title: "",
     portrait: true,
+    category: "Stories",
+  },
+  {
+    id: "QI_jcTsU46U",
+    title: "",
+    portrait: false,
+    category: "Stories",
   },
 ]
 
@@ -155,6 +213,7 @@ export default function Portfolio() {
   const [showModeIntro, setShowModeIntro] = useState(false)
   const [siteMode, setSiteMode] = useState<"visual" | "innovation">("visual")
   const [selectedCategory, setSelectedCategory] = useState("All")
+  const [selectedVideoCategory, setSelectedVideoCategory] = useState("All")
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -172,6 +231,11 @@ export default function Portfolio() {
     "Automotive",
     "Street",
   ]
+
+  const videoCategories = ["All", "Corporate", "AI Films", "Stories"]
+
+  const filteredVideos =
+    selectedVideoCategory === "All" ? videos : videos.filter((video) => video.category === selectedVideoCategory)
 
   const filteredPhotos =
     selectedCategory === "All" ? photos : photos.filter((photo) => photo.category === selectedCategory)
@@ -302,20 +366,21 @@ export default function Portfolio() {
           }`}
         >
           <section id="videos" className="bg-primary">
-            <VideoSlider videos={videos} />
+            <VideoSlider 
+              videos={filteredVideos} 
+              key={selectedVideoCategory}
+              filterComponent={
+                <VideoFilter
+                  categories={videoCategories}
+                  selectedCategory={selectedVideoCategory}
+                  onCategoryChange={setSelectedVideoCategory}
+                />
+              }
+            />
           </section>
 
-          <section
-            id="gallery"
-            className="relative bg-cover bg-center bg-fixed"
-            style={{
-              backgroundImage: `url('/images/section-background.jpg')`,
-            }}
-          >
-            <div className="absolute inset-0 bg-background/40 backdrop-blur-sm"></div>
-            <div className="relative z-10">
-              <PhotoSlider photos={filteredPhotos} onOpenLightbox={openLightbox} />
-            </div>
+          <section id="gallery" className="relative">
+            <PhotoGallery3D photos={filteredPhotos} onOpenLightbox={openLightbox} />
           </section>
 
           <section className="py-12 md:py-20 px-4 md:px-8 bg-primary text-primary-foreground">

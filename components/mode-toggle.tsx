@@ -16,7 +16,7 @@ export function ModeToggle({ mode, onModeChange, size = "compact" }: ModeToggleP
         onClick={() => onModeChange("visual")}
         className={`relative font-medium rounded-full transition-all duration-300 ${
           isLarge ? "px-6 py-3 text-lg" : "px-4 py-1.5 text-sm"
-        } ${mode === "visual" ? "bg-primary text-primary-foreground" : "bg-transparent text-muted-foreground hover:text-accent"}`}
+        } ${mode === "visual" ? "bg-foreground text-background" : "bg-transparent text-muted-foreground hover:text-foreground"}`}
       >
         Visual
       </button>
@@ -26,7 +26,7 @@ export function ModeToggle({ mode, onModeChange, size = "compact" }: ModeToggleP
         onClick={() => onModeChange("innovation")}
         className={`relative font-medium rounded-full transition-all duration-300 ${
           isLarge ? "px-6 py-3 text-lg" : "px-4 py-1.5 text-sm"
-        } ${mode === "innovation" ? "bg-primary text-primary-foreground" : "bg-transparent text-muted-foreground hover:text-accent"}`}
+        } ${mode === "innovation" ? "bg-foreground text-background" : "bg-transparent text-muted-foreground hover:text-foreground"}`}
       >
         Innovation
       </button>
