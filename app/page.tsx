@@ -15,7 +15,10 @@ import { InnovationSection } from "@/components/innovation-section"
 import { MorphicNavbar } from "@/components/morphic-navbar"
 import { VideoFilter } from "@/components/video-filter"
 
-// Aspect ratio types: "panoramic" (>2:1), "landscape" (>1:1), "portrait" (<=1:1)
+// Sorted by orientation: horizontal/landscape/panoramic first, then vertical/portrait last.
+// This ensures that when viewing a horizontal image, cards stacked behind are also horizontal (same width).
+// When viewing vertical images at the end, cards behind are also vertical (narrower).
+// This prevents wider cards from poking out behind narrower cards.
 const photos = [
   // Panoramic photos first (extra wide, >2:1 ratio)
   {
@@ -357,12 +360,12 @@ export default function Portfolio() {
         ></div>
       </header>
 
-      <div className="relative">
+      <div className="relative" style={{ minHeight: siteMode === "visual" ? "auto" : undefined }}>
         <div
           className={`transition-all duration-500 ease-out ${
             siteMode === "visual"
               ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-4 pointer-events-none absolute inset-0"
+              : "opacity-0 translate-y-4 pointer-events-none absolute inset-x-0 top-0"
           }`}
         >
           <section id="videos" className="bg-primary">
@@ -427,7 +430,7 @@ export default function Portfolio() {
           className={`transition-all duration-500 ease-out ${
             siteMode === "innovation"
               ? "opacity-100 translate-y-0"
-              : "opacity-0 -translate-y-4 pointer-events-none absolute inset-0"
+              : "opacity-0 -translate-y-4 pointer-events-none absolute inset-x-0 top-0 h-0 overflow-hidden"
           }`}
         >
           <InnovationSection />
