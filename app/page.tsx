@@ -343,15 +343,17 @@ export default function Portfolio() {
           }`}
         >
           <section id="videos" className="bg-primary">
-            <div className="py-8 md:py-12">
-              <VideoFilter
-                categories={videoCategories}
-                selectedCategory={selectedVideoCategory}
-                onCategoryChange={setSelectedVideoCategory}
-              />
-            </div>
-            <VideoSlider videos={filteredVideos} />
-            <div className="py-8 md:py-12" />
+            <VideoSlider 
+              videos={filteredVideos} 
+              key={selectedVideoCategory}
+              filterComponent={
+                <VideoFilter
+                  categories={videoCategories}
+                  selectedCategory={selectedVideoCategory}
+                  onCategoryChange={setSelectedVideoCategory}
+                />
+              }
+            />
           </section>
 
           <section

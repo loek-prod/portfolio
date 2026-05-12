@@ -39,9 +39,10 @@ interface Video {
 
 interface VideoSliderProps {
   videos: Video[]
+  filterComponent?: React.ReactNode
 }
 
-export function VideoSlider({ videos }: VideoSliderProps) {
+export function VideoSlider({ videos, filterComponent }: VideoSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [playingVideos, setPlayingVideos] = useState<Set<number>>(new Set())
   const videoRefs = useRef<(HTMLIFrameElement | null)[]>([])
@@ -175,7 +176,14 @@ export function VideoSlider({ videos }: VideoSliderProps) {
   }
 
   return (
-    <div className="relative w-full bg-primary overflow-hidden select-none pt-16 md:pt-24 lg:pt-32 pb-8 md:pb-12">
+    <div className="relative w-full bg-primary overflow-hidden select-none">
+      {/* Filter centered in top spacing */}
+      {filterComponent && (
+        <div className="flex items-center justify-center py-10 md:py-14 lg:py-16">
+          {filterComponent}
+        </div>
+      )}
+      {!filterComponent && <div className="pt-16 md:pt-24 lg:pt-32" />}
       <div
         className="relative w-full h-[45vh] md:h-[50vh] lg:h-[55vh] touch-pan-y"
         onTouchStart={onTouchStart}
@@ -298,6 +306,9 @@ export function VideoSlider({ videos }: VideoSliderProps) {
 
         <span className="text-primary-foreground/60 text-xs md:hidden">Swipe to navigate</span>
       </div>
+      
+      {/* Bottom spacing to match top */}
+      <div className="py-6 md:py-10 lg:py-12" />
     </div>
   )
 }
