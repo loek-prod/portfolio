@@ -357,12 +357,12 @@ export default function Portfolio() {
         ></div>
       </header>
 
-      <div className="relative">
+      <div className="relative" style={{ minHeight: siteMode === "visual" ? "auto" : undefined }}>
         <div
           className={`transition-all duration-500 ease-out ${
             siteMode === "visual"
               ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-4 pointer-events-none absolute inset-0"
+              : "opacity-0 translate-y-4 pointer-events-none absolute inset-x-0 top-0"
           }`}
         >
           <section id="videos" className="bg-primary">
@@ -427,7 +427,7 @@ export default function Portfolio() {
           className={`transition-all duration-500 ease-out ${
             siteMode === "innovation"
               ? "opacity-100 translate-y-0"
-              : "opacity-0 -translate-y-4 pointer-events-none absolute inset-0"
+              : "opacity-0 -translate-y-4 pointer-events-none absolute inset-x-0 top-0 h-0 overflow-hidden"
           }`}
         >
           <InnovationSection />

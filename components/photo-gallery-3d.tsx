@@ -85,11 +85,11 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
     const isActive = offset === 0
     const absOffset = Math.abs(offset)
     
-    // Only show a few cards for the depth effect
-    const maxVisibleCards = 4
+    // Show 5 cards for visible depth effect, hide cards 6+
+    const maxVisibleCards = 5
     if (absOffset > maxVisibleCards) {
       return {
-        transform: "translateX(0) translateY(0) translateZ(-800px) rotateY(-65deg) scale(0.3)",
+        transform: "translateX(0) translateY(0) translateZ(-500px) rotateY(-50deg) scale(0.5)",
         zIndex: 0,
         opacity: 0,
         visibility: "hidden" as const,
@@ -98,28 +98,29 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
       }
     }
     
-    // Strong Y rotation for dramatic 3D fanning effect
-    const baseRotateY = -60
+    // Y rotation for 3D fanning effect - moderate angle
+    const baseRotateY = -45
     
     // Position cards diagonally - fanning from bottom-left to top-right
     const xOffset = offset * stackSpacing
     const yOffset = -offset * verticalStep
     
     // Strict z-index hierarchy - active is always on top
-    // Each card behind gets progressively lower z-index
-    const zIndex = isActive ? 10000 : 1000 - absOffset * 100
+    // Each card behind gets progressively lower z-index (large gaps to prevent overlap issues)
+    const zIndex = isActive ? 10000 : 5000 - absOffset * 500
     
-    // Active card faces viewer, others rotated sharply
+    // Active card faces viewer, others rotated
     const rotateY = isActive ? 0 : baseRotateY
     
     // Progressive scale reduction creates depth illusion
-    const scale = isActive ? 1 : Math.max(0.5, 0.8 - absOffset * 0.1)
+    const scale = isActive ? 1 : Math.max(0.65, 0.92 - absOffset * 0.07)
     
-    // Push cards dramatically back in Z-space for real depth
-    const translateZ = isActive ? 200 : -absOffset * 120
+    // Push cards back in Z-space for real depth
+    const translateZ = isActive ? 100 : -absOffset * 60
     
-    // Very aggressive opacity drop-off - only hint of cards behind
-    const opacity = isActive ? 1 : Math.max(0.05, 0.4 - absOffset * 0.12)
+    // Visible opacity for background cards - they should be clearly seen
+    // Active: 1, Card 1: 0.85, Card 2: 0.7, Card 3: 0.55, Card 4: 0.4, Card 5: 0.25
+    const opacity = isActive ? 1 : Math.max(0.2, 1 - absOffset * 0.18)
     
     return {
       transform: `translateX(${xOffset}px) translateY(${yOffset}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
@@ -174,8 +175,8 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
             const style = getCardStyle(index)
             const absOffset = Math.abs(index - activeIndex)
             
-            // Only render cards within visible range
-            if (absOffset > 4) return null
+            // Only render cards within visible range (5 cards behind active)
+            if (absOffset > 5) return null
             
             return (
               <div
@@ -189,20 +190,23 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
                   pointerEvents: isActive ? "auto" : "none",
                 }}
               >
-                {/* Card wrapper - no overflow hidden on active card to prevent clipping */}
+                {/* Card wrapper with SOLID opaque background to prevent bleed-through */}
                 <div 
-                  className={`relative rounded-xl max-w-full max-h-full bg-background ${
-                    isActive ? "" : "overflow-hidden"
-                  }`}
+                  className="relative rounded-xl max-w-full max-h-full"
                   style={{
+                    // Solid white background - acts like a physical photo card
+                    backgroundColor: "#ffffff",
                     boxShadow: isActive 
-                      ? "0 35px 70px -15px rgba(0, 0, 0, 0.6)"
-                      : `0 ${Math.max(5, 20 - absOffset * 4)}px ${Math.max(10, 40 - absOffset * 8)}px -10px rgba(0, 0, 0, ${Math.max(0.1, 0.35 - absOffset * 0.08)})`,
+                      ? "0 35px 70px -15px rgba(0, 0, 0, 0.5)"
+                      : `0 ${Math.max(8, 25 - absOffset * 3)}px ${Math.max(15, 50 - absOffset * 8)}px -10px rgba(0, 0, 0, ${Math.max(0.15, 0.4 - absOffset * 0.06)})`,
                     backfaceVisibility: "hidden",
                   }}
                 >
-                  {/* Solid backing layer to prevent bleed */}
-                  <div className="absolute inset-0 bg-background rounded-xl" />
+                  {/* Solid white backing layer - ensures no transparency */}
+                  <div 
+                    className="absolute inset-0 rounded-xl" 
+                    style={{ backgroundColor: "#ffffff" }}
+                  />
                   
                   <Image
                     src={photo.src}
