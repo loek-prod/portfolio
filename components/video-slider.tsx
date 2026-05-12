@@ -34,6 +34,7 @@ interface Video {
   id: string
   title: string
   portrait?: boolean
+  category?: string
 }
 
 interface VideoSliderProps {
