@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import { ChevronLeft, ChevronRight, Maximize } from "lucide-react"
 
@@ -19,6 +19,8 @@ interface PhotoGallery3DProps {
 export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [isMobile, setIsMobile] = useState(false)
+  const touchStartX = useRef<number | null>(null)
+  const touchEndX = useRef<number | null>(null)
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768)
@@ -42,9 +44,37 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
     }
   }
 
+  // Swipe handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX
+  }
+
+  const handleTouchEnd = () => {
+    if (touchStartX.current === null || touchEndX.current === null) return
+    
+    const swipeDistance = touchStartX.current - touchEndX.current
+    const minSwipeDistance = 50
+    
+    if (swipeDistance > minSwipeDistance) {
+      // Swiped left - go to next
+      goToNext()
+    } else if (swipeDistance < -minSwipeDistance) {
+      // Swiped right - go to previous
+      goToPrev()
+    }
+    
+    // Reset
+    touchStartX.current = null
+    touchEndX.current = null
+  }
+
   // Responsive values
-  const stackSpacing = isMobile ? 15 : 30
-  const verticalStep = isMobile ? 12 : 22
+  const stackSpacing = isMobile ? 20 : 40
+  const verticalStep = isMobile ? 15 : 28
   const maxWidth = isMobile ? "90vw" : "min(85vw, 900px)"
   const maxHeight = isMobile ? "45vh" : "min(65vh, 650px)"
 
@@ -54,11 +84,11 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
     const isActive = offset === 0
     const absOffset = Math.abs(offset)
     
-    // Only show cards within a limited range (clip distant cards)
-    const maxVisibleCards = 5
+    // Only show a few cards for the depth effect
+    const maxVisibleCards = 4
     if (absOffset > maxVisibleCards) {
       return {
-        transform: "translateX(0) translateY(0) translateZ(-500px) rotateY(-55deg) scale(0.5)",
+        transform: "translateX(0) translateY(0) translateZ(-800px) rotateY(-65deg) scale(0.3)",
         zIndex: 0,
         opacity: 0,
         visibility: "hidden" as const,
@@ -67,23 +97,28 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
       }
     }
     
-    const baseRotateY = -55
+    // Strong Y rotation for dramatic 3D fanning effect
+    const baseRotateY = -60
+    
+    // Position cards diagonally - fanning from bottom-left to top-right
     const xOffset = offset * stackSpacing
     const yOffset = -offset * verticalStep
     
-    // Strict z-index: active card is 1000, others decrease sharply
-    const zIndex = isActive ? 1000 : 100 - absOffset * 20
+    // Strict z-index hierarchy - active is always on top
+    // Each card behind gets progressively lower z-index
+    const zIndex = isActive ? 10000 : 1000 - absOffset * 100
     
+    // Active card faces viewer, others rotated sharply
     const rotateY = isActive ? 0 : baseRotateY
     
-    // More aggressive scale reduction for background cards
-    const scale = isActive ? 1 : Math.max(0.6, 0.85 - absOffset * 0.08)
+    // Progressive scale reduction creates depth illusion
+    const scale = isActive ? 1 : Math.max(0.5, 0.8 - absOffset * 0.1)
     
-    // Push non-active cards much further back in Z-space
-    const translateZ = isActive ? 150 : -absOffset * 80
+    // Push cards dramatically back in Z-space for real depth
+    const translateZ = isActive ? 200 : -absOffset * 120
     
-    // More aggressive opacity drop-off
-    const opacity = isActive ? 1 : Math.max(0.1, 0.6 - absOffset * 0.15)
+    // Very aggressive opacity drop-off - only hint of cards behind
+    const opacity = isActive ? 1 : Math.max(0.05, 0.4 - absOffset * 0.12)
     
     return {
       transform: `translateX(${xOffset}px) translateY(${yOffset}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
@@ -97,17 +132,23 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
 
   if (photos.length === 0) {
     return (
-      <div className="w-full h-[60vh] md:h-[70vh] bg-background flex items-center justify-center">
+      <div className="w-full h-[70vh] md:h-[85vh] bg-background flex items-center justify-center">
         <p className="text-muted-foreground">No photos to display</p>
       </div>
     )
   }
 
   return (
-    <div className="relative w-full h-[60vh] md:h-[80vh] bg-background overflow-hidden">
-      {/* 3D Perspective Container */}
+    <div 
+      className="relative w-full bg-background overflow-hidden flex flex-col"
+      style={{ minHeight: isMobile ? "75vh" : "90vh" }}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* 3D Perspective Container - takes up main space */}
       <div 
-        className="absolute inset-0 flex items-center justify-center"
+        className="flex-1 relative flex items-center justify-center"
         style={{
           perspective: isMobile ? "800px" : "1200px",
           perspectiveOrigin: "50% 50%",
@@ -126,51 +167,54 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
             const style = getCardStyle(index)
             const absOffset = Math.abs(index - activeIndex)
             
-            // Don't render cards that are too far from active
-            if (absOffset > 5) return null
+            // Only render cards within visible range
+            if (absOffset > 4) return null
             
             return (
               <div
                 key={`${photo.src}-${index}`}
-                className="absolute cursor-pointer flex items-center justify-center"
+                className="absolute flex items-center justify-center"
                 style={{
                   ...style,
                   transformStyle: "preserve-3d",
                   width: "100%",
                   height: "100%",
-                  // Ensure non-active cards don't intercept clicks
                   pointerEvents: isActive ? "auto" : "none",
                 }}
-                onClick={() => !isActive && setActiveIndex(index)}
               >
-                {/* Card - adapts to image aspect ratio */}
+                {/* Outer wrapper with solid background to prevent bleed-through */}
                 <div 
-                  className="relative rounded-xl overflow-hidden max-w-full max-h-full"
+                  className="relative rounded-xl overflow-hidden max-w-full max-h-full bg-background"
                   style={{
                     boxShadow: isActive 
-                      ? "0 30px 60px -15px rgba(0, 0, 0, 0.5)"
-                      : `0 ${15 - absOffset * 2}px ${35 - absOffset * 5}px -10px rgba(0, 0, 0, ${0.3 - absOffset * 0.05})`,
+                      ? "0 35px 70px -15px rgba(0, 0, 0, 0.6)"
+                      : `0 ${Math.max(5, 20 - absOffset * 4)}px ${Math.max(10, 40 - absOffset * 8)}px -10px rgba(0, 0, 0, ${Math.max(0.1, 0.35 - absOffset * 0.08)})`,
+                    // Ensure solid background covers any transparency
+                    backfaceVisibility: "hidden",
                   }}
                 >
+                  {/* Solid white backing layer to prevent any bleed */}
+                  <div className="absolute inset-0 bg-background" />
+                  
                   <Image
                     src={photo.src}
                     alt={photo.alt}
                     width={900}
                     height={650}
-                    className={`w-auto h-auto object-contain ${
+                    className={`relative w-auto h-auto object-contain ${
                       isMobile 
                         ? "max-w-[90vw] max-h-[45vh]" 
                         : "max-w-[min(85vw,900px)] max-h-[min(65vh,650px)]"
                     }`}
                     draggable={false}
-                    priority
-                    quality={isActive ? 90 : 60}
+                    priority={isActive || absOffset <= 1}
+                    quality={isActive ? 90 : 40}
                   />
                   
                   {/* Active card overlay with fullscreen button */}
                   {isActive && (
                     <>
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
                       
                       {onOpenLightbox && (
                         <button
@@ -195,17 +239,17 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
         </div>
       </div>
 
-      {/* Navigation - touch-friendly 44px minimum tap targets */}
-      <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 md:gap-6">
+      {/* Navigation - below the image, not overlapping */}
+      <div className="flex items-center justify-center gap-4 md:gap-6 py-6 md:py-8">
         <button
           onClick={goToPrev}
-          className="bg-foreground/10 hover:bg-foreground/20 active:bg-foreground/30 backdrop-blur-sm rounded-full p-3 transition-all duration-200 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
+          className="bg-foreground/10 hover:bg-foreground/20 active:bg-foreground/30 rounded-full p-3 transition-all duration-200 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
           aria-label="Previous photo"
         >
           <ChevronLeft className="h-6 w-6 text-foreground" />
         </button>
         
-        <div className="bg-foreground/10 backdrop-blur-sm px-4 py-2 rounded-full">
+        <div className="bg-foreground/10 px-4 py-2 rounded-full">
           <span className="text-foreground/80 text-sm font-medium">
             {activeIndex + 1} / {photos.length}
           </span>
@@ -213,12 +257,19 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
         
         <button
           onClick={goToNext}
-          className="bg-foreground/10 hover:bg-foreground/20 active:bg-foreground/30 backdrop-blur-sm rounded-full p-3 transition-all duration-200 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
+          className="bg-foreground/10 hover:bg-foreground/20 active:bg-foreground/30 rounded-full p-3 transition-all duration-200 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
           aria-label="Next photo"
         >
           <ChevronRight className="h-6 w-6 text-foreground" />
         </button>
       </div>
+      
+      {/* Mobile swipe hint */}
+      {isMobile && (
+        <div className="text-center pb-4">
+          <span className="text-foreground/40 text-xs">Swipe to navigate</span>
+        </div>
+      )}
     </div>
   )
 }
