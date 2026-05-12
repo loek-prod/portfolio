@@ -90,11 +90,11 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
         }}
       >
         <div 
-          className="relative"
+          className="relative flex items-center justify-center"
           style={{
             transformStyle: "preserve-3d",
-            width: "280px",
-            height: "380px",
+            width: "min(80vw, 500px)",
+            height: "min(50vh, 400px)",
           }}
         >
           {photos.map((photo, index) => {
@@ -104,16 +104,18 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
             return (
               <div
                 key={`${photo.src}-${index}`}
-                className="absolute inset-0 cursor-pointer"
+                className="absolute cursor-pointer flex items-center justify-center"
                 style={{
                   ...style,
                   transformStyle: "preserve-3d",
+                  width: "100%",
+                  height: "100%",
                 }}
                 onClick={() => !isActive && setActiveIndex(index)}
               >
-                {/* Card */}
+                {/* Card - adapts to image aspect ratio */}
                 <div 
-                  className="relative w-full h-full rounded-xl overflow-hidden"
+                  className="relative rounded-xl overflow-hidden max-w-full max-h-full"
                   style={{
                     boxShadow: isActive 
                       ? "0 30px 60px -15px rgba(0, 0, 0, 0.4)"
@@ -123,9 +125,9 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
                   <Image
                     src={photo.src}
                     alt={photo.alt}
-                    fill
-                    className="object-cover"
-                    sizes="280px"
+                    width={500}
+                    height={400}
+                    className="max-w-[min(80vw,500px)] max-h-[min(50vh,400px)] w-auto h-auto object-contain"
                     draggable={false}
                     priority={Math.abs(index - activeIndex) < 3}
                   />
