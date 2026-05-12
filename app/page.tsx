@@ -5,7 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Menu, X } from "lucide-react"
-import { PhotoSlider } from "@/components/photo-slider"
+import { PhotoGallery3D } from "@/components/photo-gallery-3d"
 import { VideoSlider } from "@/components/video-slider"
 import { Lightbox } from "@/components/lightbox"
 import { LoadingScreen } from "@/components/loading-screen"
@@ -356,17 +356,8 @@ export default function Portfolio() {
             />
           </section>
 
-          <section
-            id="gallery"
-            className="relative bg-cover bg-center bg-fixed"
-            style={{
-              backgroundImage: `url('/images/section-background.jpg')`,
-            }}
-          >
-            <div className="absolute inset-0 bg-background/40 backdrop-blur-sm"></div>
-            <div className="relative z-10">
-              <PhotoSlider photos={filteredPhotos} onOpenLightbox={openLightbox} />
-            </div>
+          <section id="gallery" className="relative">
+            <PhotoGallery3D photos={filteredPhotos} onOpenLightbox={openLightbox} />
           </section>
 
           <section className="py-12 md:py-20 px-4 md:px-8 bg-primary text-primary-foreground">
