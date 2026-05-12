@@ -52,20 +52,44 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
   const getCardStyle = (index: number) => {
     const offset = index - activeIndex
     const isActive = offset === 0
+    const absOffset = Math.abs(offset)
+    
+    // Only show cards within a limited range (clip distant cards)
+    const maxVisibleCards = 5
+    if (absOffset > maxVisibleCards) {
+      return {
+        transform: "translateX(0) translateY(0) translateZ(-500px) rotateY(-55deg) scale(0.5)",
+        zIndex: 0,
+        opacity: 0,
+        visibility: "hidden" as const,
+        transition: "all 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
+        willChange: "transform, opacity" as const,
+      }
+    }
     
     const baseRotateY = -55
     const xOffset = offset * stackSpacing
     const yOffset = -offset * verticalStep
-    const zIndex = isActive ? 100 : 50 - Math.abs(offset)
+    
+    // Strict z-index: active card is 1000, others decrease sharply
+    const zIndex = isActive ? 1000 : 100 - absOffset * 20
+    
     const rotateY = isActive ? 0 : baseRotateY
-    const scale = isActive ? 1 : 0.85
-    const translateZ = isActive ? 100 : -Math.abs(offset) * 30
-    const opacity = isActive ? 1 : Math.max(0.3, 1 - Math.abs(offset) * 0.15)
+    
+    // More aggressive scale reduction for background cards
+    const scale = isActive ? 1 : Math.max(0.6, 0.85 - absOffset * 0.08)
+    
+    // Push non-active cards much further back in Z-space
+    const translateZ = isActive ? 150 : -absOffset * 80
+    
+    // More aggressive opacity drop-off
+    const opacity = isActive ? 1 : Math.max(0.1, 0.6 - absOffset * 0.15)
     
     return {
       transform: `translateX(${xOffset}px) translateY(${yOffset}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
       zIndex,
       opacity,
+      visibility: "visible" as const,
       transition: "all 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
       willChange: "transform, opacity" as const,
     }
@@ -100,6 +124,10 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
           {photos.map((photo, index) => {
             const isActive = index === activeIndex
             const style = getCardStyle(index)
+            const absOffset = Math.abs(index - activeIndex)
+            
+            // Don't render cards that are too far from active
+            if (absOffset > 5) return null
             
             return (
               <div
@@ -110,6 +138,8 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
                   transformStyle: "preserve-3d",
                   width: "100%",
                   height: "100%",
+                  // Ensure non-active cards don't intercept clicks
+                  pointerEvents: isActive ? "auto" : "none",
                 }}
                 onClick={() => !isActive && setActiveIndex(index)}
               >
@@ -118,8 +148,8 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
                   className="relative rounded-xl overflow-hidden max-w-full max-h-full"
                   style={{
                     boxShadow: isActive 
-                      ? "0 30px 60px -15px rgba(0, 0, 0, 0.4)"
-                      : "0 15px 35px -10px rgba(0, 0, 0, 0.3)",
+                      ? "0 30px 60px -15px rgba(0, 0, 0, 0.5)"
+                      : `0 ${15 - absOffset * 2}px ${35 - absOffset * 5}px -10px rgba(0, 0, 0, ${0.3 - absOffset * 0.05})`,
                   }}
                 >
                   <Image
