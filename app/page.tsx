@@ -15,41 +15,23 @@ import { InnovationSection } from "@/components/innovation-section"
 import { MorphicNavbar } from "@/components/morphic-navbar"
 import { VideoFilter } from "@/components/video-filter"
 
-// Sorted by orientation: portrait first, then landscape, then panoramic.
-// This ensures that when viewing any image, the cards stacked BEHIND it
-// (higher indexes) are the same width or WIDER — never narrower cards
-// bleeding out from behind a wider active card.
+// Sorted by orientation: horizontal/landscape/panoramic first, then vertical/portrait last.
+// This ensures that when viewing a horizontal image, cards stacked behind are also horizontal (same width).
+// When viewing vertical images at the end, cards behind are also vertical (narrower).
+// This prevents wider cards from poking out behind narrower cards.
 const photos = [
-  // Portrait photos first (vertical orientation — narrowest)
+  // Panoramic photos first (extra wide, >2:1 ratio)
   {
-    src: "/images/photo-portrait.jpg",
-    alt: "Portrait of woman on European street",
-    category: "Portrait",
-    aspectRatio: "portrait" as const,
+    src: "/images/photo-bridge.jpg",
+    alt: "Aerial view of railway bridge",
+    category: "Aerial",
+    aspectRatio: "panoramic" as const,
   },
   {
-    src: "/images/photo-terrace-portrait.jpg",
-    alt: "Portrait on coastal terrace",
-    category: "Portrait",
-    aspectRatio: "portrait" as const,
-  },
-  {
-    src: "/images/photo-alley.jpg",
-    alt: "European alley through architectural frame",
-    category: "Street",
-    aspectRatio: "portrait" as const,
-  },
-  {
-    src: "/images/photo-laundry.jpg",
-    alt: "Building facade with laundry",
-    category: "Street",
-    aspectRatio: "portrait" as const,
-  },
-  {
-    src: "/images/photo-marrakesh.jpg",
-    alt: "Architectural portrait in Marrakesh",
-    category: "Portrait",
-    aspectRatio: "portrait" as const,
+    src: "/images/photo-boat-aerial.jpg",
+    alt: "Aerial view of boat and swimmers",
+    category: "Aerial",
+    aspectRatio: "panoramic" as const,
   },
   // Landscape photos second (standard horizontal, 3:2 or 16:9)
   {
@@ -124,18 +106,36 @@ const photos = [
     category: "Landscape",
     aspectRatio: "landscape" as const,
   },
-  // Panoramic photos last (extra wide, >2:1 ratio — widest)
+  // Portrait photos last (vertical orientation)
   {
-    src: "/images/photo-bridge.jpg",
-    alt: "Aerial view of railway bridge",
-    category: "Aerial",
-    aspectRatio: "panoramic" as const,
+    src: "/images/photo-portrait.jpg",
+    alt: "Portrait of woman on European street",
+    category: "Portrait",
+    aspectRatio: "portrait" as const,
   },
   {
-    src: "/images/photo-boat-aerial.jpg",
-    alt: "Aerial view of boat and swimmers",
-    category: "Aerial",
-    aspectRatio: "panoramic" as const,
+    src: "/images/photo-terrace-portrait.jpg",
+    alt: "Portrait on coastal terrace",
+    category: "Portrait",
+    aspectRatio: "portrait" as const,
+  },
+  {
+    src: "/images/photo-alley.jpg",
+    alt: "European alley through architectural frame",
+    category: "Street",
+    aspectRatio: "portrait" as const,
+  },
+  {
+    src: "/images/photo-laundry.jpg",
+    alt: "Building facade with laundry",
+    category: "Street",
+    aspectRatio: "portrait" as const,
+  },
+  {
+    src: "/images/photo-marrakesh.jpg",
+    alt: "Architectural portrait in Marrakesh",
+    category: "Portrait",
+    aspectRatio: "portrait" as const,
   },
 ]
 
