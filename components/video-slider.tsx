@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { useState, useRef, useEffect } from "react"
+import Image from "next/image"
 import { ChevronLeft, ChevronRight, Play, Pause, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -45,6 +46,7 @@ interface VideoSliderProps {
 export function VideoSlider({ videos, filterComponent }: VideoSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [playingVideos, setPlayingVideos] = useState<Set<number>>(new Set())
+  const [loadedVideos, setLoadedVideos] = useState<Set<number>>(new Set())
   const videoRefs = useRef<(HTMLIFrameElement | null)[]>([])
   const containerRefs = useRef<(HTMLDivElement | null)[]>([])
   const [showControls, setShowControls] = useState(true)
@@ -107,11 +109,34 @@ export function VideoSlider({ videos, filterComponent }: VideoSliderProps) {
     return 0.4
   }
 
+  const loadAndPlayVideo = (index: number) => {
+    // Load the iframe if not already loaded
+    if (!loadedVideos.has(index)) {
+      setLoadedVideos((prev) => new Set(prev).add(index))
+      // Wait a tick for iframe to mount, then play
+      setTimeout(() => {
+        const iframe = videoRefs.current[index]
+        if (iframe && iframe.contentWindow) {
+          iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', "*")
+          setPlayingVideos((prev) => new Set(prev).add(index))
+        }
+      }, 500)
+    } else {
+      const iframe = videoRefs.current[index]
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', "*")
+        setPlayingVideos((prev) => new Set(prev).add(index))
+      }
+    }
+  }
+
   const togglePlayPause = (index: number, e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation()
-    const iframe = videoRefs.current[index]
-    if (iframe && iframe.contentWindow) {
-      if (playingVideos.has(index)) {
+    
+    if (playingVideos.has(index)) {
+      // Pause
+      const iframe = videoRefs.current[index]
+      if (iframe && iframe.contentWindow) {
         iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', "*")
         setPlayingVideos((prev) => {
           const newSet = new Set(prev)
@@ -119,10 +144,10 @@ export function VideoSlider({ videos, filterComponent }: VideoSliderProps) {
           return newSet
         })
         setShowControls(true)
-      } else {
-        iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', "*")
-        setPlayingVideos((prev) => new Set(prev).add(index))
       }
+    } else {
+      // Load and play
+      loadAndPlayVideo(index)
     }
   }
 
@@ -225,19 +250,35 @@ export function VideoSlider({ videos, filterComponent }: VideoSliderProps) {
                     "relative rounded-xl md:rounded-2xl overflow-hidden shadow-2xl group",
                     video.portrait ? "h-full aspect-[9/16] mx-auto" : "w-full aspect-video"
                   )}
+                  style={{ willChange: "transform" }}
                   onClick={handleVideoAreaTap}
                 >
-                  <iframe
-                    ref={(el) => (videoRefs.current[index] = el)}
-                    width="100%"
-                    height="100%"
-                    src={`https://www.youtube.com/embed/${video.id}?enablejsapi=1&controls=0`}
-                    title={video.title || `Video ${index + 1}`}
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="w-full h-full"
-                  ></iframe>
+                  {/* Show thumbnail until video is loaded */}
+                  {!loadedVideos.has(index) && (
+                    <Image
+                      src={`https://img.youtube.com/vi/${video.id}/maxresdefault.jpg`}
+                      alt={video.title || `Video ${index + 1}`}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 85vw, 70vw"
+                      priority={Math.abs(index - currentIndex) <= 1}
+                    />
+                  )}
+                  
+                  {/* Load iframe only when requested */}
+                  {loadedVideos.has(index) && (
+                    <iframe
+                      ref={(el) => (videoRefs.current[index] = el)}
+                      width="100%"
+                      height="100%"
+                      src={`https://www.youtube.com/embed/${video.id}?enablejsapi=1&controls=0&autoplay=1`}
+                      title={video.title || `Video ${index + 1}`}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full"
+                    ></iframe>
+                  )}
 
                   <div
                     className={cn(
@@ -282,7 +323,7 @@ export function VideoSlider({ videos, filterComponent }: VideoSliderProps) {
           <Button
             onClick={goToPrev}
             disabled={currentIndex === 0}
-            className="bg-background/20 hover:bg-background/30 backdrop-blur-sm text-primary-foreground border-border rounded-full w-14 h-14 md:w-14 md:h-14 p-0 disabled:opacity-30 touch-manipulation"
+            className="bg-background/20 hover:bg-background/30 active:bg-background/40 backdrop-blur-sm text-primary-foreground border-border rounded-full w-12 h-12 md:w-14 md:h-14 min-w-[44px] min-h-[44px] p-0 disabled:opacity-30 touch-manipulation"
             aria-label="Previous video"
           >
             <ChevronLeft className="h-6 w-6 md:h-7 md:w-7" />
@@ -297,7 +338,7 @@ export function VideoSlider({ videos, filterComponent }: VideoSliderProps) {
           <Button
             onClick={goToNext}
             disabled={currentIndex === videos.length - 1}
-            className="bg-background/20 hover:bg-background/30 backdrop-blur-sm text-primary-foreground border-border rounded-full w-14 h-14 md:w-14 md:h-14 p-0 disabled:opacity-30 touch-manipulation"
+            className="bg-background/20 hover:bg-background/30 active:bg-background/40 backdrop-blur-sm text-primary-foreground border-border rounded-full w-12 h-12 md:w-14 md:h-14 min-w-[44px] min-h-[44px] p-0 disabled:opacity-30 touch-manipulation"
             aria-label="Next video"
           >
             <ChevronRight className="h-6 w-6 md:h-7 md:w-7" />
