@@ -4,13 +4,17 @@ import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Mail, Phone, Instagram, ArrowLeft, Menu, X } from "lucide-react"
+import { Mail, Instagram, ArrowLeft, Menu, X, FileText } from "lucide-react"
 import { MorphicNavbar } from "@/components/morphic-navbar"
 import { ModeToggle } from "@/components/mode-toggle"
+import { useLanguage } from "@/components/language-context"
+import { CVModal } from "@/components/cv-modal"
 
 export default function ContactPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [siteMode, setSiteMode] = useState<"visual" | "innovation">("visual")
+  const [cvModalOpen, setCvModalOpen] = useState(false)
+  const { t } = useLanguage()
 
   return (
     <div className="min-h-screen bg-background">
@@ -51,21 +55,21 @@ export default function ContactPage() {
               </div>
               <Link href="/" onClick={() => setMobileMenuOpen(false)}>
                 <button className="w-full text-foreground hover:bg-accent px-5 py-4 rounded-md transition-colors text-left text-lg touch-manipulation">
-                  Home
+                  {t.nav.home}
                 </button>
               </Link>
               <Link href="/#gallery" onClick={() => setMobileMenuOpen(false)}>
                 <button className="w-full text-foreground hover:bg-accent px-5 py-4 rounded-md transition-colors text-left text-lg touch-manipulation">
-                  Pictures
+                  {t.nav.pictures}
                 </button>
               </Link>
               <Link href="/#videos" onClick={() => setMobileMenuOpen(false)}>
                 <button className="w-full text-foreground hover:bg-accent px-5 py-4 rounded-md transition-colors text-left text-lg touch-manipulation">
-                  Videos
+                  {t.nav.videos}
                 </button>
               </Link>
               <button className="w-full text-foreground bg-accent px-5 py-4 rounded-md transition-colors text-left text-lg touch-manipulation">
-                Contact
+                {t.nav.contact}
               </button>
             </div>
           </div>
@@ -77,7 +81,7 @@ export default function ContactPage() {
         <Link href="/">
           <Button variant="ghost" className="mb-6 md:mb-8 text-foreground hover:bg-accent touch-manipulation">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Portfolio
+            {t.contact.backToPortfolio}
           </Button>
         </Link>
 
@@ -92,10 +96,9 @@ export default function ContactPage() {
           {/* Contact Information */}
           <div className="space-y-6 md:space-y-8 order-1 md:order-2">
             <div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-4">Let's Connect</h1>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-4">{t.contact.letsConnect}</h1>
               <p className="text-lg md:text-xl text-muted-foreground">
-                Available for photography and videography projects. Whether it's capturing stunning landscapes, creating
-                compelling portraits, or producing engaging video content, I'd love to hear about your vision.
+                {t.contact.description}
               </p>
             </div>
 
@@ -109,22 +112,8 @@ export default function ContactPage() {
                   <Mail className="h-6 w-6 md:h-6 md:w-6" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground font-medium">Email</p>
+                  <p className="text-sm text-muted-foreground font-medium">{t.contact.email}</p>
                   <p className="text-base md:text-lg font-semibold break-all">loeklutgens2@gmail.com</p>
-                </div>
-              </a>
-
-              {/* Phone */}
-              <a
-                href="tel:+31620193058"
-                className="flex items-center gap-4 p-5 md:p-4 rounded-lg hover:bg-accent transition-colors group touch-manipulation"
-              >
-                <div className="bg-primary text-primary-foreground p-3 md:p-3 rounded-full group-hover:scale-110 transition-transform">
-                  <Phone className="h-6 w-6 md:h-6 md:w-6" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground font-medium">Phone</p>
-                  <p className="text-base md:text-lg font-semibold">+31 6 20193058</p>
                 </div>
               </a>
 
@@ -143,6 +132,20 @@ export default function ContactPage() {
                   <p className="text-base md:text-lg font-semibold">@ll_exist</p>
                 </div>
               </a>
+
+              {/* CV Button */}
+              <button
+                onClick={() => setCvModalOpen(true)}
+                className="flex items-center gap-4 p-5 md:p-4 rounded-lg hover:bg-accent transition-colors group touch-manipulation w-full"
+              >
+                <div className="bg-primary text-primary-foreground p-3 md:p-3 rounded-full group-hover:scale-110 transition-transform">
+                  <FileText className="h-6 w-6 md:h-6 md:w-6" />
+                </div>
+                <div className="text-left">
+                  <p className="text-sm text-muted-foreground font-medium">{t.contact.cvTitle}</p>
+                  <p className="text-base md:text-lg font-semibold">{t.contact.viewCV}</p>
+                </div>
+              </button>
             </div>
 
             <div className="pt-4 md:pt-6">
@@ -151,7 +154,7 @@ export default function ContactPage() {
                   size="lg"
                   className="w-full md:w-auto bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 py-6 text-lg touch-manipulation"
                 >
-                  Send me a message
+                  {t.contact.sendMessage}
                 </Button>
               </a>
             </div>
@@ -160,12 +163,15 @@ export default function ContactPage() {
 
         {/* Additional Info */}
         <div className="mt-16 md:mt-20 text-center px-4">
-          <h2 className="text-2xl md:text-3xl font-bold mb-3 md:mb-4">Based in the Netherlands</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-3 md:mb-4">{t.contact.basedIn}</h2>
           <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-            Working on projects throughout Europe and beyond. Open to travel for the right opportunity.
+            {t.contact.basedInDescription}
           </p>
         </div>
       </div>
+
+      {/* CV Modal */}
+      <CVModal isOpen={cvModalOpen} onClose={() => setCvModalOpen(false)} />
     </div>
   )
 }

@@ -2,11 +2,12 @@
 
 import { ExternalLink, Lightbulb, Rocket, Code, TrendingUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useLanguage } from "./language-context"
 
 interface Project {
-  title: string
-  description: string
-  role: string
+  titleKey: string
+  descriptionKey: string
+  roleKey: string
   tags: string[]
   link?: string
   icon: "lightbulb" | "rocket" | "code" | "trending"
@@ -14,33 +15,33 @@ interface Project {
 
 const projects: Project[] = [
   {
-    title: "Project Name 1",
-    description: "A brief description of this innovation project. Explain what problem it solves and its impact.",
-    role: "Founder & Developer",
+    titleKey: "project1",
+    descriptionKey: "project1",
+    roleKey: "project1",
     tags: ["Technology", "Startup", "AI"],
     link: "#",
     icon: "rocket",
   },
   {
-    title: "Project Name 2",
-    description: "Another innovative project description. Highlight the key features and achievements.",
-    role: "Creative Director",
+    titleKey: "project2",
+    descriptionKey: "project2",
+    roleKey: "project2",
     tags: ["Design", "Branding", "Strategy"],
     link: "#",
     icon: "lightbulb",
   },
   {
-    title: "Project Name 3",
-    description: "Description of a technical or business project. What makes it unique?",
-    role: "Lead Developer",
+    titleKey: "project3",
+    descriptionKey: "project3",
+    roleKey: "project3",
     tags: ["Web3", "Blockchain", "Innovation"],
     link: "#",
     icon: "code",
   },
   {
-    title: "Project Name 4",
-    description: "A growth-focused project or business venture. Share the results and learnings.",
-    role: "Co-Founder",
+    titleKey: "project4",
+    descriptionKey: "project4",
+    roleKey: "project4",
     tags: ["Business", "Growth", "Marketing"],
     link: "#",
     icon: "trending",
@@ -55,14 +56,20 @@ const iconMap = {
 }
 
 export function InnovationSection() {
+  const { t } = useLanguage()
+  
+  const getProjectTranslation = (key: string) => {
+    const projectKey = key as keyof typeof t.innovation.projects
+    return t.innovation.projects[projectKey]
+  }
+
   return (
     <div className="min-h-screen bg-background py-20 px-4 md:px-8">
       {/* Header */}
       <div className="max-w-6xl mx-auto mb-16 text-center">
-        <h2 className="text-4xl md:text-6xl font-bold mb-6">Innovation & Projects</h2>
+        <h2 className="text-4xl md:text-6xl font-bold mb-6">{t.innovation.title}</h2>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Beyond visual storytelling, I'm passionate about building innovative solutions and exploring new technologies.
-          Here are some of my ventures.
+          {t.innovation.subtitle}
         </p>
       </div>
 
@@ -70,6 +77,7 @@ export function InnovationSection() {
       <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
         {projects.map((project, index) => {
           const IconComponent = iconMap[project.icon]
+          const projectData = getProjectTranslation(project.titleKey)
           return (
             <div
               key={index}
@@ -81,11 +89,11 @@ export function InnovationSection() {
               </div>
 
               {/* Content */}
-              <h3 className="text-2xl font-bold mb-3">{project.title}</h3>
-              <p className="text-muted-foreground mb-4 leading-relaxed">{project.description}</p>
+              <h3 className="text-2xl font-bold mb-3">{projectData.title}</h3>
+              <p className="text-muted-foreground mb-4 leading-relaxed">{projectData.description}</p>
 
               {/* Role */}
-              <p className="text-sm font-medium text-primary mb-4">{project.role}</p>
+              <p className="text-sm font-medium text-primary mb-4">{projectData.role}</p>
 
               {/* Tags */}
               <div className="flex flex-wrap gap-2 mb-6">
@@ -100,7 +108,7 @@ export function InnovationSection() {
               {project.link && (
                 <Button variant="outline" className="group/btn rounded-full bg-transparent" asChild>
                   <a href={project.link} target="_blank" rel="noopener noreferrer">
-                    Learn More
+                    {t.innovation.learnMore}
                     <ExternalLink className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
                   </a>
                 </Button>
@@ -113,12 +121,12 @@ export function InnovationSection() {
       {/* Call to Action */}
       <div className="max-w-6xl mx-auto mt-20 text-center">
         <div className="bg-card border border-border rounded-2xl p-12">
-          <h3 className="text-3xl font-bold mb-4">Have an idea?</h3>
+          <h3 className="text-3xl font-bold mb-4">{t.innovation.haveIdea}</h3>
           <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-            I'm always looking for exciting new projects and collaborations. Let's build something innovative together.
+            {t.innovation.haveIdeaDescription}
           </p>
           <Button size="lg" className="rounded-full px-8" asChild>
-            <a href="/contact">Get in Touch</a>
+            <a href="/contact">{t.innovation.getInTouch}</a>
           </Button>
         </div>
       </div>

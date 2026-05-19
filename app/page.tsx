@@ -14,6 +14,7 @@ import { ModeIntro } from "@/components/mode-intro"
 import { InnovationSection } from "@/components/innovation-section"
 import { MorphicNavbar } from "@/components/morphic-navbar"
 import { VideoFilter } from "@/components/video-filter"
+import { useLanguage } from "@/components/language-context"
 
 // Sorted by orientation: horizontal/landscape/panoramic first, then vertical/portrait last.
 // This ensures that when viewing a horizontal image, cards stacked behind are also horizontal (same width).
@@ -221,6 +222,7 @@ export default function Portfolio() {
   const [lightboxIndex, setLightboxIndex] = useState(0)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const { t } = useLanguage()
 
   const categories = [
     "All",
@@ -324,7 +326,7 @@ export default function Portfolio() {
                   onClick={() => scrollToSection("home")}
                   className="text-foreground hover:bg-accent px-5 py-4 rounded-md transition-colors text-left text-lg touch-manipulation"
                 >
-                  Home
+                  {t.nav.home}
                 </button>
                 {siteMode === "visual" && (
                   <>
@@ -332,19 +334,19 @@ export default function Portfolio() {
                       onClick={() => scrollToSection("videos")}
                       className="text-foreground hover:bg-accent px-5 py-4 rounded-md transition-colors text-left text-lg touch-manipulation"
                     >
-                      Videos
+                      {t.nav.videos}
                     </button>
                     <button
                       onClick={() => scrollToSection("gallery")}
                       className="text-foreground hover:bg-accent px-5 py-4 rounded-md transition-colors text-left text-lg touch-manipulation"
                     >
-                      Pictures
+                      {t.nav.pictures}
                     </button>
                   </>
                 )}
                 <Link href="/contact">
                   <button className="w-full text-foreground hover:bg-accent px-5 py-4 rounded-md transition-colors text-left text-lg touch-manipulation">
-                    Contact
+                    {t.nav.contact}
                   </button>
                 </Link>
               </div>
@@ -388,9 +390,9 @@ export default function Portfolio() {
 
           <section className="py-12 md:py-20 px-4 md:px-8 bg-primary text-primary-foreground">
             <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">Let's Work Together</h2>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">{t.visual.letsWorkTogether}</h2>
               <p className="text-lg md:text-xl text-muted-foreground mb-8 md:mb-12 max-w-2xl mx-auto px-4">
-                Available for photography and videography projects. Get in touch to discuss your vision.
+                {t.visual.workTogetherDescription}
               </p>
 
               <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8 md:mb-12 px-4">
@@ -399,7 +401,7 @@ export default function Portfolio() {
                     size="lg"
                     className="w-full sm:w-auto bg-background/20 text-primary-foreground border border-border hover:bg-background/30 rounded-full px-8 py-6 text-lg touch-manipulation"
                   >
-                    Contact Me
+                    {t.visual.contactMe}
                   </Button>
                 </Link>
                 <a
@@ -412,14 +414,14 @@ export default function Portfolio() {
                     size="lg"
                     className="w-full sm:w-auto bg-background/20 text-primary-foreground border border-border hover:bg-background/30 rounded-full px-8 py-6 text-lg touch-manipulation"
                   >
-                    Instagram
+                    {t.visual.instagram}
                   </Button>
                 </a>
               </div>
 
               <div className="border-t border-border pt-8">
                 <p className="text-sm md:text-base text-muted-foreground">
-                  © {new Date().getFullYear()} L&apos;exist. All rights reserved.
+                  © {new Date().getFullYear()} {t.visual.copyright}
                 </p>
               </div>
             </div>
