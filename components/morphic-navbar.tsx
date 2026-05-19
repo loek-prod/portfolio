@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { useLanguage } from "./language-context"
 
 interface MorphicNavbarProps {
   mode: "visual" | "innovation"
@@ -11,31 +12,32 @@ interface MorphicNavbarProps {
 
 export function MorphicNavbar({ mode, onNavigate, currentPage = "home" }: MorphicNavbarProps) {
   const [activeItem, setActiveItem] = useState("home")
+  const { t } = useLanguage()
 
   // Define nav items based on mode and page
   const getNavItems = () => {
     if (currentPage === "contact") {
       return [
-        { id: "home", label: "Home", type: "link", href: "/" },
-        { id: "videos", label: "Videos", type: "link", href: "/#videos" },
-        { id: "pictures", label: "Pictures", type: "link", href: "/#gallery" },
-        { id: "contact", label: "Contact", type: "link", href: "/contact" },
+        { id: "home", label: t.nav.home, type: "link", href: "/" },
+        { id: "videos", label: t.nav.videos, type: "link", href: "/#videos" },
+        { id: "pictures", label: t.nav.pictures, type: "link", href: "/#gallery" },
+        { id: "contact", label: t.nav.contact, type: "link", href: "/contact" },
       ]
     }
 
     if (mode === "visual") {
       return [
-        { id: "home", label: "Home", type: "scroll" },
-        { id: "videos", label: "Videos", type: "scroll" },
-        { id: "gallery", label: "Pictures", type: "scroll" },
-        { id: "contact", label: "Contact", type: "link", href: "/contact" },
+        { id: "home", label: t.nav.home, type: "scroll" },
+        { id: "videos", label: t.nav.videos, type: "scroll" },
+        { id: "gallery", label: t.nav.pictures, type: "scroll" },
+        { id: "contact", label: t.nav.contact, type: "link", href: "/contact" },
       ]
     } else {
       return [
-        { id: "home", label: "Home", type: "scroll" },
-        { id: "projects", label: "Projects", type: "scroll" },
-        { id: "about", label: "About", type: "scroll" },
-        { id: "contact", label: "Contact", type: "link", href: "/contact" },
+        { id: "home", label: t.nav.home, type: "scroll" },
+        { id: "projects", label: t.nav.projects, type: "scroll" },
+        { id: "about", label: t.nav.about, type: "scroll" },
+        { id: "contact", label: t.nav.contact, type: "link", href: "/contact" },
       ]
     }
   }

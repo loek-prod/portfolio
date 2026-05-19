@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 // <CHANGE> Replaced Geist with Inter (closest free alternative to Söhne)
 import { Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import { LanguageProvider } from "@/components/language-context"
 import "./globals.css"
 
 const inter = Inter({
@@ -28,7 +29,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans antialiased ${inter.variable}`}>
-        {children}
+        <LanguageProvider>
+          {children}
+        </LanguageProvider>
         <Analytics />
       </body>
     </html>

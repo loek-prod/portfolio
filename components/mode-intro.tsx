@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { ModeToggle } from "./mode-toggle"
+import { useLanguage } from "./language-context"
 
 interface ModeIntroProps {
   mode: "visual" | "innovation"
@@ -11,6 +12,7 @@ interface ModeIntroProps {
 
 export function ModeIntro({ mode, onModeChange, onComplete }: ModeIntroProps) {
   const [isAnimating, setIsAnimating] = useState(false)
+  const { t } = useLanguage()
 
   useEffect(() => {
     const animateTimer = setTimeout(() => setIsAnimating(true), 1500)
@@ -28,9 +30,9 @@ export function ModeIntro({ mode, onModeChange, onComplete }: ModeIntroProps) {
       <div className="absolute inset-0 bg-background/60 backdrop-blur-sm" />
       <div className="relative z-10">
         <div className="pointer-events-auto">
-          <ModeToggle mode={mode} onModeChange={onModeChange} size="large" />
+          <ModeToggle mode={mode} onModeChange={onModeChange} size="large" showLanguage={false} />
         </div>
-        <p className="text-center text-muted-foreground mt-4 text-sm animate-pulse">Explore my work</p>
+        <p className="text-center text-muted-foreground mt-4 text-sm animate-pulse">{t.mode.exploreWork}</p>
       </div>
     </div>
   )
