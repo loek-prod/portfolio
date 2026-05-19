@@ -4,7 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Mail, Phone, Instagram, ArrowLeft, Menu, X, FileText } from "lucide-react"
+import { Mail, Instagram, ArrowLeft, Menu, X, FileText } from "lucide-react"
 import { MorphicNavbar } from "@/components/morphic-navbar"
 import { ModeToggle } from "@/components/mode-toggle"
 import { useLanguage } from "@/components/language-context"
@@ -114,20 +114,6 @@ export default function ContactPage() {
                 <div>
                   <p className="text-sm text-muted-foreground font-medium">{t.contact.email}</p>
                   <p className="text-base md:text-lg font-semibold break-all">loeklutgens2@gmail.com</p>
-                </div>
-              </a>
-
-              {/* Phone */}
-              <a
-                href="tel:+31620193058"
-                className="flex items-center gap-4 p-5 md:p-4 rounded-lg hover:bg-accent transition-colors group touch-manipulation"
-              >
-                <div className="bg-primary text-primary-foreground p-3 md:p-3 rounded-full group-hover:scale-110 transition-transform">
-                  <Phone className="h-6 w-6 md:h-6 md:w-6" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground font-medium">{t.contact.phone}</p>
-                  <p className="text-base md:text-lg font-semibold">+31 6 20193058</p>
                 </div>
               </a>
 
