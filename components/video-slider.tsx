@@ -7,9 +7,6 @@ import { ChevronLeft, ChevronRight, Play, Pause, ExternalLink } from "lucide-rea
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-// Cache-buster timestamp - update this value to force thumbnail refresh
-const THUMBNAIL_VERSION = "20260519"
-
 function VideoControlButton({
   children,
   onClick,
@@ -259,13 +256,12 @@ export function VideoSlider({ videos, filterComponent }: VideoSliderProps) {
                   {/* Show thumbnail until video is loaded */}
                   {!loadedVideos.has(index) && (
                     <Image
-                      src={`https://img.youtube.com/vi/${video.id}/maxresdefault.jpg?v=${THUMBNAIL_VERSION}`}
+                      src={`https://img.youtube.com/vi/${video.id}/maxresdefault.jpg`}
                       alt={video.title || `Video ${index + 1}`}
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 85vw, 70vw"
                       priority={Math.abs(index - currentIndex) <= 1}
-                      unoptimized
                     />
                   )}
                   

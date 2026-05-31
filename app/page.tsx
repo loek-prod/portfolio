@@ -187,7 +187,7 @@ const videos = [
   },
   // Stories
   {
-    id: "fcNs7xLVLB4",
+    id: "R87DgrzpIrE",
     title: "",
     portrait: false,
     category: "Stories",
@@ -206,6 +206,12 @@ const videos = [
   },
   {
     id: "QI_jcTsU46U",
+    title: "",
+    portrait: false,
+    category: "Stories",
+  },
+  {
+    id: "ZQJp0i4v4rg",
     title: "",
     portrait: false,
     category: "Stories",
@@ -239,11 +245,34 @@ export default function Portfolio() {
 
   const videoCategories = ["All", "Corporate", "AI Films", "Stories"]
 
+  // For the "All" view, order videos by: Stories first, then Corporate, then AI Films.
+  // Array.prototype.sort is stable, so the relative order within each category is preserved.
+  const allVideoCategoryOrder = ["Stories", "Corporate", "AI Films"]
+  const allVideosOrdered = [...videos].sort(
+    (a, b) => allVideoCategoryOrder.indexOf(a.category) - allVideoCategoryOrder.indexOf(b.category),
+  )
+
   const filteredVideos =
-    selectedVideoCategory === "All" ? videos : videos.filter((video) => video.category === selectedVideoCategory)
+    selectedVideoCategory === "All"
+      ? allVideosOrdered
+      : videos.filter((video) => video.category === selectedVideoCategory)
+
+  // For the photo gallery, order by orientation: standard landscape (16:9 / wide screen ratios) first,
+  // then panoramic landscape, then upright/portrait last.
+  // Stable sort preserves the existing relative order within each group, so the 3D effect is unaffected.
+  const orientationRank = (aspectRatio?: "panoramic" | "landscape" | "portrait") => {
+    if (aspectRatio === "portrait") return 2
+    if (aspectRatio === "panoramic") return 1
+    return 0 // landscape (16:9 / wide screen options) first
+  }
+  const orientationOrderedPhotos = [...photos].sort(
+    (a, b) => orientationRank(a.aspectRatio) - orientationRank(b.aspectRatio),
+  )
 
   const filteredPhotos =
-    selectedCategory === "All" ? photos : photos.filter((photo) => photo.category === selectedCategory)
+    selectedCategory === "All"
+      ? orientationOrderedPhotos
+      : orientationOrderedPhotos.filter((photo) => photo.category === selectedCategory)
 
   const openLightbox = (index: number) => {
     setLightboxIndex(index)
@@ -422,6 +451,9 @@ export default function Portfolio() {
               <div className="border-t border-border pt-8">
                 <p className="text-sm md:text-base text-muted-foreground">
                   © {new Date().getFullYear()} {t.visual.copyright}
+                </p>
+                <p className="text-xs text-muted-foreground/50 mt-2">
+                  v124
                 </p>
               </div>
             </div>
