@@ -155,6 +155,12 @@ const videos = [
     category: "Corporate",
   },
   {
+    id: "yIeWBFi1t4c",
+    title: "",
+    portrait: false,
+    category: "Corporate",
+  },
+  {
     id: "G_N6h50NA_k",
     title: "",
     portrait: false,
@@ -245,9 +251,9 @@ export default function Portfolio() {
 
   const videoCategories = ["All", "Corporate", "AI Films", "Stories"]
 
-  // For the "All" view, order videos by: Stories first, then Corporate, then AI Films.
+  // For the "All" view, order videos by: Corporate first, then Stories, then AI Films.
   // Array.prototype.sort is stable, so the relative order within each category is preserved.
-  const allVideoCategoryOrder = ["Stories", "Corporate", "AI Films"]
+  const allVideoCategoryOrder = ["Corporate", "Stories", "AI Films"]
   const allVideosOrdered = [...videos].sort(
     (a, b) => allVideoCategoryOrder.indexOf(a.category) - allVideoCategoryOrder.indexOf(b.category),
   )
