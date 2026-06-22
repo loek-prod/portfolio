@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
-import { ChevronLeft, ChevronRight, Play, Pause, Maximize } from "lucide-react"
+import { ChevronLeft, ChevronRight, Play, Pause, Maximize, Minimize } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -23,7 +23,7 @@ function VideoControlButton({
         e.preventDefault()
         onClick(e)
       }}
-      className="rounded-full p-3 md:p-4 bg-black/50 backdrop-blur-sm border border-white/20 text-white hover:bg-black/70 active:scale-95 transition-all duration-200 touch-manipulation"
+      className="btn-bubble p-3 md:p-4 text-white touch-manipulation"
       aria-label={ariaLabel}
     >
       {children}
@@ -55,6 +55,31 @@ export function VideoSlider({ videos, filterComponent }: VideoSliderProps) {
   const [touchStart, setTouchStart] = useState<number | null>(null)
   const [touchEnd, setTouchEnd] = useState<number | null>(null)
   const [swipeOffset, setSwipeOffset] = useState(0)
+
+  const [isFullscreen, setIsFullscreen] = useState(false)
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const fsElement =
+        document.fullscreenElement ||
+        (document as any).webkitFullscreenElement ||
+        (document as any).mozFullScreenElement ||
+        (document as any).msFullscreenElement
+      setIsFullscreen(!!fsElement)
+    }
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange)
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange)
+    document.addEventListener("mozfullscreenchange", handleFullscreenChange)
+    document.addEventListener("MSFullscreenChange", handleFullscreenChange)
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange)
+      document.removeEventListener("webkitfullscreenchange", handleFullscreenChange)
+      document.removeEventListener("mozfullscreenchange", handleFullscreenChange)
+      document.removeEventListener("MSFullscreenChange", handleFullscreenChange)
+    }
+  }, [])
 
   const minSwipeDistance = 50
   const slideWidth = typeof window !== "undefined" && window.innerWidth < 768 ? 85 : 70
@@ -151,14 +176,34 @@ export function VideoSlider({ videos, filterComponent }: VideoSliderProps) {
     }
   }
 
-  const openFullscreen = (index: number, e: React.MouseEvent | React.TouchEvent) => {
+  const toggleFullscreen = (index: number, e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation()
     e.preventDefault()
 
+    const fsElement =
+      document.fullscreenElement ||
+      (document as any).webkitFullscreenElement ||
+      (document as any).mozFullScreenElement ||
+      (document as any).msFullscreenElement
+
+    // If already in fullscreen, exit
+    if (fsElement) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen()
+      } else if ((document as any).webkitExitFullscreen) {
+        ;(document as any).webkitExitFullscreen()
+      } else if ((document as any).mozCancelFullScreen) {
+        ;(document as any).mozCancelFullScreen()
+      } else if ((document as any).msExitFullscreen) {
+        ;(document as any).msExitFullscreen()
+      }
+      return
+    }
+
+    // Otherwise enter fullscreen on this video container
     const container = containerRefs.current[index]
     if (!container) return
 
-    // Native browser fullscreen API
     if (container.requestFullscreen) {
       container.requestFullscreen()
     } else if ((container as any).webkitRequestFullscreen) {
@@ -318,10 +363,14 @@ export function VideoSlider({ videos, filterComponent }: VideoSliderProps) {
                   {isCurrent && (
                     <div className="absolute bottom-3 right-3 z-20">
                       <VideoControlButton
-                        onClick={(e) => openFullscreen(index, e)}
-                        ariaLabel="Watch fullscreen"
+                        onClick={(e) => toggleFullscreen(index, e)}
+                        ariaLabel={isFullscreen ? "Exit fullscreen" : "Watch fullscreen"}
                       >
-                        <Maximize className="h-4 w-4 md:h-5 md:w-5" />
+                        {isFullscreen ? (
+                          <Minimize className="h-4 w-4 md:h-5 md:w-5" />
+                        ) : (
+                          <Maximize className="h-4 w-4 md:h-5 md:w-5" />
+                        )}
                       </VideoControlButton>
                     </div>
                   )}
@@ -338,7 +387,7 @@ export function VideoSlider({ videos, filterComponent }: VideoSliderProps) {
           <Button
             onClick={goToPrev}
             disabled={currentIndex === 0}
-            className="bg-background/20 hover:bg-background/30 active:bg-background/40 backdrop-blur-sm text-primary-foreground border-border rounded-full w-12 h-12 md:w-14 md:h-14 min-w-[44px] min-h-[44px] p-0 disabled:opacity-30 touch-manipulation"
+            className="btn-bubble text-primary-foreground w-12 h-12 md:w-14 md:h-14 min-w-[44px] min-h-[44px] p-0 disabled:opacity-30 touch-manipulation"
             aria-label="Previous video"
           >
             <ChevronLeft className="h-6 w-6 md:h-7 md:w-7" />
@@ -353,7 +402,7 @@ export function VideoSlider({ videos, filterComponent }: VideoSliderProps) {
           <Button
             onClick={goToNext}
             disabled={currentIndex === videos.length - 1}
-            className="bg-background/20 hover:bg-background/30 active:bg-background/40 backdrop-blur-sm text-primary-foreground border-border rounded-full w-12 h-12 md:w-14 md:h-14 min-w-[44px] min-h-[44px] p-0 disabled:opacity-30 touch-manipulation"
+            className="btn-bubble text-primary-foreground w-12 h-12 md:w-14 md:h-14 min-w-[44px] min-h-[44px] p-0 disabled:opacity-30 touch-manipulation"
             aria-label="Next video"
           >
             <ChevronRight className="h-6 w-6 md:h-7 md:w-7" />
