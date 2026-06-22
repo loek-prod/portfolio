@@ -19,10 +19,6 @@ function VideoControlButton({
   return (
     <button
       onClick={onClick}
-      onTouchEnd={(e) => {
-        e.preventDefault()
-        onClick(e)
-      }}
       className="btn-bubble p-3 md:p-4 text-white touch-manipulation"
       aria-label={ariaLabel}
     >
@@ -176,6 +172,18 @@ export function VideoSlider({ videos, filterComponent }: VideoSliderProps) {
     }
   }
 
+  const requestFsOnElement = (el: HTMLElement) => {
+    if (el.requestFullscreen) {
+      el.requestFullscreen()
+    } else if ((el as any).webkitRequestFullscreen) {
+      ;(el as any).webkitRequestFullscreen()
+    } else if ((el as any).mozRequestFullScreen) {
+      ;(el as any).mozRequestFullScreen()
+    } else if ((el as any).msRequestFullscreen) {
+      ;(el as any).msRequestFullscreen()
+    }
+  }
+
   const toggleFullscreen = (index: number, e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation()
     e.preventDefault()
@@ -200,21 +208,28 @@ export function VideoSlider({ videos, filterComponent }: VideoSliderProps) {
       return
     }
 
-    // Otherwise enter fullscreen on this video container
+    const iframe = videoRefs.current[index]
     const container = containerRefs.current[index]
-    if (!container) return
 
-    if (container.requestFullscreen) {
-      container.requestFullscreen()
-    } else if ((container as any).webkitRequestFullscreen) {
-      // Safari
-      ;(container as any).webkitRequestFullscreen()
-    } else if ((container as any).mozRequestFullScreen) {
-      // Firefox
-      ;(container as any).mozRequestFullScreen()
-    } else if ((container as any).msRequestFullscreen) {
-      // IE/Edge
-      ;(container as any).msRequestFullscreen()
+    // iOS Safari only supports fullscreen on <video> / <iframe> elements, not <div>.
+    // Try iframe first (works on iOS), fall back to container div (works on desktop).
+    if (iframe && (iframe as any).webkitRequestFullscreen && !container?.requestFullscreen) {
+      // Make sure the video is loaded before going fullscreen on iOS
+      if (!loadedVideos.has(index)) {
+        setLoadedVideos((prev) => new Set(prev).add(index))
+        setTimeout(() => {
+          const iframeEl = videoRefs.current[index]
+          if (iframeEl) requestFsOnElement(iframeEl)
+        }, 300)
+      } else {
+        requestFsOnElement(iframe)
+      }
+      return
+    }
+
+    // Desktop: go fullscreen on the container div so controls are included
+    if (container) {
+      requestFsOnElement(container)
     }
   }
 
