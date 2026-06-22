@@ -440,7 +440,7 @@ export default function Portfolio() {
                 <Link href="/contact" className="w-full sm:w-auto">
                   <Button
                     size="lg"
-                    className="w-full sm:w-auto bg-background/20 text-primary-foreground border border-border hover:bg-background/30 rounded-full px-8 py-6 text-lg touch-manipulation"
+                    className="btn-bubble w-full sm:w-auto text-primary-foreground px-8 py-6 text-lg touch-manipulation"
                   >
                     {t.visual.contactMe}
                   </Button>
@@ -453,7 +453,7 @@ export default function Portfolio() {
                 >
                   <Button
                     size="lg"
-                    className="w-full sm:w-auto bg-background/20 text-primary-foreground border border-border hover:bg-background/30 rounded-full px-8 py-6 text-lg touch-manipulation"
+                    className="btn-bubble w-full sm:w-auto text-primary-foreground px-8 py-6 text-lg touch-manipulation"
                   >
                     {t.visual.instagram}
                   </Button>
