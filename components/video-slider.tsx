@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
-import { ChevronLeft, ChevronRight, Play, Pause, ExternalLink } from "lucide-react"
+import { ChevronLeft, ChevronRight, Play, Pause, Maximize } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -155,11 +155,22 @@ export function VideoSlider({ videos, filterComponent }: VideoSliderProps) {
     e.stopPropagation()
     e.preventDefault()
 
-    const video = videos[index]
-    if (!video) return
+    const container = containerRefs.current[index]
+    if (!container) return
 
-    // Open YouTube video directly - works on all devices including iOS
-    window.open(`https://www.youtube.com/watch?v=${video.id}`, "_blank")
+    // Native browser fullscreen API
+    if (container.requestFullscreen) {
+      container.requestFullscreen()
+    } else if ((container as any).webkitRequestFullscreen) {
+      // Safari
+      ;(container as any).webkitRequestFullscreen()
+    } else if ((container as any).mozRequestFullScreen) {
+      // Firefox
+      ;(container as any).mozRequestFullScreen()
+    } else if ((container as any).msRequestFullscreen) {
+      // IE/Edge
+      ;(container as any).msRequestFullscreen()
+    }
   }
 
   const goToNext = () => {
@@ -308,9 +319,9 @@ export function VideoSlider({ videos, filterComponent }: VideoSliderProps) {
                     <div className="absolute bottom-3 right-3 z-20">
                       <VideoControlButton
                         onClick={(e) => openFullscreen(index, e)}
-                        ariaLabel="Watch fullscreen on YouTube"
+                        ariaLabel="Watch fullscreen"
                       >
-                        <ExternalLink className="h-4 w-4 md:h-5 md:w-5" />
+                        <Maximize className="h-4 w-4 md:h-5 md:w-5" />
                       </VideoControlButton>
                     </div>
                   )}
