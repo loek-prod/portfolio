@@ -280,6 +280,7 @@ export function VideoSlider({ videos, filterComponent }: VideoSliderProps) {
                     ></iframe>
                   )}
 
+                  {/* Center play/pause controls */}
                   <div
                     className={cn(
                       "absolute inset-0 flex items-center justify-center transition-opacity duration-500 z-10",
@@ -290,26 +291,29 @@ export function VideoSlider({ videos, filterComponent }: VideoSliderProps) {
                       handleVideoAreaTap()
                     }}
                   >
-                    <div className="flex items-center gap-4">
-                      <VideoControlButton
-                        onClick={(e) => togglePlayPause(index, e)}
-                        ariaLabel={isPlaying ? "Pause video" : "Play video"}
-                      >
-                        {isPlaying ? (
-                          <Pause className="h-6 w-6 md:h-7 md:w-7" fill="currentColor" />
-                        ) : (
-                          <Play className="h-6 w-6 md:h-7 md:w-7" fill="currentColor" />
-                        )}
-                      </VideoControlButton>
+                    <VideoControlButton
+                      onClick={(e) => togglePlayPause(index, e)}
+                      ariaLabel={isPlaying ? "Pause video" : "Play video"}
+                    >
+                      {isPlaying ? (
+                        <Pause className="h-6 w-6 md:h-7 md:w-7" fill="currentColor" />
+                      ) : (
+                        <Play className="h-6 w-6 md:h-7 md:w-7" fill="currentColor" />
+                      )}
+                    </VideoControlButton>
+                  </div>
 
+                  {/* Fullscreen button — always visible on current slide, bottom-right corner */}
+                  {isCurrent && (
+                    <div className="absolute bottom-3 right-3 z-20">
                       <VideoControlButton
                         onClick={(e) => openFullscreen(index, e)}
                         ariaLabel="Watch fullscreen on YouTube"
                       >
-                        <ExternalLink className="h-6 w-6 md:h-7 md:w-7" />
+                        <ExternalLink className="h-4 w-4 md:h-5 md:w-5" />
                       </VideoControlButton>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
             )
