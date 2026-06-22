@@ -152,7 +152,7 @@ export default function ContactPage() {
               <a href="mailto:loeklutgens2@gmail.com">
                 <Button
                   size="lg"
-                  className="w-full md:w-auto bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 py-6 text-lg touch-manipulation"
+                  className="btn-bubble btn-bubble--solid w-full md:w-auto text-primary-foreground px-8 py-6 text-lg touch-manipulation"
                 >
                   {t.contact.sendMessage}
                 </Button>

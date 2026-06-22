@@ -53,22 +53,16 @@ export function MorphicNavbar({ mode, onNavigate, currentPage = "home" }: Morphi
 
   return (
     <div className="flex items-center justify-center">
-      <div className="flex items-center justify-between overflow-hidden rounded-xl bg-muted/50 backdrop-blur-sm">
+      <div className="flex items-center justify-between gap-1 p-1 rounded-2xl bg-muted/50 backdrop-blur-sm">
         {navItems.map((item, index) => {
           const isActive = activeItem === item.id
-          const isFirst = index === 0
-          const isLast = index === navItems.length - 1
-          const prevActive = index > 0 && activeItem === navItems[index - 1].id
-          const nextActive = index < navItems.length - 1 && activeItem === navItems[index + 1].id
 
           const content = (
             <div
-              className={`flex items-center justify-center px-4 md:px-5 py-2 md:py-2.5 text-sm md:text-base transition-all duration-300 cursor-pointer text-[rgba(208,126,66,1)] ${
+              className={`btn-bubble flex items-center justify-center px-4 md:px-5 py-2 md:py-2.5 text-sm md:text-base cursor-pointer ${
                 isActive
-                  ? "mx-2 rounded-xl bg-muted-foreground/20 font-semibold text-foreground"
-                  : `text-muted-foreground hover:text-foreground ${
-                      (prevActive || isFirst) && "rounded-l-xl"
-                    } ${(nextActive || isLast) && "rounded-r-xl"}`
+                  ? "font-semibold text-foreground !bg-white/20 !border-white/30"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
               onClick={() => handleClick(item)}
             >
