@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { X, ChevronLeft, ChevronRight } from "lucide-react"
 
 interface LightboxProps {
-  images: Array<{ src: string; alt: string; category: string }>
+  images: Array<{ src: string; alt: string; category?: string }>
   initialIndex: number
   onClose: () => void
 }
@@ -74,7 +74,7 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
   }, [onClose, goToNext, goToPrevious])
 
   return (
-    <div className="fixed inset-0 z-50 bg-primary/95 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/95">
       {/* Close Button - larger touch target */}
       <Button
         onClick={onClose}
@@ -133,9 +133,11 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
         <p className="text-sm mb-2">
           {currentIndex + 1} / {images.length}
         </p>
-        <span className="bg-background/20 px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
-          {images[currentIndex].category}
-        </span>
+        {images[currentIndex].category && (
+          <span className="bg-background/20 px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
+            {images[currentIndex].category}
+          </span>
+        )}
       </div>
 
       {/* Swipe hint for mobile */}
