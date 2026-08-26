@@ -19,8 +19,9 @@
      Needed because rust and clay fail WCAG AA as text on ink:
      rust #a85b34 = 3.3:1, clay #8c7a63 = 4.3:1. */
   --brand-earth: #322b25; /* lifted ink — card/elevated surfaces */
-  --brand-sand: #b5a288; /* lifted clay — body/secondary text, 6.6:1 */
-  --brand-link: #c97a4f; /* lifted rust — link/label text, 5.3:1 */
+  --brand-sand: #b5a288; /* lifted clay — body/secondary text, 6.8:1 on ink */
+  --brand-link: #d68a5e; /* lifted rust — rust TEXT: 6.1:1 on ink, 5.1:1 on earth */
+  --brand-rust-deep: #954a29; /* deepened rust — CTA fills, cream label hits 5.2:1 */
 
   --background: var(--brand-ink);
   --foreground: var(--brand-cream);
@@ -28,19 +29,19 @@
   --card-foreground: var(--brand-cream);
   --popover: var(--brand-earth);
   --popover-foreground: var(--brand-cream);
-  --primary: var(--brand-rust);
+  --primary: var(--brand-rust-deep);
   --primary-foreground: var(--brand-cream);
   --secondary: var(--brand-earth);
   --secondary-foreground: var(--brand-cream);
   --muted: var(--brand-earth);
   --muted-foreground: var(--brand-sand);
-  --accent: var(--brand-rust);
+  --accent: var(--brand-rust-deep);
   --accent-foreground: var(--brand-cream);
   --destructive: var(--brand-rust);
   --destructive-foreground: var(--brand-cream);
   --border: var(--brand-clay);
   --input: var(--brand-clay);
-  --ring: var(--brand-rust);
+  --ring: var(--brand-link);
   --chart-1: var(--brand-rust);
   --chart-2: var(--brand-clay);
   --chart-3: var(--brand-cream);
@@ -63,6 +64,7 @@
   --color-ink: var(--brand-ink);
   --color-cream: var(--brand-cream);
   --color-rust: var(--brand-rust);
+  --color-rust-deep: var(--brand-rust-deep);
   --color-clay: var(--brand-clay);
   --color-earth: var(--brand-earth);
   --color-sand: var(--brand-sand);
