@@ -399,9 +399,12 @@ html {
   transform: translateY(0px) scale(0.99);
 }
 
-/* Outlined variant — the non-accent CTA on light surfaces. */
+/* Outlined variant — the non-accent CTA on light surfaces.
+   Background is forced transparent because shadcn's Button default variant
+   applies bg-primary (rust), which would otherwise read as an accent fill. */
 .btn-bubble--outline {
   border-color: var(--brand-charcoal);
+  background: transparent;
 }
 
 .btn-bubble--outline:hover {
