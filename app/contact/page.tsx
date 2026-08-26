@@ -15,9 +15,10 @@ export default function ContactPage() {
 
   const linkClasses =
     "group flex w-full items-center gap-4 rounded-lg border border-clay/25 bg-earth/40 p-5 text-left transition-colors hover:border-link/50 hover:bg-earth md:p-4"
-  // Rust stays a small highlight here: a tint behind the icon, not three solid fills.
+  // Accent stays a small highlight: a rust outlined icon, not a filled chip, so the
+  // send-message CTA remains the only accent-filled element on this screen.
   const iconClasses =
-    "rounded-full bg-accent/15 p-3 text-link transition-transform group-hover:scale-110"
+    "rounded-full border border-clay/40 p-3 text-link transition-transform group-hover:scale-110"
 
   return (
     <main className="min-h-screen bg-background">

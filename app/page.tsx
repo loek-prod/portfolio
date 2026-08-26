@@ -81,7 +81,10 @@ export default function Portfolio() {
               </Button>
             </Link>
             <Link href="/contact" className="w-full sm:w-auto">
-              <Button size="lg" className="btn-bubble w-full px-8 py-6 text-lg text-cream sm:w-auto">
+              <Button
+                size="lg"
+                className="btn-bubble btn-bubble--on-image w-full px-8 py-6 text-lg sm:w-auto"
+              >
                 {t.visual.contactMe}
               </Button>
             </Link>
@@ -207,7 +210,10 @@ export default function Portfolio() {
               rel="noopener noreferrer"
               className="w-full sm:w-auto"
             >
-              <Button size="lg" className="btn-bubble w-full px-8 py-6 text-lg text-foreground sm:w-auto">
+              <Button
+                size="lg"
+                className="btn-bubble btn-bubble--outline w-full px-8 py-6 text-lg text-foreground sm:w-auto"
+              >
                 {t.visual.instagram}
               </Button>
             </a>

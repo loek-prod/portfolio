@@ -9,67 +9,100 @@
 
 :root,
 .dark {
-  /* Brand palette — exact spec values */
-  --brand-ink: #221d19; /* warm near black — background */
-  --brand-cream: #f1e7d8; /* warm cream — primary text */
-  --brand-rust: #a85b34; /* muted rust — CTA/accent fills only */
-  --brand-clay: #8c7a63; /* muted clay — borders, inactive states */
+  /* ---------------------------------------------------------------
+     BRAND PALETTE — exact spec values (light theme)
+     --------------------------------------------------------------- */
+  --brand-paper: #f7f5f1; /* near white, warm undertone — page background */
+  --brand-charcoal: #1a1917; /* near black — primary text (16.1:1 on paper) */
+  --brand-rust: #9a5b38; /* muted rust — accent (4.9:1 on paper, AA) */
+  --brand-stone: #9a9187; /* warm grey — dividers, inactive states */
 
-  /* Tonal derivations of the four brand hues (not new colors).
-     Needed because rust and clay fail WCAG AA as text on ink:
-     rust #a85b34 = 3.3:1, clay #8c7a63 = 4.3:1. */
-  --brand-earth: #322b25; /* lifted ink — card/elevated surfaces */
-  --brand-sand: #b5a288; /* lifted clay — body/secondary text, 6.8:1 on ink */
-  --brand-link: #d68a5e; /* lifted rust — rust TEXT: 6.1:1 on ink, 5.1:1 on earth */
-  --brand-rust-deep: #954a29; /* deepened rust — CTA fills, cream label hits 5.2:1 */
+  /* Tonal derivations of the four brand hues above (not new colors).
+     --brand-stone at #9a9187 is only 2.85:1 on paper, so it cannot carry
+     caption text. stone-text is the same hue darkened to clear AA. */
+  --brand-stone-text: #776e64; /* warm grey for caption/muted TEXT — 4.6:1 */
+  --brand-surface: #efebe4; /* paper darkened — cards, hovers, elevated fills */
 
-  --background: var(--brand-ink);
-  --foreground: var(--brand-cream);
-  --card: var(--brand-earth);
-  --card-foreground: var(--brand-cream);
-  --popover: var(--brand-earth);
-  --popover-foreground: var(--brand-cream);
-  --primary: var(--brand-rust-deep);
-  --primary-foreground: var(--brand-cream);
-  --secondary: var(--brand-earth);
-  --secondary-foreground: var(--brand-cream);
-  --muted: var(--brand-earth);
-  --muted-foreground: var(--brand-sand);
-  --accent: var(--brand-rust-deep);
-  --accent-foreground: var(--brand-cream);
+  /* ---------------------------------------------------------------
+     OVERLAY TOKENS — deliberately NOT inverted.
+     Text and scrims that sit on top of photographs must stay
+     light-on-dark regardless of the page theme, because the
+     photographs themselves are dark. Used only with images.
+     --------------------------------------------------------------- */
+  --brand-scrim: #1a1917; /* dark scrim over photos (used with alpha) */
+  --brand-on-image: #f7f5f1; /* light text/chips placed over photos */
+
+  /* Back-compat aliases for the previous dark-theme variable names, so
+     inline var(--brand-*) references in components keep resolving. */
+  --brand-ink: var(--brand-scrim);
+  --brand-cream: var(--brand-on-image);
+  --brand-clay: var(--brand-stone);
+  --brand-earth: var(--brand-surface);
+  --brand-sand: var(--brand-stone-text);
+  --brand-link: var(--brand-rust);
+  --brand-rust-deep: var(--brand-rust);
+
+  --background: var(--brand-paper);
+  --foreground: var(--brand-charcoal);
+  --card: var(--brand-surface);
+  --card-foreground: var(--brand-charcoal);
+  --popover: var(--brand-paper);
+  --popover-foreground: var(--brand-charcoal);
+  --primary: var(--brand-rust);
+  --primary-foreground: var(--brand-paper);
+  --secondary: var(--brand-surface);
+  --secondary-foreground: var(--brand-charcoal);
+  --muted: var(--brand-surface);
+  --muted-foreground: var(--brand-stone-text);
+  --accent: var(--brand-rust);
+  --accent-foreground: var(--brand-paper);
   --destructive: var(--brand-rust);
-  --destructive-foreground: var(--brand-cream);
-  --border: var(--brand-clay);
-  --input: var(--brand-clay);
-  --ring: var(--brand-link);
+  --destructive-foreground: var(--brand-paper);
+  --border: var(--brand-stone);
+  --input: var(--brand-stone);
+  --ring: var(--brand-rust);
   --chart-1: var(--brand-rust);
-  --chart-2: var(--brand-clay);
-  --chart-3: var(--brand-cream);
-  --chart-4: var(--brand-earth);
-  --chart-5: var(--brand-ink);
+  --chart-2: var(--brand-stone);
+  --chart-3: var(--brand-charcoal);
+  --chart-4: var(--brand-surface);
+  --chart-5: var(--brand-stone-text);
   --radius: 0.625rem;
-  --sidebar: var(--brand-ink);
-  --sidebar-foreground: var(--brand-cream);
+  --sidebar: var(--brand-paper);
+  --sidebar-foreground: var(--brand-charcoal);
   --sidebar-primary: var(--brand-rust);
-  --sidebar-primary-foreground: var(--brand-cream);
-  --sidebar-accent: var(--brand-earth);
-  --sidebar-accent-foreground: var(--brand-cream);
-  --sidebar-border: var(--brand-clay);
+  --sidebar-primary-foreground: var(--brand-paper);
+  --sidebar-accent: var(--brand-surface);
+  --sidebar-accent-foreground: var(--brand-charcoal);
+  --sidebar-border: var(--brand-stone);
   --sidebar-ring: var(--brand-rust);
 }
 
 @theme inline {
   --font-sans: var(--font-darker-grotesque), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-decorative, var(--font-darker-grotesque)), ui-sans-serif, system-ui, sans-serif;
-  --color-ink: var(--brand-ink);
-  --color-cream: var(--brand-cream);
+  /* Spec palette, named directly */
+  --color-paper: var(--brand-paper);
+  --color-charcoal: var(--brand-charcoal);
   --color-rust: var(--brand-rust);
-  --color-rust-deep: var(--brand-rust-deep);
-  --color-clay: var(--brand-clay);
-  --color-earth: var(--brand-earth);
-  --color-sand: var(--brand-sand);
+  --color-stone: var(--brand-stone);
+  --color-stone-text: var(--brand-stone-text);
+  --color-surface: var(--brand-surface);
+
+  /* Overlay-only utilities: for text/scrims sitting on photographs.
+     These intentionally stay dark/light and do NOT follow the theme. */
+  --color-scrim: var(--brand-scrim);
+  --color-on-image: var(--brand-on-image);
+
+  /* Legacy aliases kept so existing markup keeps resolving.
+     ink/cream are overlay colors; the rest now map to the light palette. */
+  --color-ink: var(--brand-scrim);
+  --color-cream: var(--brand-on-image);
+  --color-rust-deep: var(--brand-rust);
+  --color-clay: var(--brand-stone);
+  --color-earth: var(--brand-surface);
+  --color-sand: var(--brand-stone-text);
   /* Use text-link for rust-colored TEXT; bg-accent for rust fills. */
-  --color-link: var(--brand-link);
+  --color-link: var(--brand-rust);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -197,7 +230,7 @@ html {
 .loading-title {
   font-size: 4rem;
   font-weight: bold;
-  color: var(--brand-cream);
+  color: var(--brand-charcoal);
   text-align: center;
   animation: loadingTitleFade 0.8s ease-out forwards;
 }
@@ -237,7 +270,7 @@ html {
   height: 100%;
   object-fit: cover;
   border-radius: 8px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 40px rgba(26, 25, 23, 0.18);
 }
 
 @media (max-width: 768px) {
@@ -319,47 +352,33 @@ html {
   }
 }
 
-.btn-bubble {
-  position: relative;
-  overflow: hidden;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(8px);
-  color: inherit;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-  box-shadow:
-    0 2px 12px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.08);
+/* Base is intentionally neutral — no fill, no outline — so it can be used for
+   quiet nav pills. Standalone CTAs opt into --outline, --solid or --on-image.
+   Lives in the components layer so Tailwind text-*/bg-*/border-* utilities
+   applied on the element still win over these defaults. */
+@layer components {
+  .btn-bubble {
+    position: relative;
+    overflow: hidden;
+    border-radius: 9999px;
+    border: 1px solid transparent;
+    background: transparent;
+    backdrop-filter: blur(8px);
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease,
+      color 0.2s ease;
+    box-shadow: none;
+  }
 }
 
-/* Top gloss highlight */
-.btn-bubble::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 10%;
-  right: 10%;
-  height: 45%;
-  border-radius: 0 0 50% 50%;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.45) 0%,
-    rgba(255, 255, 255, 0.0) 100%
-  );
-  pointer-events: none;
-}
-
-/* Shimmer sweep on hover */
-.btn-bubble::after {
+/* Shimmer sweep on hover — only meaningful on the glass/over-image variant */
+.btn-bubble--on-image::after {
   content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(
     105deg,
     transparent 40%,
-    rgba(255, 255, 255, 0.28) 50%,
+    rgba(247, 245, 241, 0.28) 50%,
     transparent 60%
   );
   background-size: 200% 100%;
@@ -368,30 +387,45 @@ html {
   pointer-events: none;
 }
 
-.btn-bubble:hover::after {
+.btn-bubble--on-image:hover::after {
   animation: bubbleShimmer 1.8s ease forwards;
 }
 
 .btn-bubble:hover {
   transform: translateY(-2px) scale(1.02);
-  transition: transform 0.6s ease, box-shadow 0.6s ease, background 0.6s ease;
-  box-shadow:
-    0 6px 20px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.08);
-  background: rgba(255, 255, 255, 0.18);
 }
 
 .btn-bubble:active {
   transform: translateY(0px) scale(0.99);
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
-/* Solid variant — keeps the primary fill so the bubble reads on light backgrounds */
+/* Outlined variant — the non-accent CTA on light surfaces. */
+.btn-bubble--outline {
+  border-color: var(--brand-charcoal);
+}
+
+.btn-bubble--outline:hover {
+  background: var(--brand-charcoal);
+  color: var(--brand-paper);
+}
+
+/* Solid accent variant — the single accent-filled element allowed per screen. */
 .btn-bubble--solid,
 .btn-bubble--solid:hover {
-  background: var(--primary);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: var(--brand-rust);
+  border-color: var(--brand-rust);
+  color: var(--brand-paper);
+}
+
+/* Glass variant for buttons placed OVER a photograph: stays light-on-dark
+   so it keeps reading against the image behind it. */
+.btn-bubble--on-image,
+.btn-bubble--on-image:hover {
+  border-color: rgba(247, 245, 241, 0.55);
+  background: rgba(247, 245, 241, 0.14);
+  color: var(--brand-on-image);
+}
+
+.btn-bubble--on-image:hover {
+  background: rgba(247, 245, 241, 0.24);
 }

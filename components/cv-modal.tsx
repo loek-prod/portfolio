@@ -66,7 +66,7 @@ export function CVModal({ isOpen, onClose }: CVModalProps) {
         {/* Header — sticky */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0">
           <div className="flex items-center gap-3">
-            <div className="bg-accent/15 p-2 rounded-lg">
+            <div className="bg-muted p-2 rounded-lg">
               <FileText className="h-5 w-5 text-link" />
             </div>
             <h2 className="text-lg font-semibold">{t.contact.cvTitle}</h2>

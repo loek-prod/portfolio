@@ -31,15 +31,20 @@ export function SiteHeader({
             alt="L'exist"
             width={150}
             height={45}
-            className="h-auto w-[100px] md:w-[120px] lg:w-[150px]"
+            /* The logo artwork is light-on-transparent, so it needs inverting
+               to read on the light page background. Over the hero photo it
+               stays as-is. */
+            className={`h-auto w-[100px] md:w-[120px] lg:w-[150px] ${overlay ? "" : "invert"}`}
             priority
           />
         </Link>
         <div className="hidden md:block">
-          <MorphicNavbar />
+          <MorphicNavbar overlay={overlay} />
         </div>
         <button
-          className="touch-manipulation rounded-md p-3 text-foreground transition-colors hover:bg-earth md:hidden"
+          className={`touch-manipulation rounded-md p-3 transition-colors md:hidden ${
+            overlay ? "text-on-image hover:bg-on-image/15" : "text-foreground hover:bg-earth"
+          }`}
           onClick={() => setMobileMenuOpen((open) => !open)}
           aria-label="Toggle menu"
           aria-expanded={mobileMenuOpen}

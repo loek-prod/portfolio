@@ -78,7 +78,8 @@ export function LoadingScreen({ photos, onComplete }: LoadingScreenProps) {
             alt="L'exist"
             width={400}
             height={120}
-            className="w-[200px] md:w-[300px] lg:w-[400px] h-auto"
+            /* Light-on-transparent artwork inverted for the light backdrop. */
+            className="w-[200px] md:w-[300px] lg:w-[400px] h-auto invert"
             priority
           />
         </div>
