@@ -1,491 +1,248 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Menu, X } from "lucide-react"
-import { PhotoGallery3D } from "@/components/photo-gallery-3d"
-import { VideoSlider } from "@/components/video-slider"
 import { Lightbox } from "@/components/lightbox"
 import { LoadingScreen } from "@/components/loading-screen"
-import { ModeToggle } from "@/components/mode-toggle"
-import { ModeIntro } from "@/components/mode-intro"
-import { InnovationSection } from "@/components/innovation-section"
-import { MorphicNavbar } from "@/components/morphic-navbar"
-import { VideoFilter } from "@/components/video-filter"
+import { SiteHeader } from "@/components/site-header"
+import { PhotoGallery3D } from "@/components/photo-gallery-3d"
 import { useLanguage } from "@/components/language-context"
+import { galleryPhotos } from "@/lib/gallery-photos"
+import { featuredPieces } from "@/lib/featured"
 
-// Sorted by orientation: horizontal/landscape/panoramic first, then vertical/portrait last.
-// This ensures that when viewing a horizontal image, cards stacked behind are also horizontal (same width).
-// When viewing vertical images at the end, cards behind are also vertical (narrower).
-// This prevents wider cards from poking out behind narrower cards.
-const photos = [
-  // Panoramic photos first (extra wide, >2:1 ratio)
-  {
-    src: "/images/photo-bridge.jpg",
-    alt: "Aerial view of railway bridge",
-    category: "Aerial",
-    aspectRatio: "panoramic" as const,
-  },
-  {
-    src: "/images/photo-boat-aerial.jpg",
-    alt: "Aerial view of boat and swimmers",
-    category: "Aerial",
-    aspectRatio: "panoramic" as const,
-  },
-  // Landscape photos second (standard horizontal, 3:2 or 16:9)
-  {
-    src: "/images/photo5.jpg",
-    alt: "Macro photography of textured green leaves",
-    category: "Macro",
-    aspectRatio: "landscape" as const,
-  },
-  {
-    src: "/images/photo-architecture1.jpg",
-    alt: "Vibrant blue architecture with cacti",
-    category: "Architecture",
-    aspectRatio: "landscape" as const,
-  },
-  {
-    src: "/images/photo-pattern.jpg",
-    alt: "Ornate decorative circular pattern",
-    category: "Detail",
-    aspectRatio: "landscape" as const,
-  },
-  {
-    src: "/images/photo-architecture2.jpg",
-    alt: "Vibrant blue architecture with yellow accents",
-    category: "Architecture",
-    aspectRatio: "landscape" as const,
-  },
-  {
-    src: "/images/photo-monkey.jpg",
-    alt: "Wildlife photography of monkey on beach",
-    category: "Wildlife",
-    aspectRatio: "landscape" as const,
-  },
-  {
-    src: "/images/photo-car.jpg",
-    alt: "Vintage Mercedes-Benz automotive photography",
-    category: "Automotive",
-    aspectRatio: "landscape" as const,
-  },
-  {
-    src: "/images/photo-car-mural.jpg",
-    alt: "Car and street art in urban setting",
-    category: "Street",
-    aspectRatio: "landscape" as const,
-  },
-  {
-    src: "/images/photo-palace.jpg",
-    alt: "Palace interior with ornate golden ceiling",
-    category: "Architecture",
-    aspectRatio: "landscape" as const,
-  },
-  {
-    src: "/images/photo-yellow-coast.jpg",
-    alt: "Coastal scene with boats",
-    category: "Landscape",
-    aspectRatio: "landscape" as const,
-  },
-  {
-    src: "/images/photo-street-scene.jpg",
-    alt: "Street photography scene",
-    category: "Street",
-    aspectRatio: "landscape" as const,
-  },
-  {
-    src: "/images/photo-workers.jpg",
-    alt: "Construction workers street scene",
-    category: "Street",
-    aspectRatio: "landscape" as const,
-  },
-  {
-    src: "/images/photo3.jpg",
-    alt: "Mountain landscape with misty peaks",
-    category: "Landscape",
-    aspectRatio: "landscape" as const,
-  },
-  // Portrait photos last (vertical orientation)
-  {
-    src: "/images/photo-portrait.jpg",
-    alt: "Portrait of woman on European street",
-    category: "Portrait",
-    aspectRatio: "portrait" as const,
-  },
-  {
-    src: "/images/photo-terrace-portrait.jpg",
-    alt: "Portrait on coastal terrace",
-    category: "Portrait",
-    aspectRatio: "portrait" as const,
-  },
-  {
-    src: "/images/photo-alley.jpg",
-    alt: "European alley through architectural frame",
-    category: "Street",
-    aspectRatio: "portrait" as const,
-  },
-  {
-    src: "/images/photo-laundry.jpg",
-    alt: "Building facade with laundry",
-    category: "Street",
-    aspectRatio: "portrait" as const,
-  },
-  {
-    src: "/images/photo-marrakesh.jpg",
-    alt: "Architectural portrait in Marrakesh",
-    category: "Portrait",
-    aspectRatio: "portrait" as const,
-  },
-]
+/** Home only teases the photography — the full set lives on /gallery. */
+const teaserPhotos = galleryPhotos.slice(0, 6)
 
-const videos = [
-  // Corporate
-  {
-    id: "yIeWBFi1t4c",
-    title: "",
-    portrait: false,
-    category: "Corporate",
-  },
-  {
-    id: "VGCzEnAJiQ0",
-    title: "",
-    portrait: false,
-    category: "Corporate",
-  },
-  {
-    id: "2X-7H1_Nz94",
-    title: "",
-    portrait: false,
-    category: "Corporate",
-  },
-  {
-    id: "G_N6h50NA_k",
-    title: "",
-    portrait: false,
-    category: "Corporate",
-  },
-  {
-    id: "RU18Qln-Xvo",
-    title: "",
-    portrait: false,
-    category: "Corporate",
-  },
-  {
-    id: "PhP4les8tj8",
-    title: "",
-    portrait: false,
-    category: "Corporate",
-  },
-  // AI Films
-  {
-    id: "Y6I4mEgfGM0",
-    title: "",
-    portrait: true,
-    category: "AI Films",
-  },
-  {
-    id: "-V9JmMuPD8M",
-    title: "",
-    portrait: true,
-    category: "AI Films",
-  },
-  {
-    id: "L8oyrBfeTM4",
-    title: "",
-    portrait: false,
-    category: "AI Films",
-  },
-  // Stories
-  {
-    id: "R87DgrzpIrE",
-    title: "",
-    portrait: false,
-    category: "Stories",
-  },
-  {
-    id: "MIV0ZJXb2j0",
-    title: "",
-    portrait: false,
-    category: "Stories",
-  },
-  {
-    id: "u-5Frj2SZ-0",
-    title: "",
-    portrait: true,
-    category: "Stories",
-  },
-  {
-    id: "QI_jcTsU46U",
-    title: "",
-    portrait: false,
-    category: "Stories",
-  },
-  {
-    id: "ZQJp0i4v4rg",
-    title: "",
-    portrait: false,
-    category: "Stories",
-  },
+const entryPoints = [
+  { href: "/work", label: "Work", description: "Films made with clients" },
+  { href: "/passion-projects", label: "Passion Projects", description: "Made because I wanted to" },
+  { href: "/gallery", label: "Gallery", description: "Photographs taken for myself" },
 ]
 
 export default function Portfolio() {
   const [isLoading, setIsLoading] = useState(false)
-  const [showModeIntro, setShowModeIntro] = useState(false)
-  const [siteMode, setSiteMode] = useState<"visual" | "innovation">("visual")
-  const [selectedCategory, setSelectedCategory] = useState("All")
-  const [selectedVideoCategory, setSelectedVideoCategory] = useState("All")
-  const [lightboxOpen, setLightboxOpen] = useState(false)
-  const [lightboxIndex, setLightboxIndex] = useState(0)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
   const [mounted, setMounted] = useState(false)
   const { t } = useLanguage()
 
-  const categories = [
-    "All",
-    "Landscape",
-    "Architecture",
-    "Portrait",
-    "Wildlife",
-    "Macro",
-    "Detail",
-    "Aerial",
-    "Automotive",
-    "Street",
-  ]
-
-  const videoCategories = ["All", "Corporate", "AI Films", "Stories"]
-
-  // For the "All" view, order videos by: Stories first, then Corporate, then AI Films.
-  // Array.prototype.sort is stable, so the relative order within each category is preserved.
-  const allVideoCategoryOrder = ["Stories", "Corporate", "AI Films"]
-  const allVideosOrdered = [...videos].sort(
-    (a, b) => allVideoCategoryOrder.indexOf(a.category) - allVideoCategoryOrder.indexOf(b.category),
-  )
-
-  const filteredVideos =
-    selectedVideoCategory === "All"
-      ? allVideosOrdered
-      : videos.filter((video) => video.category === selectedVideoCategory)
-
-  // For the photo gallery, order by orientation: standard landscape (16:9 / wide screen ratios) first,
-  // then panoramic landscape, then upright/portrait last.
-  // Stable sort preserves the existing relative order within each group, so the 3D effect is unaffected.
-  const orientationRank = (aspectRatio?: "panoramic" | "landscape" | "portrait") => {
-    if (aspectRatio === "portrait") return 2
-    if (aspectRatio === "panoramic") return 1
-    return 0 // landscape (16:9 / wide screen options) first
-  }
-  const orientationOrderedPhotos = [...photos].sort(
-    (a, b) => orientationRank(a.aspectRatio) - orientationRank(b.aspectRatio),
-  )
-
-  const filteredPhotos =
-    selectedCategory === "All"
-      ? orientationOrderedPhotos
-      : orientationOrderedPhotos.filter((photo) => photo.category === selectedCategory)
-
-  const openLightbox = (index: number) => {
-    setLightboxIndex(index)
-    setLightboxOpen(true)
-  }
-
-  const scrollToSection = (sectionId: string) => {
-    if (typeof window !== "undefined") {
-      const element = document.getElementById(sectionId)
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" })
-      }
-    }
-    setMobileMenuOpen(false)
-  }
+  useEffect(() => {
+    setMounted(true)
+    if (!sessionStorage.getItem("hasSeenLoading")) setIsLoading(true)
+  }, [])
 
   const handleLoadingComplete = () => {
     setIsLoading(false)
-    setShowModeIntro(true)
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("hasSeenLoading", "true")
-    }
+    sessionStorage.setItem("hasSeenLoading", "true")
   }
 
-  useEffect(() => {
-    setMounted(true)
-    const hasSeenLoading = sessionStorage.getItem("hasSeenLoading")
-    if (!hasSeenLoading) {
-      setIsLoading(true)
-    }
-  }, [])
-
-  if (!mounted) {
-    return null
-  }
-
-  if (isLoading) {
-    return <LoadingScreen photos={photos} onComplete={handleLoadingComplete} />
-  }
+  if (!mounted) return null
+  if (isLoading) return <LoadingScreen photos={teaserPhotos} onComplete={handleLoadingComplete} />
 
   return (
-    <div className="min-h-screen bg-background">
-      {showModeIntro && (
-        <ModeIntro mode={siteMode} onModeChange={setSiteMode} onComplete={() => setShowModeIntro(false)} />
-      )}
+    <main className="min-h-screen bg-background">
+      {/* Cinematic hero — the one big statement on the page */}
+      <section className="relative flex h-[92svh] min-h-[540px] flex-col justify-end overflow-hidden">
+        <div className="hero-zoom-fade absolute inset-0">
+          <Image
+            src="/images/photo3.jpg"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+        </div>
+        <div
+          className="absolute inset-0 bg-gradient-to-t from-ink via-ink/45 to-ink/60"
+          aria-hidden="true"
+        />
 
-      <header id="home" className="relative h-[50vh] md:h-[60vh] overflow-hidden">
-        <nav className="absolute top-0 left-0 right-0 z-20 bg-background shadow-md">
-          <div className="flex justify-between items-center p-4 md:p-6 lg:p-8">
-            <div className="text-foreground">
-              <Image
-                src="/images/lexist-logo.png"
-                alt="L'exist"
-                width={150}
-                height={45}
-                className="w-[100px] md:w-[120px] lg:w-[150px] h-auto"
-                priority
-              />
-            </div>
-            <div className="hidden md:flex gap-6 items-center">
-              <MorphicNavbar mode={siteMode} onNavigate={scrollToSection} currentPage="home" />
-              <div className="h-6 w-px bg-border mx-2" />
-              <ModeToggle mode={siteMode} onModeChange={setSiteMode} size="compact" />
-            </div>
-            <button
-              className="md:hidden text-foreground p-3 hover:bg-accent rounded-md transition-colors touch-manipulation"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
-            </button>
+        <SiteHeader currentPath="/" overlay />
+
+        <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-16 md:px-8 md:pb-24">
+          <p className="font-display text-2xl text-link md:text-3xl">film &amp; photography</p>
+          <h1 className="mt-2 max-w-4xl text-balance text-5xl font-bold leading-[0.92] text-cream sm:text-6xl md:text-7xl lg:text-8xl">
+            Stories worth sitting still for
+          </h1>
+          <p className="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-cream/85 md:text-xl">
+            Loek Lutgens — filmmaker and photographer based in Switzerland, working on client films and personal work
+            across Europe.
+          </p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Link href="/work" className="w-full sm:w-auto">
+              <Button
+                size="lg"
+                className="btn-bubble btn-bubble--solid w-full px-8 py-6 text-lg text-primary-foreground sm:w-auto"
+              >
+                View work
+              </Button>
+            </Link>
+            <Link href="/contact" className="w-full sm:w-auto">
+              <Button
+                size="lg"
+                className="btn-bubble btn-bubble--on-image w-full px-8 py-6 text-lg sm:w-auto"
+              >
+                {t.visual.contactMe}
+              </Button>
+            </Link>
           </div>
-          {mobileMenuOpen && (
-            <div className="md:hidden bg-background border-t border-border shadow-lg">
-              <div className="flex flex-col p-4 space-y-3">
-                <div className="flex justify-center py-4 border-b border-border mb-2">
-                  <ModeToggle mode={siteMode} onModeChange={setSiteMode} size="compact" />
-                </div>
-                <button
-                  onClick={() => scrollToSection("home")}
-                  className="text-foreground hover:bg-accent px-5 py-4 rounded-md transition-colors text-left text-lg touch-manipulation"
-                >
-                  {t.nav.home}
-                </button>
-                {siteMode === "visual" && (
-                  <>
-                    <button
-                      onClick={() => scrollToSection("videos")}
-                      className="text-foreground hover:bg-accent px-5 py-4 rounded-md transition-colors text-left text-lg touch-manipulation"
-                    >
-                      {t.nav.videos}
-                    </button>
-                    <button
-                      onClick={() => scrollToSection("gallery")}
-                      className="text-foreground hover:bg-accent px-5 py-4 rounded-md transition-colors text-left text-lg touch-manipulation"
-                    >
-                      {t.nav.pictures}
-                    </button>
-                  </>
-                )}
-                <Link href="/contact">
-                  <button className="w-full text-foreground hover:bg-accent px-5 py-4 rounded-md transition-colors text-left text-lg touch-manipulation">
-                    {t.nav.contact}
-                  </button>
-                </Link>
-              </div>
-            </div>
-          )}
-        </nav>
+        </div>
+      </section>
 
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat hero-zoom-fade"
-          style={{
-            backgroundImage: `url('/images/photo3.jpg')`,
-          }}
-        ></div>
-      </header>
-
-      <div className="relative" style={{ minHeight: siteMode === "visual" ? "auto" : undefined }}>
-        <div
-          className={`transition-all duration-500 ease-out ${
-            siteMode === "visual"
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-4 pointer-events-none absolute inset-x-0 top-0"
-          }`}
-        >
-          <section id="videos" className="bg-primary">
-            <VideoSlider 
-              videos={filteredVideos} 
-              key={selectedVideoCategory}
-              filterComponent={
-                <VideoFilter
-                  categories={videoCategories}
-                  selectedCategory={selectedVideoCategory}
-                  onCategoryChange={setSelectedVideoCategory}
-                />
-              }
+      {/* Curated teaser — three pieces that route onward, not the whole library */}
+      <section className="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-24" aria-labelledby="featured-heading">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="text-sm uppercase tracking-[0.35em] text-link">Selected</p>
+            <h2 id="featured-heading" className="mt-3 text-balance text-4xl font-bold text-foreground md:text-5xl">
+              A few pieces
+            </h2>
+          </div>
+          <Link
+            href="/work"
+            className="group inline-flex items-center gap-2 text-lg text-foreground transition-colors hover:text-link"
+          >
+            All client work
+            <ArrowRight
+              className="h-5 w-5 transition-transform group-hover:translate-x-1"
+              aria-hidden="true"
             />
-          </section>
-
-          <section id="gallery" className="relative">
-            <PhotoGallery3D photos={filteredPhotos} onOpenLightbox={openLightbox} />
-          </section>
-
-          <section className="py-12 md:py-20 px-4 md:px-8 bg-primary text-primary-foreground">
-            <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">{t.visual.letsWorkTogether}</h2>
-              <p className="text-lg md:text-xl text-muted-foreground mb-8 md:mb-12 max-w-2xl mx-auto px-4">
-                {t.visual.workTogetherDescription}
-              </p>
-
-              <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8 md:mb-12 px-4">
-                <Link href="/contact" className="w-full sm:w-auto">
-                  <Button
-                    size="lg"
-                    className="btn-bubble w-full sm:w-auto text-primary-foreground px-8 py-6 text-lg touch-manipulation"
-                  >
-                    {t.visual.contactMe}
-                  </Button>
-                </Link>
-                <a
-                  href="https://www.instagram.com/ll_exist/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full sm:w-auto"
-                >
-                  <Button
-                    size="lg"
-                    className="btn-bubble w-full sm:w-auto text-primary-foreground px-8 py-6 text-lg touch-manipulation"
-                  >
-                    {t.visual.instagram}
-                  </Button>
-                </a>
-              </div>
-
-              <div className="border-t border-border pt-8">
-                <p className="text-sm md:text-base text-muted-foreground">
-                  © {new Date().getFullYear()} {t.visual.copyright}
-                </p>
-                <p className="text-xs text-muted-foreground/50 mt-2">
-                  v124
-                </p>
-              </div>
-            </div>
-          </section>
+          </Link>
         </div>
 
-        <div
-          className={`transition-all duration-500 ease-out ${
-            siteMode === "innovation"
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 -translate-y-4 pointer-events-none absolute inset-x-0 top-0 h-0 overflow-hidden"
-          }`}
-        >
-          <InnovationSection />
-        </div>
-      </div>
+        <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {featuredPieces.map((piece) => (
+            <li key={piece.videoId}>
+              <Link href={piece.href} className="group block">
+                {/* No frame: square corners, no border, no card background. */}
+                <div className="relative aspect-video overflow-hidden">
+                  {/* Still frame only — no embeds on the home page. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`https://i.ytimg.com/vi/${piece.videoId}/hqdefault.jpg`}
+                    alt=""
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                  />
+                  <span className="absolute inset-0 bg-ink/20 transition-colors group-hover:bg-ink/5" />
+                </div>
+                {/* Single line under the media — title only. */}
+                <h3 className="mt-4 text-2xl font-semibold text-foreground transition-colors group-hover:text-link md:text-3xl">
+                  {piece.title}
+                </h3>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
 
-      {lightboxOpen && (
-        <Lightbox images={filteredPhotos} initialIndex={lightboxIndex} onClose={() => setLightboxOpen(false)} />
+      {/* Photography teaser */}
+      {/* Dark treatment — the photographs light up out of the page. No rule above. */}
+      <section className="section-dark w-full py-16 md:py-24" aria-labelledby="photos-heading">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-end justify-between gap-4 px-4 md:px-8">
+          <div>
+            <p className="text-sm uppercase tracking-[0.35em] text-link">Personal work</p>
+            <h2 id="photos-heading" className="mt-3 text-balance text-4xl font-bold text-foreground md:text-5xl">
+              Photographs
+            </h2>
+          </div>
+          <Link
+            href="/gallery"
+            className="group inline-flex items-center gap-2 text-lg text-foreground transition-colors hover:text-link"
+          >
+            Full gallery
+            <ArrowRight
+              className="h-5 w-5 transition-transform group-hover:translate-x-1"
+              aria-hidden="true"
+            />
+          </Link>
+        </div>
+        <PhotoGallery3D compact photos={teaserPhotos} onOpenLightbox={(index) => setLightboxIndex(index)} />
+      </section>
+
+      {/* Clear entry points to every section.
+          Full bleed image treatment: photograph edge to edge, dark scrim over it,
+          cream text on top. This photograph is deliberately one of the darkest in
+          the set so the specified 42% scrim still clears AA — see .section-scrim. */}
+      <nav className="section-on-image relative w-full overflow-hidden" aria-label="Browse sections">
+        <Image
+          src="/images/photo-bridge.jpg"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover"
+          aria-hidden="true"
+        />
+        <div className="section-scrim absolute inset-0" aria-hidden="true" />
+        <ul className="relative z-10 mx-auto max-w-7xl px-4 py-8 md:px-8 md:py-12">
+          {entryPoints.map((entry) => (
+            <li key={entry.href}>
+              <Link
+                href={entry.href}
+                className="group flex flex-wrap items-center justify-between gap-x-6 gap-y-1 py-8 md:py-10"
+              >
+                <span className="text-4xl font-bold text-foreground transition-colors group-hover:text-link md:text-6xl">
+                  {entry.label}
+                </span>
+                <span className="flex items-center gap-4 text-base text-muted-foreground md:text-lg">
+                  {entry.description}
+                  <ArrowRight
+                    className="h-6 w-6 shrink-0 text-link transition-transform group-hover:translate-x-1"
+                    aria-hidden="true"
+                  />
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      {/* Light treatment — differs from the full bleed section above it. */}
+      <footer className="bg-background px-4 py-16 text-foreground md:px-8 md:py-24">
+        <div className="mx-auto max-w-4xl text-center">
+          <h2 className="mb-4 text-balance text-3xl font-bold md:mb-6 md:text-4xl lg:text-5xl">
+            {t.visual.letsWorkTogether}
+          </h2>
+          <p className="mx-auto mb-8 max-w-2xl px-4 text-lg leading-relaxed text-muted-foreground md:mb-12 md:text-xl">
+            {t.visual.workTogetherDescription}
+          </p>
+          <div className="mb-8 flex flex-col justify-center gap-4 px-4 sm:flex-row md:mb-12">
+            <Link href="/contact" className="w-full sm:w-auto">
+              <Button
+                size="lg"
+                className="btn-bubble btn-bubble--solid w-full px-8 py-6 text-lg text-primary-foreground sm:w-auto"
+              >
+                {t.visual.contactMe}
+              </Button>
+            </Link>
+            <a
+              href="https://www.instagram.com/ll_exist/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto"
+            >
+              <Button
+                size="lg"
+                className="btn-bubble btn-bubble--outline w-full px-8 py-6 text-lg text-foreground sm:w-auto"
+              >
+                {t.visual.instagram}
+              </Button>
+            </a>
+          </div>
+          <div className="pt-8">
+            <p className="text-sm text-muted-foreground md:text-base">
+              © {new Date().getFullYear()} {t.visual.copyright}
+            </p>
+          </div>
+        </div>
+      </footer>
+
+      {lightboxIndex !== null && (
+        <Lightbox images={teaserPhotos} initialIndex={lightboxIndex} onClose={() => setLightboxIndex(null)} />
       )}
-    </div>
+    </main>
   )
 }

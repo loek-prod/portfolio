@@ -7,79 +7,119 @@
 
 @custom-variant dark (&:is(.dark *));
 
-:root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
+:root,
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+  /* ---------------------------------------------------------------
+     BRAND PALETTE — exact spec values (light theme)
+     --------------------------------------------------------------- */
+  --brand-paper: #f7f5f1; /* near white, warm undertone — page background */
+  --brand-charcoal: #1a1917; /* near black — primary text (16.1:1 on paper) */
+  --brand-rust: #9a5b38; /* muted rust — accent (4.9:1 on paper, AA) */
+  --brand-stone: #9a9187; /* warm grey — dividers, inactive states */
+
+  /* Tonal derivations of the four brand hues above (not new colors).
+     --brand-stone at #9a9187 is only 2.85:1 on paper, so it cannot carry
+     caption text. stone-text is the same hue darkened to clear AA. */
+  /* Warm grey for caption/muted TEXT. #776e64 cleared 4.6:1 on the cream page
+     but only 4.4:1 on the muted nav pill (--muted at 50% over paper), so it is
+     one shade deeper: ~4.8:1 on cream, ~4.7:1 on the pill. */
+  --brand-stone-text: #726960;
+  --brand-surface: #efebe4; /* paper darkened — cards, hovers, elevated fills */
+
+  /* ---------------------------------------------------------------
+     OVERLAY TOKENS — deliberately NOT inverted.
+     Text and scrims that sit on top of photographs must stay
+     light-on-dark regardless of the page theme, because the
+     photographs themselves are dark. Used only with images.
+     --------------------------------------------------------------- */
+  --brand-scrim: #1a1917; /* dark scrim over photos (used with alpha) */
+  --brand-on-image: #f7f5f1; /* light text/chips placed over photos */
+
+  /* ---------------------------------------------------------------
+     SECTION TREATMENT TOKENS
+     Sections are separated by what fills them, never by a rule.
+     --------------------------------------------------------------- */
+  --brand-dark-section: #2a2724; /* dark treatment background */
+  /* On the dark treatment the spec rust (#9a5b38) drops to 2.8:1 and the spec
+     stone to 4.8:1, so dark sections use lifted tones of the same two hues. */
+  --brand-on-dark-muted: #b9b0a4; /* muted/caption text on dark — 6.9:1 */
+  --brand-rust-on-dark: #d68a5e; /* rust accent text on dark — 5.4:1 */
+
+  /* Back-compat aliases for the previous dark-theme variable names, so
+     inline var(--brand-*) references in components keep resolving. */
+  --brand-ink: var(--brand-scrim);
+  --brand-cream: var(--brand-on-image);
+  --brand-clay: var(--brand-stone);
+  --brand-earth: var(--brand-surface);
+  --brand-sand: var(--brand-stone-text);
+  --brand-link: var(--brand-rust);
+  --brand-rust-deep: var(--brand-rust);
+
+  --background: var(--brand-paper);
+  --foreground: var(--brand-charcoal);
+  --card: var(--brand-surface);
+  --card-foreground: var(--brand-charcoal);
+  --popover: var(--brand-paper);
+  --popover-foreground: var(--brand-charcoal);
+  --primary: var(--brand-rust);
+  --primary-foreground: var(--brand-paper);
+  --secondary: var(--brand-surface);
+  --secondary-foreground: var(--brand-charcoal);
+  --muted: var(--brand-surface);
+  --muted-foreground: var(--brand-stone-text);
+  --accent: var(--brand-rust);
+  --accent-foreground: var(--brand-paper);
+  --destructive: var(--brand-rust);
+  --destructive-foreground: var(--brand-paper);
+  --border: var(--brand-stone);
+  --input: var(--brand-stone);
+  --ring: var(--brand-rust);
+  --chart-1: var(--brand-rust);
+  --chart-2: var(--brand-stone);
+  --chart-3: var(--brand-charcoal);
+  --chart-4: var(--brand-surface);
+  --chart-5: var(--brand-stone-text);
+  --radius: 0.625rem;
+  --sidebar: var(--brand-paper);
+  --sidebar-foreground: var(--brand-charcoal);
+  --sidebar-primary: var(--brand-rust);
+  --sidebar-primary-foreground: var(--brand-paper);
+  --sidebar-accent: var(--brand-surface);
+  --sidebar-accent-foreground: var(--brand-charcoal);
+  --sidebar-border: var(--brand-stone);
+  --sidebar-ring: var(--brand-rust);
 }
 
 @theme inline {
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-darker-grotesque), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-decorative, var(--font-darker-grotesque)), ui-sans-serif, system-ui, sans-serif;
+  /* Spec palette, named directly */
+  --color-paper: var(--brand-paper);
+  --color-charcoal: var(--brand-charcoal);
+  --color-rust: var(--brand-rust);
+  --color-stone: var(--brand-stone);
+  --color-stone-text: var(--brand-stone-text);
+  --color-surface: var(--brand-surface);
+
+  /* Overlay-only utilities: for text/scrims sitting on photographs.
+     These intentionally stay dark/light and do NOT follow the theme. */
+  --color-scrim: var(--brand-scrim);
+  --color-on-image: var(--brand-on-image);
+  --color-section-dark: var(--brand-dark-section);
+
+  /* Legacy aliases kept so existing markup keeps resolving.
+     ink/cream are overlay colors; the rest now map to the light palette. */
+  --color-ink: var(--brand-scrim);
+  --color-cream: var(--brand-on-image);
+  --color-rust-deep: var(--brand-rust);
+  /* Route through --brand-clay/--brand-link (not the raw brand hues) so that
+     section treatments like .section-dark can override them and have every
+     text-clay / text-link utility invert automatically. */
+  --color-clay: var(--brand-clay);
+  --color-earth: var(--brand-surface);
+  --color-sand: var(--brand-stone-text);
+  /* Use text-link for rust-colored TEXT; bg-accent for rust fills. */
+  --color-link: var(--brand-link);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -207,7 +247,7 @@ html {
 .loading-title {
   font-size: 4rem;
   font-weight: bold;
-  color: white;
+  color: var(--brand-charcoal);
   text-align: center;
   animation: loadingTitleFade 0.8s ease-out forwards;
 }
@@ -247,7 +287,7 @@ html {
   height: 100%;
   object-fit: cover;
   border-radius: 8px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 40px rgba(26, 25, 23, 0.18);
 }
 
 @media (max-width: 768px) {
@@ -329,47 +369,76 @@ html {
   }
 }
 
-.btn-bubble {
-  position: relative;
-  overflow: hidden;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(8px);
-  color: inherit;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-  box-shadow:
-    0 2px 12px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.08);
+/* ------------------------------------------------------------------
+   SECTION TREATMENTS
+   Three treatments only, alternated so no two identical sections sit
+   next to each other. Each redefines the semantic text tokens inside
+   itself, so existing utilities (text-foreground, text-muted-foreground,
+   text-link) invert automatically without touching markup.
+   ------------------------------------------------------------------ */
+@layer components {
+  /* Treatment 2 — dark. Imagery lights up out of the page. */
+  .section-dark {
+    background-color: var(--brand-dark-section);
+    color: var(--brand-on-image);
+    --foreground: var(--brand-on-image);
+    --muted-foreground: var(--brand-on-dark-muted);
+    --brand-link: var(--brand-rust-on-dark);
+    --brand-clay: var(--brand-on-dark-muted);
+    --border: var(--brand-on-dark-muted);
+  }
+
+  /* Treatment 3 — full bleed photograph. Applies the same text inversion;
+     the scrim itself is a sibling layer so the image stays edge to edge. */
+  .section-on-image {
+    color: var(--brand-on-image);
+    --foreground: var(--brand-on-image);
+    --muted-foreground: var(--brand-on-dark-muted);
+    --brand-link: var(--brand-rust-on-dark);
+    --brand-clay: var(--brand-on-dark-muted);
+    --border: var(--brand-on-dark-muted);
+  }
+
+  /* Uniform scrim at the specified 42%. Uniform (not gradient) because the
+     text spans the whole section, so a bottom-weighted gradient would leave
+     the topmost row under-covered.
+     A 42% scrim only clears AA if the photograph beneath it is dark: measured
+     against these assets, cream text needs the image's brightest 5% of pixels
+     to stay under ~0.40 relative luminance. photo-bridge.jpg measures 0.09
+     and yields 10.2:1. Swapping in a brighter photo will silently break
+     contrast — re-measure before changing the image. */
+  .section-scrim {
+    background-color: color-mix(in srgb, var(--brand-scrim) 42%, transparent);
+  }
 }
 
-/* Top gloss highlight */
-.btn-bubble::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 10%;
-  right: 10%;
-  height: 45%;
-  border-radius: 0 0 50% 50%;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.45) 0%,
-    rgba(255, 255, 255, 0.0) 100%
-  );
-  pointer-events: none;
+/* Base is intentionally neutral — no fill, no outline — so it can be used for
+   quiet nav pills. Standalone CTAs opt into --outline, --solid or --on-image.
+   Lives in the components layer so Tailwind text-*/bg-*/border-* utilities
+   applied on the element still win over these defaults. */
+@layer components {
+  .btn-bubble {
+    position: relative;
+    overflow: hidden;
+    border-radius: 9999px;
+    border: 1px solid transparent;
+    background: transparent;
+    backdrop-filter: blur(8px);
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease,
+      color 0.2s ease;
+    box-shadow: none;
+  }
 }
 
-/* Shimmer sweep on hover */
-.btn-bubble::after {
+/* Shimmer sweep on hover — only meaningful on the glass/over-image variant */
+.btn-bubble--on-image::after {
   content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(
     105deg,
     transparent 40%,
-    rgba(255, 255, 255, 0.28) 50%,
+    rgba(247, 245, 241, 0.28) 50%,
     transparent 60%
   );
   background-size: 200% 100%;
@@ -378,30 +447,48 @@ html {
   pointer-events: none;
 }
 
-.btn-bubble:hover::after {
+.btn-bubble--on-image:hover::after {
   animation: bubbleShimmer 1.8s ease forwards;
 }
 
 .btn-bubble:hover {
   transform: translateY(-2px) scale(1.02);
-  transition: transform 0.6s ease, box-shadow 0.6s ease, background 0.6s ease;
-  box-shadow:
-    0 6px 20px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.08);
-  background: rgba(255, 255, 255, 0.18);
 }
 
 .btn-bubble:active {
   transform: translateY(0px) scale(0.99);
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
-/* Solid variant — keeps the primary fill so the bubble reads on light backgrounds */
+/* Outlined variant — the non-accent CTA on light surfaces.
+   Background is forced transparent because shadcn's Button default variant
+   applies bg-primary (rust), which would otherwise read as an accent fill. */
+.btn-bubble--outline {
+  border-color: var(--brand-charcoal);
+  background: transparent;
+}
+
+.btn-bubble--outline:hover {
+  background: var(--brand-charcoal);
+  color: var(--brand-paper);
+}
+
+/* Solid accent variant — the single accent-filled element allowed per screen. */
 .btn-bubble--solid,
 .btn-bubble--solid:hover {
-  background: var(--primary);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: var(--brand-rust);
+  border-color: var(--brand-rust);
+  color: var(--brand-paper);
+}
+
+/* Glass variant for buttons placed OVER a photograph: stays light-on-dark
+   so it keeps reading against the image behind it. */
+.btn-bubble--on-image,
+.btn-bubble--on-image:hover {
+  border-color: rgba(247, 245, 241, 0.55);
+  background: rgba(247, 245, 241, 0.14);
+  color: var(--brand-on-image);
+}
+
+.btn-bubble--on-image:hover {
+  background: rgba(247, 245, 241, 0.24);
 }

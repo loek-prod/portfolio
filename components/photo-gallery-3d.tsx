@@ -7,16 +7,18 @@ import { ChevronLeft, ChevronRight, Maximize } from "lucide-react"
 interface Photo {
   src: string
   alt: string
-  category: string
+  category?: string
   aspectRatio?: "panoramic" | "landscape" | "portrait"
 }
 
 interface PhotoGallery3DProps {
   photos: Photo[]
   onOpenLightbox?: (index: number) => void
+  /** Shorter variant for use as a teaser inside a page, not as a full section. */
+  compact?: boolean
 }
 
-export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) {
+export function PhotoGallery3D({ photos, onOpenLightbox, compact = false }: PhotoGallery3DProps) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [isMobile, setIsMobile] = useState(false)
   const touchStartX = useRef<number | null>(null)
@@ -76,8 +78,14 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
   const stackSpacing = isMobile ? 15 : 35
   const verticalStep = isMobile ? 12 : 24
   // Smaller max sizes to ensure containment with padding
-  const maxImageWidth = isMobile ? "75vw" : "min(70vw, 750px)"
-  const maxImageHeight = isMobile ? "35vh" : "min(50vh, 500px)"
+  // The stack box is a fixed frame that every photo letterboxes into, so it must
+  // be tall enough for portrait orientations (roughly 2:3) at the given width —
+  // otherwise `fill` + object-contain crops tall photos top and bottom.
+  const maxImageWidth = isMobile ? "75vw" : compact ? "min(58vw, 620px)" : "min(70vw, 750px)"
+  const maxImageHeight = isMobile
+    ? compact ? "42vh" : "52vh"
+    : compact ? "min(52vh, 520px)" : "min(64vh, 660px)"
+  const sectionMinHeight = compact ? (isMobile ? "60vh" : "68vh") : isMobile ? "78vh" : "88vh"
 
   // Calculate card position relative to active index
   const getCardStyle = (index: number) => {
@@ -115,8 +123,10 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
     // Progressive scale reduction creates depth illusion
     const scale = isActive ? 1 : Math.max(0.65, 0.92 - absOffset * 0.07)
     
-    // Push cards back in Z-space for real depth
-    const translateZ = isActive ? 100 : -absOffset * 60
+    // Push cards back in Z-space for real depth. The active card stays at 0:
+    // a positive translateZ magnifies it under the perspective projection, which
+    // pushed it past the fixed stack height and clipped tall photos top/bottom.
+    const translateZ = isActive ? 0 : -absOffset * 60
     
     // Visible opacity for background cards - they should be clearly seen
     // Active: 1, Card 1: 0.85, Card 2: 0.7, Card 3: 0.55, Card 4: 0.4, Card 5: 0.25
@@ -134,7 +144,7 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
 
   if (photos.length === 0) {
     return (
-      <div className="w-full h-[70vh] md:h-[85vh] bg-background flex items-center justify-center">
+      <div className="w-full h-[70vh] md:h-[85vh] bg-transparent flex items-center justify-center">
         <p className="text-muted-foreground">No photos to display</p>
       </div>
     )
@@ -142,8 +152,10 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
 
   return (
     <div 
-      className="relative w-full bg-background overflow-hidden flex flex-col"
-      style={{ minHeight: isMobile ? "70vh" : "85vh" }}
+      /* Transparent so the surrounding section treatment shows through.
+         The foreground-based controls below invert with it automatically. */
+      className="relative w-full bg-transparent overflow-hidden flex flex-col"
+      style={{ minHeight: sectionMinHeight }}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -152,7 +164,7 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
       <div 
         className="flex-1 relative flex items-center justify-center"
         style={{
-          padding: isMobile ? "24px 16px" : "48px 40px",
+          padding: isMobile ? "24px 16px" : compact ? "28px 40px" : "48px 40px",
         }}
       >
         <div 
@@ -190,35 +202,21 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
                   pointerEvents: isActive ? "auto" : "none",
                 }}
               >
-                {/* Card wrapper with SOLID opaque background to prevent bleed-through */}
-                <div 
-                  className="relative rounded-xl max-w-full max-h-full"
-                  style={{
-                    // Solid white background - acts like a physical photo card
-                    backgroundColor: "#ffffff",
-                    boxShadow: isActive 
-                      ? "0 35px 70px -15px rgba(0, 0, 0, 0.5)"
-                      : `0 ${Math.max(8, 25 - absOffset * 3)}px ${Math.max(15, 50 - absOffset * 8)}px -10px rgba(0, 0, 0, ${Math.max(0.15, 0.4 - absOffset * 0.06)})`,
-                    backfaceVisibility: "hidden",
-                  }}
+                {/* No card: square corners, no backing, no shadow. Depth in the
+                    stack is carried by scale, rotation and opacity alone. */}
+                <div
+                  className="relative flex h-full w-full items-center justify-center"
+                  style={{ backfaceVisibility: "hidden" }}
                 >
-                  {/* Solid white backing layer - ensures no transparency */}
-                  <div 
-                    className="absolute inset-0 rounded-xl" 
-                    style={{ backgroundColor: "#ffffff" }}
-                  />
-                  
+                  {/* fill + object-contain so portrait and landscape photos both
+                      letterbox inside the stack box instead of overflowing it.
+                      Sizing via width/height props clipped tall photos. */}
                   <Image
                     src={photo.src}
                     alt={photo.alt}
-                    width={750}
-                    height={500}
-                    className={`relative w-auto h-auto rounded-xl ${
-                      isMobile 
-                        ? "max-w-[75vw] max-h-[35vh]" 
-                        : "max-w-[min(70vw,750px)] max-h-[min(50vh,500px)]"
-                    }`}
-                    style={{ objectFit: "contain" }}
+                    fill
+                    sizes="(max-width: 768px) 90vw, 620px"
+                    className="object-contain"
                     draggable={false}
                     priority={isActive || absOffset <= 1}
                     quality={isActive ? 90 : 40}
@@ -227,12 +225,12 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
                   {/* Active card overlay with fullscreen button */}
                   {isActive && (
                     <>
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/30 via-transparent to-transparent" />
                       
                       {onOpenLightbox && (
                         <button
                           onClick={handleFullscreen}
-                          className="absolute top-3 right-3 md:top-4 md:right-4 bg-white/90 hover:bg-white active:bg-white text-foreground rounded-full p-3 md:p-2.5 shadow-lg transition-all duration-200 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
+                          className="absolute right-3 top-3 flex min-h-[44px] min-w-[44px] touch-manipulation items-center justify-center rounded-full bg-cream/90 p-3 text-ink shadow-lg transition-all duration-200 hover:bg-cream active:bg-cream md:right-4 md:top-4 md:p-2.5"
                           aria-label="View fullscreen"
                         >
                           <Maximize className="h-5 w-5" />
@@ -240,9 +238,11 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
                       )}
                       
                       {/* Category label */}
-                      <div className="absolute bottom-3 left-3 md:bottom-4 md:left-4 bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-full">
-                        <span className="text-white text-xs md:text-sm font-medium">{photo.category}</span>
-                      </div>
+                      {photo.category && (
+                        <div className="absolute bottom-3 left-3 rounded-full bg-ink/60 px-3 py-1.5 backdrop-blur-sm md:bottom-4 md:left-4">
+                          <span className="text-xs font-medium text-cream md:text-sm">{photo.category}</span>
+                        </div>
+                      )}
                     </>
                   )}
                 </div>
