@@ -7,16 +7,18 @@ import { ChevronLeft, ChevronRight, Maximize } from "lucide-react"
 interface Photo {
   src: string
   alt: string
-  category: string
+  category?: string
   aspectRatio?: "panoramic" | "landscape" | "portrait"
 }
 
 interface PhotoGallery3DProps {
   photos: Photo[]
   onOpenLightbox?: (index: number) => void
+  /** Shorter variant for use as a teaser inside a page, not as a full section. */
+  compact?: boolean
 }
 
-export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) {
+export function PhotoGallery3D({ photos, onOpenLightbox, compact = false }: PhotoGallery3DProps) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [isMobile, setIsMobile] = useState(false)
   const touchStartX = useRef<number | null>(null)
@@ -76,8 +78,11 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
   const stackSpacing = isMobile ? 15 : 35
   const verticalStep = isMobile ? 12 : 24
   // Smaller max sizes to ensure containment with padding
-  const maxImageWidth = isMobile ? "75vw" : "min(70vw, 750px)"
-  const maxImageHeight = isMobile ? "35vh" : "min(50vh, 500px)"
+  const maxImageWidth = isMobile ? "75vw" : compact ? "min(58vw, 620px)" : "min(70vw, 750px)"
+  const maxImageHeight = isMobile
+    ? compact ? "28vh" : "35vh"
+    : compact ? "min(34vh, 340px)" : "min(50vh, 500px)"
+  const sectionMinHeight = compact ? (isMobile ? "44vh" : "50vh") : isMobile ? "70vh" : "85vh"
 
   // Calculate card position relative to active index
   const getCardStyle = (index: number) => {
@@ -143,7 +148,7 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
   return (
     <div 
       className="relative w-full bg-background overflow-hidden flex flex-col"
-      style={{ minHeight: isMobile ? "70vh" : "85vh" }}
+      style={{ minHeight: sectionMinHeight }}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -152,7 +157,7 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
       <div 
         className="flex-1 relative flex items-center justify-center"
         style={{
-          padding: isMobile ? "24px 16px" : "48px 40px",
+          padding: isMobile ? "24px 16px" : compact ? "28px 40px" : "48px 40px",
         }}
       >
         <div 
@@ -213,12 +218,8 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
                     alt={photo.alt}
                     width={750}
                     height={500}
-                    className={`relative w-auto h-auto rounded-xl ${
-                      isMobile 
-                        ? "max-w-[75vw] max-h-[35vh]" 
-                        : "max-w-[min(70vw,750px)] max-h-[min(50vh,500px)]"
-                    }`}
-                    style={{ objectFit: "contain" }}
+                    className="relative h-auto w-auto rounded-xl"
+                    style={{ maxWidth: maxImageWidth, maxHeight: maxImageHeight, objectFit: "contain" }}
                     draggable={false}
                     priority={isActive || absOffset <= 1}
                     quality={isActive ? 90 : 40}
@@ -240,9 +241,11 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
                       )}
                       
                       {/* Category label */}
-                      <div className="absolute bottom-3 left-3 rounded-full bg-ink/60 px-3 py-1.5 backdrop-blur-sm md:bottom-4 md:left-4">
-                        <span className="text-xs font-medium text-clay md:text-sm">{photo.category}</span>
-                      </div>
+                      {photo.category && (
+                        <div className="absolute bottom-3 left-3 rounded-full bg-ink/60 px-3 py-1.5 backdrop-blur-sm md:bottom-4 md:left-4">
+                          <span className="text-xs font-medium text-cream md:text-sm">{photo.category}</span>
+                        </div>
+                      )}
                     </>
                   )}
                 </div>

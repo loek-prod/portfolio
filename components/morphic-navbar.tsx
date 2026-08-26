@@ -28,7 +28,7 @@ export function MorphicNavbar() {
               className={`btn-bubble flex cursor-pointer items-center justify-center px-4 py-2 text-sm md:px-5 md:py-2.5 md:text-base ${
                 isActive
                   ? "border-clay/70 bg-clay/20 font-semibold text-foreground"
-                  : "text-muted-foreground hover:text-accent"
+                  : "text-muted-foreground hover:text-link"
               }`}
             >
               {item.label}

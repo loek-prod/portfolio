@@ -14,7 +14,7 @@ export default function GalleryPage() {
       <SiteHeader currentPath="/gallery" />
 
       <section className="mx-auto max-w-7xl px-4 pb-10 pt-14 md:px-8 md:pb-16 md:pt-20">
-        <p className="text-sm uppercase tracking-[0.35em] text-accent">Personal work</p>
+        <p className="text-sm uppercase tracking-[0.35em] text-link">Personal work</p>
         <h1 className="mt-4 text-balance text-5xl font-bold leading-[0.95] text-foreground md:text-7xl lg:text-8xl">
           Gallery
         </h1>
@@ -32,7 +32,7 @@ export default function GalleryPage() {
               type="button"
               onClick={() => setLightboxIndex(index)}
               aria-label={`Enlarge photograph: ${photo.alt}`}
-              className="group block w-full break-inside-avoid overflow-hidden rounded-lg border border-clay/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="group block w-full break-inside-avoid overflow-hidden rounded-lg border border-clay/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-link focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <Image
                 src={photo.src || "/placeholder.svg"}

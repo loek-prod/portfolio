@@ -78,7 +78,7 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
       {/* Close Button - larger touch target */}
       <Button
         onClick={onClose}
-        className="absolute top-4 right-4 z-50 bg-background/10 hover:bg-background/20 text-primary-foreground rounded-full w-14 h-14 p-0 touch-manipulation"
+        className="absolute top-4 right-4 z-50 bg-cream/10 hover:bg-cream/20 text-cream rounded-full w-14 h-14 p-0 touch-manipulation"
         aria-label="Close lightbox"
       >
         <X className="h-7 w-7" />
@@ -87,7 +87,7 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
       {/* Previous Button - larger touch target */}
       <Button
         onClick={goToPrevious}
-        className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-50 bg-background/10 hover:bg-background/20 text-primary-foreground rounded-full w-14 h-14 p-0 touch-manipulation"
+        className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-50 bg-cream/10 hover:bg-cream/20 text-cream rounded-full w-14 h-14 p-0 touch-manipulation"
         aria-label="Previous image"
       >
         <ChevronLeft className="h-8 w-8" />
@@ -96,7 +96,7 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
       {/* Next Button - larger touch target */}
       <Button
         onClick={goToNext}
-        className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-50 bg-background/10 hover:bg-background/20 text-primary-foreground rounded-full w-14 h-14 p-0 touch-manipulation"
+        className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-50 bg-cream/10 hover:bg-cream/20 text-cream rounded-full w-14 h-14 p-0 touch-manipulation"
         aria-label="Next image"
       >
         <ChevronRight className="h-8 w-8" />
@@ -129,19 +129,19 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
       </div>
 
       {/* Image Info - improved mobile layout */}
-      <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 text-primary-foreground text-center">
+      <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 text-cream text-center">
         <p className="text-sm mb-2">
           {currentIndex + 1} / {images.length}
         </p>
         {images[currentIndex].category && (
-          <span className="bg-background/20 px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
+          <span className="bg-cream/15 px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
             {images[currentIndex].category}
           </span>
         )}
       </div>
 
       {/* Swipe hint for mobile */}
-      <div className="absolute top-6 md:top-8 left-1/2 -translate-x-1/2 text-primary-foreground/60 text-xs md:text-sm">
+      <div className="absolute top-6 md:top-8 left-1/2 -translate-x-1/2 text-cream/70 text-xs md:text-sm">
         Swipe or use arrows to navigate
       </div>
     </div>

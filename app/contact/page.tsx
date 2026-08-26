@@ -14,9 +14,10 @@ export default function ContactPage() {
   const { t } = useLanguage()
 
   const linkClasses =
-    "group flex w-full items-center gap-4 rounded-lg border border-clay/20 bg-earth/40 p-5 text-left transition-colors hover:border-accent/50 hover:bg-earth md:p-4"
+    "group flex w-full items-center gap-4 rounded-lg border border-clay/25 bg-earth/40 p-5 text-left transition-colors hover:border-link/50 hover:bg-earth md:p-4"
+  // Rust stays a small highlight here: a tint behind the icon, not three solid fills.
   const iconClasses =
-    "rounded-full bg-accent p-3 text-accent-foreground transition-transform group-hover:scale-110"
+    "rounded-full bg-accent/15 p-3 text-link transition-transform group-hover:scale-110"
 
   return (
     <main className="min-h-screen bg-background">
@@ -39,7 +40,7 @@ export default function ContactPage() {
 
           <div className="order-1 space-y-6 md:order-2 md:space-y-8">
             <div>
-              <p className="text-sm uppercase tracking-[0.35em] text-accent">Contact</p>
+              <p className="text-sm uppercase tracking-[0.35em] text-link">Contact</p>
               <h1 className="mt-4 text-balance text-5xl font-bold leading-[0.95] text-foreground md:text-6xl lg:text-7xl">
                 {t.contact.letsConnect}
               </h1>

@@ -47,8 +47,8 @@ export function LanguageDropdown() {
                 setLanguage(lang.code)
                 setIsOpen(false)
               }}
-              className={`w-full px-3 py-2 text-sm text-left hover:bg-accent transition-colors ${
-                language === lang.code ? "bg-accent font-medium" : ""
+              className={`w-full px-3 py-2 text-left text-sm transition-colors hover:bg-earth ${
+                language === lang.code ? "bg-earth font-medium text-link" : "text-foreground"
               }`}
             >
               {lang.label}

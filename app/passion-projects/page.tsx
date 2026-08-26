@@ -51,7 +51,7 @@ export default function PassionProjectsPage() {
       <SiteHeader currentPath="/passion-projects" />
 
       <section className="mx-auto max-w-5xl px-4 pb-10 pt-14 md:px-8 md:pb-16 md:pt-24">
-        <p className="font-display text-2xl text-accent md:text-3xl">no brief, no client</p>
+        <p className="font-display text-2xl text-link md:text-3xl">no brief, no client</p>
         <h1 className="mt-3 text-balance text-5xl font-bold leading-[0.95] text-foreground md:text-7xl">
           Passion projects
         </h1>
@@ -66,27 +66,27 @@ export default function PassionProjectsPage() {
           <article key={project.title} className={index % 2 === 1 ? "md:ml-16" : "md:mr-16"}>
             <div className="mb-4 flex flex-wrap items-baseline gap-x-4 gap-y-1">
               <h2 className="text-3xl font-semibold text-foreground md:text-4xl">{project.title}</h2>
-              <span className="font-display text-xl text-accent md:text-2xl">{project.tag}</span>
+              <span className="font-display text-xl text-link md:text-2xl">{project.tag}</span>
             </div>
             <p className="mb-5 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
               {project.description}
             </p>
             <YouTubeEmbed {...project.video} />
             {project.note && (
-              <p className="mt-3 font-display text-lg text-clay">{project.note}</p>
+              <p className="mt-3 font-display text-lg text-sand">{project.note}</p>
             )}
           </article>
         ))}
       </div>
 
       <section className="mx-auto max-w-5xl px-4 pb-24 md:px-8">
-        <p className="font-display mb-8 text-2xl text-accent md:text-3xl">shot vertical</p>
+        <p className="font-display mb-8 text-2xl text-link md:text-3xl">shot vertical</p>
         <div className="flex flex-wrap items-start gap-8 md:gap-12">
           {verticalProjects.map((project) => (
             <article key={project.title} className="w-full max-w-[17rem] basis-[17rem]">
               <YouTubeEmbed {...project.video} />
               <div className="mt-4">
-                <span className="font-display text-xl text-accent">{project.tag}</span>
+                <span className="font-display text-xl text-link">{project.tag}</span>
                 <h2 className="mt-1 text-2xl font-semibold text-foreground">{project.title}</h2>
                 <p className="mt-2 text-pretty text-base leading-relaxed text-muted-foreground">
                   {project.description}

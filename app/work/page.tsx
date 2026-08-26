@@ -59,7 +59,7 @@ export default function WorkPage() {
       <SiteHeader currentPath="/work" />
 
       <section className="mx-auto max-w-7xl px-4 pb-8 pt-14 md:px-8 md:pb-12 md:pt-20">
-        <p className="text-sm uppercase tracking-[0.35em] text-accent">Client work</p>
+        <p className="text-sm uppercase tracking-[0.35em] text-link">Client work</p>
         <h1 className="mt-4 text-balance text-5xl font-bold leading-[0.95] text-foreground md:text-7xl lg:text-8xl">
           Films made with clients
         </h1>
@@ -84,7 +84,7 @@ export default function WorkPage() {
                       href={client.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-baseline gap-1.5 transition-colors hover:text-accent"
+                      className="inline-flex items-baseline gap-1.5 transition-colors hover:text-link"
                     >
                       {client.name}
                       <ArrowUpRight className="h-5 w-5 shrink-0 self-center" aria-hidden="true" />

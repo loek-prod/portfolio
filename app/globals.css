@@ -9,11 +9,18 @@
 
 :root,
 .dark {
-  --brand-ink: #141210;
-  --brand-cream: #f4ead9;
-  --brand-rust: #a44a2a;
-  --brand-clay: #a88b73;
-  --brand-earth: #302a25;
+  /* Brand palette — exact spec values */
+  --brand-ink: #221d19; /* warm near black — background */
+  --brand-cream: #f1e7d8; /* warm cream — primary text */
+  --brand-rust: #a85b34; /* muted rust — CTA/accent fills only */
+  --brand-clay: #8c7a63; /* muted clay — borders, inactive states */
+
+  /* Tonal derivations of the four brand hues (not new colors).
+     Needed because rust and clay fail WCAG AA as text on ink:
+     rust #a85b34 = 3.3:1, clay #8c7a63 = 4.3:1. */
+  --brand-earth: #322b25; /* lifted ink — card/elevated surfaces */
+  --brand-sand: #b5a288; /* lifted clay — body/secondary text, 6.6:1 */
+  --brand-link: #c97a4f; /* lifted rust — link/label text, 5.3:1 */
 
   --background: var(--brand-ink);
   --foreground: var(--brand-cream);
@@ -26,7 +33,7 @@
   --secondary: var(--brand-earth);
   --secondary-foreground: var(--brand-cream);
   --muted: var(--brand-earth);
-  --muted-foreground: var(--brand-clay);
+  --muted-foreground: var(--brand-sand);
   --accent: var(--brand-rust);
   --accent-foreground: var(--brand-cream);
   --destructive: var(--brand-rust);
@@ -58,6 +65,9 @@
   --color-rust: var(--brand-rust);
   --color-clay: var(--brand-clay);
   --color-earth: var(--brand-earth);
+  --color-sand: var(--brand-sand);
+  /* Use text-link for rust-colored TEXT; bg-accent for rust fills. */
+  --color-link: var(--brand-link);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -185,7 +195,7 @@ html {
 .loading-title {
   font-size: 4rem;
   font-weight: bold;
-  color: white;
+  color: var(--brand-cream);
   text-align: center;
   animation: loadingTitleFade 0.8s ease-out forwards;
 }

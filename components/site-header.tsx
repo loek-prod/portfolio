@@ -6,11 +6,24 @@ import Link from "next/link"
 import { Menu, X } from "lucide-react"
 import { MorphicNavbar, navItems } from "@/components/morphic-navbar"
 
-export function SiteHeader({ currentPath }: { currentPath: string }) {
+export function SiteHeader({
+  currentPath,
+  /** Float the header over a hero image instead of sitting on the page background. */
+  overlay = false,
+}: {
+  currentPath: string
+  overlay?: boolean
+}) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-30 border-b border-clay/40 bg-background">
+    <header
+      className={
+        overlay
+          ? "absolute inset-x-0 top-0 z-30 bg-gradient-to-b from-ink/80 via-ink/40 to-transparent"
+          : "sticky top-0 z-30 border-b border-clay/40 bg-background"
+      }
+    >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 p-4 md:p-6 lg:px-8">
         <Link href="/" aria-label="L'exist home">
           <Image
@@ -45,7 +58,7 @@ export function SiteHeader({ currentPath }: { currentPath: string }) {
                 className={`rounded-md px-5 py-4 text-lg transition-colors ${
                   item.href === currentPath
                     ? "bg-earth text-foreground"
-                    : "text-foreground hover:bg-earth hover:text-accent"
+                    : "text-foreground hover:bg-earth hover:text-link"
                 }`}
               >
                 {item.label}
