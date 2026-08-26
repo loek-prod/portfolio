@@ -20,7 +20,10 @@
   /* Tonal derivations of the four brand hues above (not new colors).
      --brand-stone at #9a9187 is only 2.85:1 on paper, so it cannot carry
      caption text. stone-text is the same hue darkened to clear AA. */
-  --brand-stone-text: #776e64; /* warm grey for caption/muted TEXT — 4.6:1 */
+  /* Warm grey for caption/muted TEXT. #776e64 cleared 4.6:1 on the cream page
+     but only 4.4:1 on the muted nav pill (--muted at 50% over paper), so it is
+     one shade deeper: ~4.8:1 on cream, ~4.7:1 on the pill. */
+  --brand-stone-text: #726960;
   --brand-surface: #efebe4; /* paper darkened — cards, hovers, elevated fills */
 
   /* ---------------------------------------------------------------

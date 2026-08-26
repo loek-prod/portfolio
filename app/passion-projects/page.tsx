@@ -69,22 +69,22 @@ export default function PassionProjectsPage() {
             key={project.title}
             className={`w-full py-16 md:py-24 ${index % 2 === 0 ? "section-dark" : ""}`}
           >
-          <div className="mx-auto max-w-5xl px-4 md:px-8">
-          <article className={index % 2 === 1 ? "md:ml-16" : "md:mr-16"}>
-            <div className="mb-4 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-              <h2 className="text-3xl font-semibold text-foreground md:text-4xl">{project.title}</h2>
-              <span className="font-display text-xl text-link md:text-2xl">{project.tag}</span>
+            <div className="mx-auto max-w-5xl px-4 md:px-8">
+              <article className={index % 2 === 1 ? "md:ml-16" : "md:mr-16"}>
+                <div className="mb-4 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                  <h2 className="text-3xl font-semibold text-foreground md:text-4xl">{project.title}</h2>
+                  <span className="font-display text-xl text-link md:text-2xl">{project.tag}</span>
+                </div>
+                <p className="mb-5 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
+                  {project.description}
+                </p>
+                <YouTubeEmbed {...project.video} />
+                {/* Semantic muted token so it inverts with the section treatment. */}
+                {project.note && (
+                  <p className="mt-3 font-display text-lg text-muted-foreground">{project.note}</p>
+                )}
+              </article>
             </div>
-            <p className="mb-5 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
-              {project.description}
-            </p>
-            <YouTubeEmbed {...project.video} />
-            {project.note && (
-              {/* Semantic muted token so it inverts with the section treatment. */}
-              <p className="mt-3 font-display text-lg text-muted-foreground">{project.note}</p>
-            )}
-          </article>
-          </div>
           </section>
         ))}
       </div>
