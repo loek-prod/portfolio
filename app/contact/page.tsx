@@ -5,14 +5,12 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Mail, Instagram, ArrowLeft, Menu, X, FileText } from "lucide-react"
-import { MorphicNavbar } from "@/components/morphic-navbar"
-import { ModeToggle } from "@/components/mode-toggle"
+import { MorphicNavbar, navItems } from "@/components/morphic-navbar"
 import { useLanguage } from "@/components/language-context"
 import { CVModal } from "@/components/cv-modal"
 
 export default function ContactPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [siteMode, setSiteMode] = useState<"visual" | "innovation">("visual")
   const [cvModalOpen, setCvModalOpen] = useState(false)
   const { t } = useLanguage()
 
@@ -33,9 +31,7 @@ export default function ContactPage() {
           </Link>
 
           <div className="hidden md:flex items-center gap-4">
-            <MorphicNavbar mode={siteMode} currentPage="contact" />
-            <div className="h-6 w-px bg-border mx-2" />
-            <ModeToggle mode={siteMode} onModeChange={setSiteMode} size="compact" />
+            <MorphicNavbar />
           </div>
 
           <button
@@ -49,28 +45,21 @@ export default function ContactPage() {
 
         {mobileMenuOpen && (
           <div className="md:hidden bg-background border-t border-border shadow-lg">
-            <div className="flex flex-col p-4 space-y-3">
-              <div className="flex justify-center py-4 border-b border-border mb-2">
-                <ModeToggle mode={siteMode} onModeChange={setSiteMode} size="compact" />
-              </div>
-              <Link href="/" onClick={() => setMobileMenuOpen(false)}>
-                <button className="w-full text-foreground hover:bg-accent px-5 py-4 rounded-md transition-colors text-left text-lg touch-manipulation">
-                  {t.nav.home}
-                </button>
-              </Link>
-              <Link href="/#gallery" onClick={() => setMobileMenuOpen(false)}>
-                <button className="w-full text-foreground hover:bg-accent px-5 py-4 rounded-md transition-colors text-left text-lg touch-manipulation">
-                  {t.nav.pictures}
-                </button>
-              </Link>
-              <Link href="/#videos" onClick={() => setMobileMenuOpen(false)}>
-                <button className="w-full text-foreground hover:bg-accent px-5 py-4 rounded-md transition-colors text-left text-lg touch-manipulation">
-                  {t.nav.videos}
-                </button>
-              </Link>
-              <button className="w-full text-foreground bg-accent px-5 py-4 rounded-md transition-colors text-left text-lg touch-manipulation">
-                {t.nav.contact}
-              </button>
+            <div className="flex flex-col gap-1 p-4">
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`rounded-md px-5 py-4 text-left text-lg transition-colors ${
+                    item.href === "/contact"
+                      ? "bg-earth text-foreground"
+                      : "text-foreground hover:bg-earth hover:text-accent"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
             </div>
           </div>
         )}

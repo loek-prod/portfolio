@@ -55,7 +55,7 @@ export function CVModal({ isOpen, onClose }: CVModalProps) {
       onClick={onClose}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-ink/80 backdrop-blur-sm" />
 
       {/* Modal */}
       <div
@@ -87,7 +87,7 @@ export function CVModal({ isOpen, onClose }: CVModalProps) {
         {/* Scrollable PNG pages */}
         <div className="overflow-y-auto flex-1 px-4 py-4 space-y-3 bg-muted/30">
           {pages.map((page, i) => (
-            <div key={i} className="w-full rounded-lg overflow-hidden shadow-sm border border-border bg-white">
+            <div key={i} className="w-full overflow-hidden rounded-lg border border-border bg-cream shadow-sm">
               <Image
                 src={page.src}
                 alt={page.alt}

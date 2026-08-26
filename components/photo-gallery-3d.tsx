@@ -194,8 +194,8 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
                 <div 
                   className="relative rounded-xl max-w-full max-h-full"
                   style={{
-                    // Solid white background - acts like a physical photo card
-                    backgroundColor: "#ffffff",
+                    // Cream backing acts like a physical photo card.
+                    backgroundColor: "var(--brand-cream)",
                     boxShadow: isActive 
                       ? "0 35px 70px -15px rgba(0, 0, 0, 0.5)"
                       : `0 ${Math.max(8, 25 - absOffset * 3)}px ${Math.max(15, 50 - absOffset * 8)}px -10px rgba(0, 0, 0, ${Math.max(0.15, 0.4 - absOffset * 0.06)})`,
@@ -205,7 +205,7 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
                   {/* Solid white backing layer - ensures no transparency */}
                   <div 
                     className="absolute inset-0 rounded-xl" 
-                    style={{ backgroundColor: "#ffffff" }}
+                    style={{ backgroundColor: "var(--brand-cream)" }}
                   />
                   
                   <Image
@@ -227,12 +227,12 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
                   {/* Active card overlay with fullscreen button */}
                   {isActive && (
                     <>
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/30 via-transparent to-transparent" />
                       
                       {onOpenLightbox && (
                         <button
                           onClick={handleFullscreen}
-                          className="absolute top-3 right-3 md:top-4 md:right-4 bg-white/90 hover:bg-white active:bg-white text-foreground rounded-full p-3 md:p-2.5 shadow-lg transition-all duration-200 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
+                          className="absolute right-3 top-3 flex min-h-[44px] min-w-[44px] touch-manipulation items-center justify-center rounded-full bg-cream/90 p-3 text-ink shadow-lg transition-all duration-200 hover:bg-cream active:bg-cream md:right-4 md:top-4 md:p-2.5"
                           aria-label="View fullscreen"
                         >
                           <Maximize className="h-5 w-5" />
@@ -240,8 +240,8 @@ export function PhotoGallery3D({ photos, onOpenLightbox }: PhotoGallery3DProps) 
                       )}
                       
                       {/* Category label */}
-                      <div className="absolute bottom-3 left-3 md:bottom-4 md:left-4 bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-full">
-                        <span className="text-white text-xs md:text-sm font-medium">{photo.category}</span>
+                      <div className="absolute bottom-3 left-3 rounded-full bg-ink/60 px-3 py-1.5 backdrop-blur-sm md:bottom-4 md:left-4">
+                        <span className="text-xs font-medium text-clay md:text-sm">{photo.category}</span>
                       </div>
                     </>
                   )}
