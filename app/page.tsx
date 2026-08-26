@@ -165,19 +165,18 @@ export default function Portfolio() {
 
       {/* Clear entry points to every section.
           Full bleed image treatment: photograph edge to edge, dark scrim over it,
-          cream text on top. Placeholder image — intended to be swapped by hand. */}
+          cream text on top. This photograph is deliberately one of the darkest in
+          the set so the specified 42% scrim still clears AA — see .section-scrim. */}
       <nav className="section-on-image relative w-full overflow-hidden" aria-label="Browse sections">
         <Image
-          src="/placeholder.jpg"
+          src="/images/photo-bridge.jpg"
           alt=""
           fill
           sizes="100vw"
           className="object-cover"
           aria-hidden="true"
         />
-        {/* Base scrim at the specified density, plus a gradient behind the text. */}
         <div className="section-scrim absolute inset-0" aria-hidden="true" />
-        <div className="section-scrim-text absolute inset-0" aria-hidden="true" />
         <ul className="relative z-10 mx-auto max-w-7xl px-4 py-8 md:px-8 md:py-12">
           {entryPoints.map((entry) => (
             <li key={entry.href}>

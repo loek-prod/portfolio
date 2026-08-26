@@ -80,7 +80,8 @@ export default function PassionProjectsPage() {
             </p>
             <YouTubeEmbed {...project.video} />
             {project.note && (
-              <p className="mt-3 font-display text-lg text-sand">{project.note}</p>
+              {/* Semantic muted token so it inverts with the section treatment. */}
+              <p className="mt-3 font-display text-lg text-muted-foreground">{project.note}</p>
             )}
           </article>
           </div>

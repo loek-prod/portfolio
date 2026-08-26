@@ -78,11 +78,14 @@ export function PhotoGallery3D({ photos, onOpenLightbox, compact = false }: Phot
   const stackSpacing = isMobile ? 15 : 35
   const verticalStep = isMobile ? 12 : 24
   // Smaller max sizes to ensure containment with padding
+  // The stack box is a fixed frame that every photo letterboxes into, so it must
+  // be tall enough for portrait orientations (roughly 2:3) at the given width —
+  // otherwise `fill` + object-contain crops tall photos top and bottom.
   const maxImageWidth = isMobile ? "75vw" : compact ? "min(58vw, 620px)" : "min(70vw, 750px)"
   const maxImageHeight = isMobile
-    ? compact ? "28vh" : "35vh"
-    : compact ? "min(34vh, 340px)" : "min(50vh, 500px)"
-  const sectionMinHeight = compact ? (isMobile ? "44vh" : "50vh") : isMobile ? "70vh" : "85vh"
+    ? compact ? "42vh" : "52vh"
+    : compact ? "min(52vh, 520px)" : "min(64vh, 660px)"
+  const sectionMinHeight = compact ? (isMobile ? "60vh" : "68vh") : isMobile ? "78vh" : "88vh"
 
   // Calculate card position relative to active index
   const getCardStyle = (index: number) => {
@@ -120,8 +123,10 @@ export function PhotoGallery3D({ photos, onOpenLightbox, compact = false }: Phot
     // Progressive scale reduction creates depth illusion
     const scale = isActive ? 1 : Math.max(0.65, 0.92 - absOffset * 0.07)
     
-    // Push cards back in Z-space for real depth
-    const translateZ = isActive ? 100 : -absOffset * 60
+    // Push cards back in Z-space for real depth. The active card stays at 0:
+    // a positive translateZ magnifies it under the perspective projection, which
+    // pushed it past the fixed stack height and clipped tall photos top/bottom.
+    const translateZ = isActive ? 0 : -absOffset * 60
     
     // Visible opacity for background cards - they should be clearly seen
     // Active: 1, Card 1: 0.85, Card 2: 0.7, Card 3: 0.55, Card 4: 0.4, Card 5: 0.25
@@ -200,16 +205,18 @@ export function PhotoGallery3D({ photos, onOpenLightbox, compact = false }: Phot
                 {/* No card: square corners, no backing, no shadow. Depth in the
                     stack is carried by scale, rotation and opacity alone. */}
                 <div
-                  className="relative max-w-full max-h-full"
+                  className="relative flex h-full w-full items-center justify-center"
                   style={{ backfaceVisibility: "hidden" }}
                 >
+                  {/* fill + object-contain so portrait and landscape photos both
+                      letterbox inside the stack box instead of overflowing it.
+                      Sizing via width/height props clipped tall photos. */}
                   <Image
                     src={photo.src}
                     alt={photo.alt}
-                    width={750}
-                    height={500}
-                    className="relative h-auto w-auto"
-                    style={{ maxWidth: maxImageWidth, maxHeight: maxImageHeight, objectFit: "contain" }}
+                    fill
+                    sizes="(max-width: 768px) 90vw, 620px"
+                    className="object-contain"
                     draggable={false}
                     priority={isActive || absOffset <= 1}
                     quality={isActive ? 90 : 40}

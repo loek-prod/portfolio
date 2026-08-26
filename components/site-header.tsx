@@ -21,7 +21,7 @@ export function SiteHeader({
       className={
         overlay
           ? "absolute inset-x-0 top-0 z-30 bg-gradient-to-b from-ink/80 via-ink/40 to-transparent"
-          : "sticky top-0 z-30 border-b border-clay/40 bg-background"
+          : "sticky top-0 z-30 bg-background"
       }
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 p-4 md:p-6 lg:px-8">

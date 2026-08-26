@@ -109,11 +109,14 @@
   --color-ink: var(--brand-scrim);
   --color-cream: var(--brand-on-image);
   --color-rust-deep: var(--brand-rust);
-  --color-clay: var(--brand-stone);
+  /* Route through --brand-clay/--brand-link (not the raw brand hues) so that
+     section treatments like .section-dark can override them and have every
+     text-clay / text-link utility invert automatically. */
+  --color-clay: var(--brand-clay);
   --color-earth: var(--brand-surface);
   --color-sand: var(--brand-stone-text);
   /* Use text-link for rust-colored TEXT; bg-accent for rust fills. */
-  --color-link: var(--brand-rust);
+  --color-link: var(--brand-link);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -378,6 +381,7 @@ html {
     --foreground: var(--brand-on-image);
     --muted-foreground: var(--brand-on-dark-muted);
     --brand-link: var(--brand-rust-on-dark);
+    --brand-clay: var(--brand-on-dark-muted);
     --border: var(--brand-on-dark-muted);
   }
 
@@ -388,24 +392,20 @@ html {
     --foreground: var(--brand-on-image);
     --muted-foreground: var(--brand-on-dark-muted);
     --brand-link: var(--brand-rust-on-dark);
+    --brand-clay: var(--brand-on-dark-muted);
     --border: var(--brand-on-dark-muted);
   }
 
-  /* Base scrim at the specified 40–45%, plus a bottom-weighted gradient
-     concentrated behind the text. A flat 42% alone leaves cream at only
-     2.5:1 over light areas of a photograph, so the gradient carries the
-     text while the rest of the frame keeps the specified density. */
+  /* Uniform scrim at the specified 42%. Uniform (not gradient) because the
+     text spans the whole section, so a bottom-weighted gradient would leave
+     the topmost row under-covered.
+     A 42% scrim only clears AA if the photograph beneath it is dark: measured
+     against these assets, cream text needs the image's brightest 5% of pixels
+     to stay under ~0.40 relative luminance. photo-bridge.jpg measures 0.09
+     and yields 10.2:1. Swapping in a brighter photo will silently break
+     contrast — re-measure before changing the image. */
   .section-scrim {
     background-color: color-mix(in srgb, var(--brand-scrim) 42%, transparent);
-  }
-
-  .section-scrim-text {
-    background-image: linear-gradient(
-      to top,
-      color-mix(in srgb, var(--brand-scrim) 55%, transparent) 0%,
-      color-mix(in srgb, var(--brand-scrim) 30%, transparent) 45%,
-      transparent 100%
-    );
   }
 }
 
