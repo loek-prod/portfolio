@@ -117,7 +117,8 @@ export default function Portfolio() {
           {featuredPieces.map((piece) => (
             <li key={piece.videoId}>
               <Link href={piece.href} className="group block">
-                <div className="relative aspect-video overflow-hidden rounded-xl border border-clay/30 bg-earth">
+                {/* No frame: square corners, no border, no card background. */}
+                <div className="relative aspect-video overflow-hidden">
                   {/* Still frame only — no embeds on the home page. */}
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -128,11 +129,10 @@ export default function Portfolio() {
                   />
                   <span className="absolute inset-0 bg-ink/20 transition-colors group-hover:bg-ink/5" />
                 </div>
-                <p className="mt-4 font-display text-xl text-link">{piece.tag}</p>
-                <h3 className="mt-1 text-2xl font-semibold text-foreground transition-colors group-hover:text-link md:text-3xl">
+                {/* Single line under the media — title only. */}
+                <h3 className="mt-4 text-2xl font-semibold text-foreground transition-colors group-hover:text-link md:text-3xl">
                   {piece.title}
                 </h3>
-                <p className="mt-1 text-base text-muted-foreground">{piece.destination}</p>
               </Link>
             </li>
           ))}
@@ -140,7 +140,8 @@ export default function Portfolio() {
       </section>
 
       {/* Photography teaser */}
-      <section className="border-t border-clay/25 py-12 md:py-16" aria-labelledby="photos-heading">
+      {/* Dark treatment — the photographs light up out of the page. No rule above. */}
+      <section className="section-dark w-full py-16 md:py-24" aria-labelledby="photos-heading">
         <div className="mx-auto flex max-w-7xl flex-wrap items-end justify-between gap-4 px-4 md:px-8">
           <div>
             <p className="text-sm uppercase tracking-[0.35em] text-link">Personal work</p>
@@ -162,11 +163,24 @@ export default function Portfolio() {
         <PhotoGallery3D compact photos={teaserPhotos} onOpenLightbox={(index) => setLightboxIndex(index)} />
       </section>
 
-      {/* Clear entry points to every section */}
-      <nav className="border-t border-clay/25" aria-label="Browse sections">
-        <ul className="mx-auto max-w-7xl px-4 md:px-8">
+      {/* Clear entry points to every section.
+          Full bleed image treatment: photograph edge to edge, dark scrim over it,
+          cream text on top. Placeholder image — intended to be swapped by hand. */}
+      <nav className="section-on-image relative w-full overflow-hidden" aria-label="Browse sections">
+        <Image
+          src="/placeholder.jpg"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover"
+          aria-hidden="true"
+        />
+        {/* Base scrim at the specified density, plus a gradient behind the text. */}
+        <div className="section-scrim absolute inset-0" aria-hidden="true" />
+        <div className="section-scrim-text absolute inset-0" aria-hidden="true" />
+        <ul className="relative z-10 mx-auto max-w-7xl px-4 py-8 md:px-8 md:py-12">
           {entryPoints.map((entry) => (
-            <li key={entry.href} className="border-b border-clay/25 last:border-b-0">
+            <li key={entry.href}>
               <Link
                 href={entry.href}
                 className="group flex flex-wrap items-center justify-between gap-x-6 gap-y-1 py-8 md:py-10"
@@ -187,7 +201,8 @@ export default function Portfolio() {
         </ul>
       </nav>
 
-      <footer className="bg-earth px-4 py-12 text-foreground md:px-8 md:py-20">
+      {/* Light treatment — differs from the full bleed section above it. */}
+      <footer className="bg-background px-4 py-16 text-foreground md:px-8 md:py-24">
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="mb-4 text-balance text-3xl font-bold md:mb-6 md:text-4xl lg:text-5xl">
             {t.visual.letsWorkTogether}
@@ -218,7 +233,7 @@ export default function Portfolio() {
               </Button>
             </a>
           </div>
-          <div className="border-t border-clay/40 pt-8">
+          <div className="pt-8">
             <p className="text-sm text-muted-foreground md:text-base">
               © {new Date().getFullYear()} {t.visual.copyright}
             </p>

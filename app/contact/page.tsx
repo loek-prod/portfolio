@@ -13,18 +13,17 @@ export default function ContactPage() {
   const [cvModalOpen, setCvModalOpen] = useState(false)
   const { t } = useLanguage()
 
-  const linkClasses =
-    "group flex w-full items-center gap-4 rounded-lg border border-clay/25 bg-earth/40 p-5 text-left transition-colors hover:border-link/50 hover:bg-earth md:p-4"
-  // Accent stays a small highlight: a rust outlined icon, not a filled chip, so the
-  // send-message CTA remains the only accent-filled element on this screen.
-  const iconClasses =
-    "rounded-full border border-clay/40 p-3 text-link transition-transform group-hover:scale-110"
+  // Plain rows: no box, no border, no rounded container. Just a small icon,
+  // a muted label and the value in primary text.
+  const linkClasses = "group flex w-full items-center gap-4 py-3 text-left"
+  // Small bare icon — no filled or outlined circle behind it.
+  const iconClasses = "shrink-0 text-link transition-transform group-hover:scale-110"
 
   return (
     <main className="min-h-screen bg-background">
       <SiteHeader currentPath="/contact" />
 
-      <div className="mx-auto max-w-6xl px-4 py-12 md:px-8 md:py-20">
+      <div className="mx-auto max-w-6xl px-4 pb-16 pt-12 md:px-8 md:pb-24 md:pt-20">
         <Link href="/">
           <Button variant="ghost" className="mb-6 text-foreground hover:bg-earth md:mb-8">
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -34,7 +33,8 @@ export default function ContactPage() {
 
         <div className="grid items-center gap-8 md:grid-cols-2 md:gap-12">
           <div className="order-2 md:order-1">
-            <div className="relative mx-auto aspect-[3/4] w-full max-w-md overflow-hidden rounded-2xl border border-clay/30 shadow-2xl md:max-w-none">
+            {/* Square corners, no border, no shadow. */}
+            <div className="relative mx-auto aspect-[3/4] w-full max-w-md overflow-hidden md:max-w-none">
               <Image src="/images/loek-profile.jpg" alt="Loek Lutgens" fill className="object-cover" priority />
             </div>
           </div>
@@ -53,7 +53,7 @@ export default function ContactPage() {
             <div className="space-y-3 md:space-y-4">
               <a href="mailto:loeklutgens2@gmail.com" className={linkClasses}>
                 <div className={iconClasses}>
-                  <Mail className="h-6 w-6" />
+                  <Mail className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-muted-foreground">{t.contact.email}</p>
@@ -70,7 +70,7 @@ export default function ContactPage() {
                 className={linkClasses}
               >
                 <div className={iconClasses}>
-                  <Instagram className="h-6 w-6" />
+                  <Instagram className="h-5 w-5" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Instagram</p>
@@ -80,7 +80,7 @@ export default function ContactPage() {
 
               <button type="button" onClick={() => setCvModalOpen(true)} className={linkClasses}>
                 <div className={iconClasses}>
-                  <FileText className="h-6 w-6" />
+                  <FileText className="h-5 w-5" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">{t.contact.cvTitle}</p>
@@ -102,13 +102,17 @@ export default function ContactPage() {
           </div>
         </div>
 
-        <div className="mt-16 border-t border-clay/30 pt-12 text-center md:mt-20 md:pt-16">
+      </div>
+
+      {/* Dark treatment instead of a rule — the change of background separates it. */}
+      <section className="section-dark w-full py-16 md:py-24">
+        <div className="mx-auto max-w-6xl px-4 text-center md:px-8">
           <h2 className="text-balance text-3xl font-bold text-foreground md:text-4xl">{t.contact.basedIn}</h2>
           <p className="mx-auto mt-4 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
             {t.contact.basedInDescription}
           </p>
         </div>
-      </div>
+      </section>
 
       <CVModal isOpen={cvModalOpen} onClose={() => setCvModalOpen(false)} />
     </main>

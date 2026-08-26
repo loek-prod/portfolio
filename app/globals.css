@@ -32,6 +32,16 @@
   --brand-scrim: #1a1917; /* dark scrim over photos (used with alpha) */
   --brand-on-image: #f7f5f1; /* light text/chips placed over photos */
 
+  /* ---------------------------------------------------------------
+     SECTION TREATMENT TOKENS
+     Sections are separated by what fills them, never by a rule.
+     --------------------------------------------------------------- */
+  --brand-dark-section: #2a2724; /* dark treatment background */
+  /* On the dark treatment the spec rust (#9a5b38) drops to 2.8:1 and the spec
+     stone to 4.8:1, so dark sections use lifted tones of the same two hues. */
+  --brand-on-dark-muted: #b9b0a4; /* muted/caption text on dark — 6.9:1 */
+  --brand-rust-on-dark: #d68a5e; /* rust accent text on dark — 5.4:1 */
+
   /* Back-compat aliases for the previous dark-theme variable names, so
      inline var(--brand-*) references in components keep resolving. */
   --brand-ink: var(--brand-scrim);
@@ -92,6 +102,7 @@
      These intentionally stay dark/light and do NOT follow the theme. */
   --color-scrim: var(--brand-scrim);
   --color-on-image: var(--brand-on-image);
+  --color-section-dark: var(--brand-dark-section);
 
   /* Legacy aliases kept so existing markup keeps resolving.
      ink/cream are overlay colors; the rest now map to the light palette. */
@@ -349,6 +360,52 @@ html {
   }
   100% {
     background-position: 200% center;
+  }
+}
+
+/* ------------------------------------------------------------------
+   SECTION TREATMENTS
+   Three treatments only, alternated so no two identical sections sit
+   next to each other. Each redefines the semantic text tokens inside
+   itself, so existing utilities (text-foreground, text-muted-foreground,
+   text-link) invert automatically without touching markup.
+   ------------------------------------------------------------------ */
+@layer components {
+  /* Treatment 2 — dark. Imagery lights up out of the page. */
+  .section-dark {
+    background-color: var(--brand-dark-section);
+    color: var(--brand-on-image);
+    --foreground: var(--brand-on-image);
+    --muted-foreground: var(--brand-on-dark-muted);
+    --brand-link: var(--brand-rust-on-dark);
+    --border: var(--brand-on-dark-muted);
+  }
+
+  /* Treatment 3 — full bleed photograph. Applies the same text inversion;
+     the scrim itself is a sibling layer so the image stays edge to edge. */
+  .section-on-image {
+    color: var(--brand-on-image);
+    --foreground: var(--brand-on-image);
+    --muted-foreground: var(--brand-on-dark-muted);
+    --brand-link: var(--brand-rust-on-dark);
+    --border: var(--brand-on-dark-muted);
+  }
+
+  /* Base scrim at the specified 40–45%, plus a bottom-weighted gradient
+     concentrated behind the text. A flat 42% alone leaves cream at only
+     2.5:1 over light areas of a photograph, so the gradient carries the
+     text while the rest of the frame keeps the specified density. */
+  .section-scrim {
+    background-color: color-mix(in srgb, var(--brand-scrim) 42%, transparent);
+  }
+
+  .section-scrim-text {
+    background-image: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--brand-scrim) 55%, transparent) 0%,
+      color-mix(in srgb, var(--brand-scrim) 30%, transparent) 45%,
+      transparent 100%
+    );
   }
 }
 

@@ -22,7 +22,9 @@ export function YouTubeEmbed({ id, title, orientation }: VideoItem) {
 
   return (
     <div
-      className={`group relative w-full overflow-hidden rounded-xl border border-clay/30 bg-earth ${ratioClass}`}
+      /* No frame: square corners, no border, no card background or shadow.
+         The thumbnail sits directly on the section background. */
+      className={`group relative w-full overflow-hidden ${ratioClass}`}
     >
       {playing ? (
         <iframe

@@ -61,9 +61,16 @@ export default function PassionProjectsPage() {
         </p>
       </section>
 
-      <div className="mx-auto flex max-w-5xl flex-col gap-16 px-4 pb-16 md:gap-24 md:px-8">
+      {/* Each project is its own edge-to-edge space, alternating light and dark.
+          The stagger offsets are preserved inside the max-width container. */}
+      <div>
         {landscapeProjects.map((project, index) => (
-          <article key={project.title} className={index % 2 === 1 ? "md:ml-16" : "md:mr-16"}>
+          <section
+            key={project.title}
+            className={`w-full py-16 md:py-24 ${index % 2 === 0 ? "section-dark" : ""}`}
+          >
+          <div className="mx-auto max-w-5xl px-4 md:px-8">
+          <article className={index % 2 === 1 ? "md:ml-16" : "md:mr-16"}>
             <div className="mb-4 flex flex-wrap items-baseline gap-x-4 gap-y-1">
               <h2 className="text-3xl font-semibold text-foreground md:text-4xl">{project.title}</h2>
               <span className="font-display text-xl text-link md:text-2xl">{project.tag}</span>
@@ -76,24 +83,24 @@ export default function PassionProjectsPage() {
               <p className="mt-3 font-display text-lg text-sand">{project.note}</p>
             )}
           </article>
+          </div>
+          </section>
         ))}
       </div>
 
-      <section className="mx-auto max-w-5xl px-4 pb-24 md:px-8">
-        <p className="font-display mb-8 text-2xl text-link md:text-3xl">shot vertical</p>
-        <div className="flex flex-wrap items-start gap-8 md:gap-12">
-          {verticalProjects.map((project) => (
-            <article key={project.title} className="w-full max-w-[17rem] basis-[17rem]">
-              <YouTubeEmbed {...project.video} />
-              <div className="mt-4">
-                <span className="font-display text-xl text-link">{project.tag}</span>
-                <h2 className="mt-1 text-2xl font-semibold text-foreground">{project.title}</h2>
-                <p className="mt-2 text-pretty text-base leading-relaxed text-muted-foreground">
-                  {project.description}
-                </p>
-              </div>
-            </article>
-          ))}
+      {/* Vertical set — dark treatment so it differs from the light section above. */}
+      <section className="section-dark w-full py-16 md:py-24">
+        <div className="mx-auto max-w-5xl px-4 md:px-8">
+          <p className="font-display mb-8 text-2xl text-link md:text-3xl">shot vertical</p>
+          <div className="flex flex-wrap items-start gap-8 md:gap-12">
+            {verticalProjects.map((project) => (
+              <article key={project.title} className="w-full max-w-[17rem] basis-[17rem]">
+                <YouTubeEmbed {...project.video} />
+                {/* Single line under the media — title only. */}
+                <h2 className="mt-4 text-2xl font-semibold text-foreground">{project.title}</h2>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
     </main>

@@ -24,15 +24,20 @@ export default function GalleryPage() {
         </p>
       </section>
 
-      <div className="mx-auto max-w-7xl px-4 pb-24 md:px-8">
-        <div className="gap-3 space-y-3 sm:columns-2 md:gap-4 md:space-y-4 lg:columns-3">
+      {/* Dark treatment — the photographs light up out of the page. Edge to
+          edge, no rule above it; the change of background does the separating. */}
+      <section className="section-dark w-full py-16 md:py-24">
+        <div className="mx-auto max-w-7xl px-4 md:px-8">
+          <div className="gap-3 space-y-3 sm:columns-2 md:gap-4 md:space-y-4 lg:columns-3">
           {galleryPhotos.map((photo, index) => (
             <button
               key={photo.src}
               type="button"
               onClick={() => setLightboxIndex(index)}
               aria-label={`Enlarge photograph: ${photo.alt}`}
-              className="group block w-full break-inside-avoid overflow-hidden rounded-lg border border-clay/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-link focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              /* Square corners, no border — the photograph sits directly on
+                 the section background. */
+              className="group block w-full break-inside-avoid overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-link focus-visible:ring-offset-0"
             >
               <Image
                 src={photo.src || "/placeholder.svg"}
@@ -44,8 +49,9 @@ export default function GalleryPage() {
               />
             </button>
           ))}
+          </div>
         </div>
-      </div>
+      </section>
 
       {lightboxIndex !== null && (
         <Lightbox images={galleryPhotos} initialIndex={lightboxIndex} onClose={() => setLightboxIndex(null)} />

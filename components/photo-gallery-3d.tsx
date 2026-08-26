@@ -139,7 +139,7 @@ export function PhotoGallery3D({ photos, onOpenLightbox, compact = false }: Phot
 
   if (photos.length === 0) {
     return (
-      <div className="w-full h-[70vh] md:h-[85vh] bg-background flex items-center justify-center">
+      <div className="w-full h-[70vh] md:h-[85vh] bg-transparent flex items-center justify-center">
         <p className="text-muted-foreground">No photos to display</p>
       </div>
     )
@@ -147,7 +147,9 @@ export function PhotoGallery3D({ photos, onOpenLightbox, compact = false }: Phot
 
   return (
     <div 
-      className="relative w-full bg-background overflow-hidden flex flex-col"
+      /* Transparent so the surrounding section treatment shows through.
+         The foreground-based controls below invert with it automatically. */
+      className="relative w-full bg-transparent overflow-hidden flex flex-col"
       style={{ minHeight: sectionMinHeight }}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
@@ -195,30 +197,18 @@ export function PhotoGallery3D({ photos, onOpenLightbox, compact = false }: Phot
                   pointerEvents: isActive ? "auto" : "none",
                 }}
               >
-                {/* Card wrapper with SOLID opaque background to prevent bleed-through */}
-                <div 
-                  className="relative rounded-xl max-w-full max-h-full"
-                  style={{
-                    // Cream backing acts like a physical photo card.
-                    backgroundColor: "var(--brand-cream)",
-                    boxShadow: isActive 
-                      ? "0 35px 70px -15px rgba(0, 0, 0, 0.5)"
-                      : `0 ${Math.max(8, 25 - absOffset * 3)}px ${Math.max(15, 50 - absOffset * 8)}px -10px rgba(0, 0, 0, ${Math.max(0.15, 0.4 - absOffset * 0.06)})`,
-                    backfaceVisibility: "hidden",
-                  }}
+                {/* No card: square corners, no backing, no shadow. Depth in the
+                    stack is carried by scale, rotation and opacity alone. */}
+                <div
+                  className="relative max-w-full max-h-full"
+                  style={{ backfaceVisibility: "hidden" }}
                 >
-                  {/* Solid white backing layer - ensures no transparency */}
-                  <div 
-                    className="absolute inset-0 rounded-xl" 
-                    style={{ backgroundColor: "var(--brand-cream)" }}
-                  />
-                  
                   <Image
                     src={photo.src}
                     alt={photo.alt}
                     width={750}
                     height={500}
-                    className="relative h-auto w-auto rounded-xl"
+                    className="relative h-auto w-auto"
                     style={{ maxWidth: maxImageWidth, maxHeight: maxImageHeight, objectFit: "contain" }}
                     draggable={false}
                     priority={isActive || absOffset <= 1}
