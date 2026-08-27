@@ -67,7 +67,7 @@ export default function Portfolio() {
               The page still needs one h1 for document structure and search results,
               so it stays as screen-reader-only text rather than disappearing. */}
           <h1 className="sr-only">Loek Lutgens — film &amp; photography</h1>
-          <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Link href="/work" className="w-full sm:w-auto">
               <Button
                 size="lg"
