@@ -190,10 +190,6 @@ export function PhotoGallery3D({ photos, onOpenLightbox, compact = false }: Phot
     // Y rotation for 3D fanning effect - moderate angle
     const baseRotateY = -45
     
-    // Position cards diagonally - fanning from bottom-left to top-right
-    const xOffset = offset * stackSpacing
-    const yOffset = -offset * verticalStep
-    
     // Strict z-index hierarchy - active is always on top
     // Each card behind gets progressively lower z-index (large gaps to prevent overlap issues)
     const zIndex = isActive ? 10000 : 5000 - absOffset * 500
@@ -203,6 +199,20 @@ export function PhotoGallery3D({ photos, onOpenLightbox, compact = false }: Phot
     
     // Progressive scale reduction creates depth illusion
     const scale = isActive ? 1 : Math.max(0.65, 0.92 - absOffset * 0.07)
+
+    /* Fan diagonally, bottom-left to top-right. The horizontal offset is solved
+       per card so its outer edge clears the active photo's edge by exactly
+       absOffset * sliverStep: every card is centred and each has its own width,
+       so a shared step would hide narrow neighbours entirely behind a wide active
+       photo. 0.72 approximates how much rotateY(-45deg) foreshortens the width. */
+    const cardSize = getCardSize(photos[index].src)
+    let xOffset = offset * sliverStep
+    if (activeSize && cardSize) {
+      const effHalfW = (cardSize.w * scale * (isActive ? 1 : 0.72)) / 2
+      const reach = activeSize.w / 2 - effHalfW + absOffset * sliverStep
+      xOffset = Math.sign(offset) * reach
+    }
+    const yOffset = -offset * verticalStep
     
     // Push cards back in Z-space for real depth. The active card stays at 0:
     // a positive translateZ magnifies it under the perspective projection, which
