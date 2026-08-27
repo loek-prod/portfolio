@@ -63,15 +63,11 @@ export default function Portfolio() {
         <SiteHeader currentPath="/" overlay />
 
         <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-16 md:px-8 md:pb-24">
-          <p className="font-display text-2xl text-link md:text-3xl">film &amp; photography</p>
-          <h1 className="mt-2 max-w-4xl text-balance text-5xl font-bold leading-[0.92] text-cream sm:text-6xl md:text-7xl lg:text-8xl">
-            Stories worth sitting still for
-          </h1>
-          <p className="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-cream/85 md:text-xl">
-            Loek Lutgens — filmmaker and photographer based in Switzerland, working on client films and personal work
-            across Europe.
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          {/* Hero copy removed by request — the photograph carries the hero on its own.
+              The page still needs one h1 for document structure and search results,
+              so it stays as screen-reader-only text rather than disappearing. */}
+          <h1 className="sr-only">Loek Lutgens — film &amp; photography</h1>
+          <div className="flex flex-col gap-3 sm:flex-row">
             <Link href="/work" className="w-full sm:w-auto">
               <Button
                 size="lg"

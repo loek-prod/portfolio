@@ -34,7 +34,11 @@ export function MorphicNavbar({
               key={item.href}
               href={item.href}
               aria-current={isActive ? "page" : undefined}
-              className={`btn-bubble flex cursor-pointer items-center justify-center px-4 py-2 text-sm md:px-5 md:py-2.5 md:text-base ${
+              /* rounded-xl overrides .btn-bubble's pill radius so each pill echoes
+                 the container's rounded-2xl instead of being fully round. 12px
+                 inner vs 16px outer keeps the 4px p-1 gap visually concentric.
+                 Wins on specificity because .btn-bubble sits in @layer components. */
+              className={`btn-bubble flex cursor-pointer items-center justify-center rounded-xl px-4 py-2 text-sm md:px-5 md:py-2.5 md:text-base ${
                 overlay
                   ? isActive
                     ? "border-on-image/50 bg-on-image/20 font-semibold text-on-image"

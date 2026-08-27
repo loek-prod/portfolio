@@ -24,12 +24,75 @@ export function PhotoGallery3D({ photos, onOpenLightbox, compact = false }: Phot
   const touchStartX = useRef<number | null>(null)
   const touchEndX = useRef<number | null>(null)
 
+  /* Each card used to fill the whole stack box and letterbox the photo inside it
+     with object-contain. That left transparent bands beside a portrait photo, and
+     the fanned cards behind showed through them — the "leaking" between pictures.
+     Fixing it needs two measurements: the box's real pixel size (its width/height
+     are vw/min() strings that JS can't read) and each photo's aspect ratio. Every
+     card is then sized to its own photo, so there are no gaps to see through. */
+  const stackRef = useRef<HTMLDivElement | null>(null)
+  const [box, setBox] = useState<{ w: number; h: number } | null>(null)
+  const [ratios, setRatios] = useState<Record<string, number>>({})
+
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768)
     checkMobile()
     window.addEventListener("resize", checkMobile)
     return () => window.removeEventListener("resize", checkMobile)
   }, [])
+
+  useEffect(() => {
+    const el = stackRef.current
+    if (!el) return
+    const measure = () => {
+      const r = el.getBoundingClientRect()
+      setBox({ w: r.width, h: r.height })
+    }
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    photos.forEach((photo) => {
+      const img = new window.Image()
+      img.src = photo.src
+      img.onload = () => {
+        if (cancelled || !img.naturalHeight) return
+        setRatios((prev) =>
+          prev[photo.src] ? prev : { ...prev, [photo.src]: img.naturalWidth / img.naturalHeight },
+        )
+      }
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [photos])
+
+  /** Largest w/h fitting `bounds` while keeping the photo's own aspect ratio. */
+  const fit = (ratio: number, bounds: { w: number; h: number }) =>
+    ratio > bounds.w / bounds.h
+      ? { w: bounds.w, h: bounds.w / ratio }
+      : { w: bounds.h * ratio, h: bounds.h }
+
+  /* The active photo's own rendered frame is the envelope for the whole stack.
+     Fitting each card to the full box instead let a tall portrait neighbour stand
+     proud above and below a short landscape active photo — pictures leaking into
+     each other again, just on the other axis. Bounding every card by the active
+     frame means the fan can only emerge sideways, as a deck of photos should. */
+  const activeSize =
+    box && box.w && box.h && ratios[photos[activeIndex]?.src]
+      ? fit(ratios[photos[activeIndex].src], box)
+      : null
+
+  const getCardSize = (src: string) => {
+    if (!activeSize) return null
+    const ratio = ratios[src]
+    if (!ratio) return null
+    return fit(ratio, activeSize)
+  }
 
   const goToNext = () => {
     setActiveIndex((prev) => (prev + 1) % photos.length)
@@ -74,9 +137,17 @@ export function PhotoGallery3D({ photos, onOpenLightbox, compact = false }: Phot
     touchEndX.current = null
   }
 
-  // Responsive values - sized to fit within padded container
-  const stackSpacing = isMobile ? 15 : 35
-  const verticalStep = isMobile ? 12 : 24
+  /* How far each stacked card peeks past the edge of the one in front of it. A
+     plain "offset * spacing" cannot work here: a narrow portrait bounded inside a
+     wide landscape active photo stays completely hidden behind it however large
+     the step, while the same step around a portrait active photo throws landscape
+     neighbours far out into the margin. The offset is therefore derived per card
+     from its own fitted width, below. */
+  const sliverStep = activeSize ? Math.max(18, activeSize.w * 0.05) : 30
+  /* The vertical step stays under the per-step shrink from `scale` (which takes
+     at least 3.5% off the height per side), so a stacked card can never rise
+     above or drop below the active photo's edge whatever its shape. */
+  const verticalStep = activeSize ? activeSize.h * 0.03 : isMobile ? 12 : 24
   // Smaller max sizes to ensure containment with padding
   // The stack box is a fixed frame that every photo letterboxes into, so it must
   // be tall enough for portrait orientations (roughly 2:3) at the given width —
@@ -86,6 +157,16 @@ export function PhotoGallery3D({ photos, onOpenLightbox, compact = false }: Phot
     ? compact ? "42vh" : "52vh"
     : compact ? "min(52vh, 520px)" : "min(64vh, 660px)"
   const sectionMinHeight = compact ? (isMobile ? "60vh" : "68vh") : isMobile ? "78vh" : "88vh"
+
+  /* Perspective is applied per card rather than on the shared parent so that the
+     stack does NOT need transformStyle: preserve-3d. Inside a preserve-3d context
+     the browser sorts siblings by 3D geometry and ignores z-index entirely, and a
+     card rotated 45deg swings its near edge in front of the active photo — which
+     is what made the neighbours paint over it. Each card is now flattened on its
+     own, so the z-index hierarchy below is authoritative and the active photo is
+     always on top. The perspective value matches the old parent value, so the
+     fanning still looks the same. */
+  const cardPerspective = `perspective(${isMobile ? 800 : 1200}px)`
 
   // Calculate card position relative to active index
   const getCardStyle = (index: number) => {
@@ -97,7 +178,7 @@ export function PhotoGallery3D({ photos, onOpenLightbox, compact = false }: Phot
     const maxVisibleCards = 5
     if (absOffset > maxVisibleCards) {
       return {
-        transform: "translateX(0) translateY(0) translateZ(-500px) rotateY(-50deg) scale(0.5)",
+        transform: `${cardPerspective} translateX(0) translateY(0) translateZ(-500px) rotateY(-50deg) scale(0.5)`,
         zIndex: 0,
         opacity: 0,
         visibility: "hidden" as const,
@@ -133,7 +214,7 @@ export function PhotoGallery3D({ photos, onOpenLightbox, compact = false }: Phot
     const opacity = isActive ? 1 : Math.max(0.2, 1 - absOffset * 0.18)
     
     return {
-      transform: `translateX(${xOffset}px) translateY(${yOffset}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
+      transform: `${cardPerspective} translateX(${xOffset}px) translateY(${yOffset}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
       zIndex,
       opacity,
       visibility: "visible" as const,
@@ -167,17 +248,15 @@ export function PhotoGallery3D({ photos, onOpenLightbox, compact = false }: Phot
           padding: isMobile ? "24px 16px" : compact ? "28px 40px" : "48px 40px",
         }}
       >
-        <div 
-          className="relative w-full h-full flex items-center justify-center"
-          style={{
-            perspective: isMobile ? "800px" : "1200px",
-            perspectiveOrigin: "50% 50%",
-          }}
-        >
+        {/* No `perspective` here any more: the cards are grandchildren of this
+            element and the stack between them is flat, so it never reached them.
+            Each card carries its own perspective() instead. */}
+        <div className="relative w-full h-full flex items-center justify-center">
           <div 
+            ref={stackRef}
             className="relative flex items-center justify-center"
             style={{
-              transformStyle: "preserve-3d",
+              /* Deliberately NOT preserve-3d — see cardPerspective above. */
               width: maxImageWidth,
               height: maxImageHeight,
             }}
@@ -189,6 +268,11 @@ export function PhotoGallery3D({ photos, onOpenLightbox, compact = false }: Phot
             
             // Only render cards within visible range (5 cards behind active)
             if (absOffset > 5) return null
+
+            /* Hug the photo's own aspect ratio so no transparent letterbox band
+               is left for the cards behind to show through. Falls back to the
+               full box for the frame or two before the ratio is measured. */
+            const size = getCardSize(photo.src)
             
             return (
               <div
@@ -196,9 +280,15 @@ export function PhotoGallery3D({ photos, onOpenLightbox, compact = false }: Phot
                 className="absolute flex items-center justify-center"
                 style={{
                   ...style,
-                  transformStyle: "preserve-3d",
-                  width: "100%",
-                  height: "100%",
+                  /* Centred with real pixel offsets instead of left/top 50% plus a
+                     percentage translate, because a percentage shift inside the
+                     card's own perspective projection gets scaled along with the
+                     card and drifts off centre. */
+                  left: size && box ? `${(box.w - size.w) / 2}px` : 0,
+                  top: size && box ? `${(box.h - size.h) / 2}px` : 0,
+                  width: size ? `${size.w}px` : "100%",
+                  height: size ? `${size.h}px` : "100%",
+                  opacity: size ? style.opacity : 0,
                   pointerEvents: isActive ? "auto" : "none",
                 }}
               >
