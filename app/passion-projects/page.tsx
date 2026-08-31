@@ -13,7 +13,7 @@ const projects: PassionProject[] = [
   {
     title: "Stillen Wonden",
     tag: "short film",
-    description: "A short film written, shot, and cut on my own terms.",
+    description: "A film where I served as assistant DOP and handled audio and editing, working as part of a collaborative team.",
     note: "Spoken in Dutch",
     video: { id: "MIV0ZJXb2j0", title: "Stillen Wonden — short film", orientation: "landscape" },
   },
@@ -56,8 +56,7 @@ export default function PassionProjectsPage() {
           Passion projects
         </h1>
         <p className="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground md:text-xl">
-          The things I make because I want to see them exist. Some are films, some are experiments, all of them are
-          mine.
+          These things have been made because I want them to exist.
         </p>
       </section>
 
@@ -70,7 +69,9 @@ export default function PassionProjectsPage() {
             className={`w-full py-16 md:py-24 ${index % 2 === 0 ? "section-dark" : ""}`}
           >
             <div className="mx-auto max-w-5xl px-4 md:px-8">
-              <article className={index % 2 === 1 ? "md:ml-16" : "md:mr-16"}>
+              {/* Don't offset — all projects center-aligned. Previous code had
+                  even projects offset right, odd projects offset left. */}
+              <article>
                 <div className="mb-4 flex flex-wrap items-baseline gap-x-4 gap-y-1">
                   <h2 className="text-3xl font-semibold text-foreground md:text-4xl">{project.title}</h2>
                   <span className="font-display text-xl text-link md:text-2xl">{project.tag}</span>
