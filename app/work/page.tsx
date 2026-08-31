@@ -63,10 +63,6 @@ export default function WorkPage() {
         <h1 className="mt-4 text-balance text-5xl font-bold leading-[0.95] text-foreground md:text-7xl lg:text-8xl">
           Films made with clients
         </h1>
-        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl">
-          Explainers, event coverage, interviews, and brand motion — produced end to end, from concept to final
-          delivery.
-        </p>
       </section>
 
       {/* No rules between clients — each client is its own edge-to-edge space,
