@@ -52,7 +52,7 @@ export default function Portfolio() {
             fill
             priority
             sizes="100vw"
-            className="object-cover"
+            className="object-contain"
           />
         </div>
         <div
