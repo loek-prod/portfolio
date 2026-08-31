@@ -18,10 +18,6 @@ export default function GalleryPage() {
         <h1 className="mt-4 text-balance text-5xl font-bold leading-[0.95] text-foreground md:text-7xl lg:text-8xl">
           Gallery
         </h1>
-        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl">
-          Photographs taken for myself — travelling, walking, waiting for the light. No brief, no client, just what
-          caught my eye.
-        </p>
       </section>
 
       {/* Dark treatment — the photographs light up out of the page. Edge to
