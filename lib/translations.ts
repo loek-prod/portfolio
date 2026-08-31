@@ -15,7 +15,7 @@ export const translations = {
     },
     contact: {
       letsConnect: "Let's Connect",
-      description: "Available for photography and videography projects. Whether it's capturing stunning landscapes, creating compelling portraits, or producing engaging video content, I'd love to hear about your vision.",
+      description: "Available for video and photography projects. Whether it's producing engaging video content, capturing stunning landscapes, or creating compelling portraits, I'd love to hear about your vision.",
       email: "Email",
       phone: "Phone",
       sendMessage: "Send me a message",
@@ -45,7 +45,7 @@ export const translations = {
     },
     contact: {
       letsConnect: "Lass uns verbinden",
-      description: "Verfügbar für Fotografie- und Videografie-Projekte. Ob es darum geht, atemberaubende Landschaften einzufangen, überzeugende Porträts zu erstellen oder ansprechende Videoinhalte zu produzieren - ich würde gerne von deiner Vision hören.",
+      description: "Verfügbar für Video- und Fotografie-Projekte. Ob es darum geht, ansprechende Videoinhalte zu produzieren, atemberaubende Landschaften einzufangen oder überzeugende Porträts zu erstellen - ich würde gerne von deiner Vision hören.",
       email: "E-Mail",
       phone: "Telefon",
       sendMessage: "Nachricht senden",
