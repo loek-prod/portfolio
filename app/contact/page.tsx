@@ -33,9 +33,19 @@ export default function ContactPage() {
 
         <div className="grid items-center gap-8 md:grid-cols-2 md:gap-12">
           <div className="order-2 md:order-1">
-            {/* Square corners, no border, no shadow. */}
-            <div className="relative mx-auto aspect-[3/4] w-full max-w-md overflow-hidden md:max-w-none">
-              <Image src="/images/loek-profile-2026.jpg" alt="Loek Lutgens" fill className="object-cover" priority />
+            {/* Square corners, no border, no shadow. object-contain shows the
+                photo exactly as uploaded — object-cover was cropping into it.
+                bg-background on the frame itself means any letterboxing that
+                contain leaves is the page's own cream, not the browser's
+                default white/transparent showing through. */}
+            <div className="relative mx-auto aspect-[3/4] w-full max-w-md overflow-hidden bg-background md:max-w-none">
+              <Image
+                src="/images/loek-profile-2026.jpg"
+                alt="Loek Lutgens"
+                fill
+                className="object-contain"
+                priority
+              />
             </div>
           </div>
 
