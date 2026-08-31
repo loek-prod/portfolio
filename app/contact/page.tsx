@@ -39,7 +39,7 @@ export default function ContactPage() {
                 photo or letterbox it. */}
             <div className="relative mx-auto aspect-square w-full max-w-md md:max-w-none">
               <Image
-                src="/images/loek-connect.jpg"
+                src="/images/loek-connect.png"
                 alt="Loek Lutgens"
                 fill
                 className="object-contain"
