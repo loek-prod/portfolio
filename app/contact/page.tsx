@@ -35,7 +35,7 @@ export default function ContactPage() {
           <div className="order-2 md:order-1">
             {/* Square corners, no border, no shadow. */}
             <div className="relative mx-auto aspect-[3/4] w-full max-w-md overflow-hidden md:max-w-none">
-              <Image src="/images/loek-profile.jpg" alt="Loek Lutgens" fill className="object-cover" priority />
+              <Image src="/images/loek-profile-2026.jpg" alt="Loek Lutgens" fill className="object-cover" priority />
             </div>
           </div>
 
