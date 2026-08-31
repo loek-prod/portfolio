@@ -33,9 +33,18 @@ export default function ContactPage() {
 
         <div className="grid items-center gap-8 md:grid-cols-2 md:gap-12">
           <div className="order-2 md:order-1">
-            {/* Square corners, no border, no shadow. */}
-            <div className="relative mx-auto aspect-[3/4] w-full max-w-md overflow-hidden md:max-w-none">
-              <Image src="/images/loek-profile.jpg" alt="Loek Lutgens" fill className="object-cover" priority />
+            {/* The uploaded file is placed as-is: no background added underneath
+                and no pixel processing applied. The source is square (6000x6000),
+                so the frame is square too — a 3/4 frame would either crop the
+                photo or letterbox it. */}
+            <div className="relative mx-auto aspect-square w-full max-w-md md:max-w-none">
+              <Image
+                src="/images/loek-connect.png"
+                alt="Loek Lutgens"
+                fill
+                className="object-contain"
+                priority
+              />
             </div>
           </div>
 

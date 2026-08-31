@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Lightbox } from "@/components/lightbox"
 import { LoadingScreen } from "@/components/loading-screen"
 import { SiteHeader } from "@/components/site-header"
+import { HeroIntroReveal } from "@/components/hero-intro-reveal"
 import { PhotoGallery3D } from "@/components/photo-gallery-3d"
 import { useLanguage } from "@/components/language-context"
 import { galleryPhotos } from "@/lib/gallery-photos"
@@ -43,8 +44,10 @@ export default function Portfolio() {
 
   return (
     <main className="min-h-screen bg-background">
-      {/* Cinematic hero — the one big statement on the page */}
-      <section className="relative flex h-[92svh] min-h-[540px] flex-col justify-end overflow-hidden">
+      {/* Cinematic hero — the one big statement on the page.
+          Reduced from 92svh to fit the full landscape photo without cropping
+          or needing letterbox bands at the top and bottom. */}
+      <section className="relative flex h-screen min-h-[540px] flex-col justify-end overflow-hidden">
         <div className="hero-zoom-fade absolute inset-0">
           <Image
             src="/images/photo3.jpg"
@@ -60,9 +63,14 @@ export default function Portfolio() {
           aria-hidden="true"
         />
 
+        {/* Interaction layer over the image, under the nav. Additive only —
+            nothing existing in the hero changes. */}
+        <HeroIntroReveal />
+
         <SiteHeader currentPath="/" overlay />
 
-        <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-16 md:px-8 md:pb-24">
+        {/* z-30 keeps the buttons above the reveal layer so they stay clickable. */}
+        <div className="relative z-30 mx-auto w-full max-w-7xl px-4 pb-16 md:px-8 md:pb-24">
           {/* Hero copy removed by request — the photograph carries the hero on its own.
               The page still needs one h1 for document structure and search results,
               so it stays as screen-reader-only text rather than disappearing. */}
