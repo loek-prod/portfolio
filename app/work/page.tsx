@@ -33,7 +33,10 @@ const clients: Client[] = [
     name: "Modernday",
     website: "https://modern-day.nl/",
     description: "Company providing AI training courses. Branding motion work.",
-    videos: [{ id: "L8oyrBfeTM4", title: "Modernday — branding motion", orientation: "landscape" }],
+    videos: [
+      { id: "L8oyrBfeTM4", title: "Modernday — branding motion", orientation: "landscape" },
+      { id: "Bz8UVmK-5hE", title: "Modernday — branding motion two", orientation: "landscape" },
+    ],
   },
   {
     name: "beFesti",
